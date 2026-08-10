@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 type DemoRole = "mobile_nurse" | "specialist" | "dispatcher";
 
@@ -19,6 +20,7 @@ export function DemoRoleLink({
   children: ReactNode;
   className?: string;
 }) {
+  const router = useRouter();
   async function activate(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
     const response = await fetch("/api/auth/demo", {
@@ -26,7 +28,7 @@ export function DemoRoleLink({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role: workspace }),
     });
-    if (response.ok) window.location.assign(destinations[workspace]);
+    if (response.ok) router.push(destinations[workspace]);
   }
 
   return (

@@ -2,6 +2,7 @@
 /* eslint-disable react/no-unescaped-entities, jsx-a11y/label-has-associated-control */
 
 import { FormEvent, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { DemoRoleLink } from "./DemoRoleLink";
 
 type Triage = "routine" | "priority" | "urgent" | "emergency";
@@ -85,6 +86,7 @@ const seedCases: Case[] = [
 ];
 
 export function ClinicDashboard() {
+  const router = useRouter();
   const [cases, setCases] = useState(seedCases);
   const [selected, setSelected] = useState("1");
   const [modal, setModal] = useState(false);
@@ -188,7 +190,7 @@ export function ClinicDashboard() {
     });
     if (response.ok) {
       setAuthError("");
-      window.location.assign("/mobile");
+      router.push("/mobile");
       return;
     }
     setAuthError("Demo email yoki parol noto'g'ri");
