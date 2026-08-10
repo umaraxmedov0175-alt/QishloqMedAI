@@ -12,6 +12,10 @@ Synthetic patient queue, consented intake, unit-labelled vitals, red flags, dete
 
 Reproducible D1 schema, indexed clinical queues, private R2 design, provider abstraction, Zod validation, data minimization, idempotency field, audit structure, and security/AI-safety documentation added.
 
+## Phase 4 — Conventional authentication experience: complete
+
+Removed ChatGPT authentication and added an email/password login experience with explicit demo credentials. Production Supabase authentication remains credential-gated and must enforce authorization server-side.
+
 ## Production follow-ups
 
 Authenticated server CRUD, role/clinic authorization policies, signed R2 upload/download routes, and a configured real AI provider remain intentionally unavailable until production credentials and deployment policy are supplied.
