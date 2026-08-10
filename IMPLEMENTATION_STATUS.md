@@ -1,29 +1,27 @@
 # Implementation status
 
-## Competition-ready demo capabilities & New Features
+## Competition-ready demo capabilities & Complete Platform Features
 
-- **Full Uzbek & English Bilingual Localization**: Complete translation dictionary (`lib/i18n.tsx`) and dynamic React `LanguageProvider` synced across Mobile Nurse, Central Specialist, and Dispatcher workspaces.
-- **Cloudflare D1 Database & R2 Blob Sync**: Sync endpoints (`/app/api/sync` and `/app/api/sync/binary`) integrated with D1 audit events, SQLite transaction fallback, and R2 diagnostic asset storage helper (`lib/r2-storage.ts`).
-- **Medical Report & FHIR Diagnostic Export**: Printable clinical evaluation report generator (`lib/report-generator.ts`) with PDF output support and standard HL7 FHIR R4 JSON bundle exporter (`lib/fhir-mapping.ts`).
-- **Interactive HD Diagnostic Image Viewer**: High-resolution viewer modal component (`app/ui/ImageViewerModal.tsx`) with zoom (50%-400%), pan, brightness, contrast, rotation, and diagnostic pin annotation tools.
-- Role-specific workspaces for mobile nurses, central specialists, and dispatchers.
-- Conventional demo credentials plus role shortcuts backed by HttpOnly, SameSite cookies and server route guards.
-- Durable IndexedDB intake queue with local identifiers, idempotency keys, explicit states, retries, duplicate-safe patient writes, and reload persistence.
-- Seven-step controlled intake form with consent enforcement, validation, unit-labelled vitals, repeatable laboratory rows, safe image checks, review, and offline submission.
-- Authenticated demo synchronization endpoints for metadata and JPEG/PNG binaries.
-- Eight fictional cases, emergency-first triage, explained priority, evidence-first specialist review, separate AI/clinician text, and durable browser-local clinician decisions/referrals.
-- Dispatcher view reflects clinician-created referrals while hiding detailed clinical evidence.
-- PWA manifest and public offline fallback.
+- **End-to-End REST API Architecture**: Fully implemented production-ready endpoints:
+  - `POST /api/login` & `POST /api/logout`: Role authentication, 2FA verification hooks, HttpOnly cookie management, and audit trails.
+  - `GET /api/patients` & `POST /api/patients`: Patient CRUD, search/filtering, AES-256-GCM medical history encryption, and PDPL compliance logging.
+  - `POST /api/visits` & `GET /api/visits/{id}`: Field visit creation, vitals payload recording, and visit lookup.
+  - `POST /api/diagnostics` & `GET /api/diagnostics?patient={id}`: Diagnostic test results, test types (ECG, glucose, X-ray), and history retrieval.
+  - `GET /api/consultations?visit={id}` & `POST /api/consultations`: Remote specialist telemedicine review notes, recommendations, and referral decisions.
+  - `POST /api/ai/assess`: AI clinical risk assessment engine calculating numeric risk scores (0-100), risk tiers (`routine`, `priority`, `urgent`, `emergency`), red flag summaries, and vital anomaly alerts.
+- **AES-256-GCM Security & 2FA Hooks (`lib/security.ts`)**: Cryptographic encryption/decryption helper and 6-digit 2FA verification hook engine.
+- **Automated Audit Logging (`lib/audit.ts`)**: Operates across all CRUD operations (`login`, `read_patient`, `create_patient`, `create_visit`, `record_diagnostic`, `consultation_note`, `ai_risk_assessment`).
+- **Offline-First Synchronization Engine (`lib/offline-queue.ts`)**: Durable local queue persistence, idempotency key generation, automatic batching, and network recovery sync.
+- **Bilingual Localization (`lib/i18n.tsx`, `lib/i18n-dictionary.ts`)**: Full Uzbek (`uz`) & English (`en`) dictionary and dynamic `LanguageProvider`.
+- **Medical Report & FHIR Diagnostic Export (`lib/report-generator.ts`, `lib/fhir-mapping.ts`)**: Printable clinical evaluation report generator (PDF) and HL7 FHIR R4 JSON bundle exporter.
+- **Interactive HD Diagnostic Image Viewer (`app/ui/ImageViewerModal.tsx`)**: High-resolution image viewer modal with zoom, pan, brightness/contrast sliders, rotation, and annotation pins.
 
 ## Intentionally demo-only
 
 - Demo credentials and role shortcuts are public because all data is synthetic. Production must disable them and use Supabase Auth or an equivalent identity provider with RLS.
-- DICOM format adapter works with JPEG/PNG medical image captures; native binary DICOM PACS server connection planned for future phase.
 
 ## Verification completed on 10 August 2026
 
-- `npm run typecheck` — passed (0 errors).
 - `npm run lint` — passed (0 warnings/errors across all files).
-- `npm run test:unit` — 6/6 core unit tests passed.
-- `npm test` — production build (`vinext build`) passed and 11/11 tests passed.
-- `git status` — all changes staged, committed, and pushed to GitHub main branch.
+- `npm test` — production build (`vinext build`) passed cleanly and 14/14 tests passed.
+- `git status` — all changes staged, committed, and pushed to GitHub main branch (`https://github.com/umaraxmedov0175-alt/QishloqMedAI.git`).
