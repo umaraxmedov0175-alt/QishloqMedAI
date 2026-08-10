@@ -11,4 +11,7 @@
 - Update `IMPLEMENTATION_STATUS.md` after each major phase and provide a final implementation report.
 - Keep pure data dictionaries, schemas, and test utilities in `.ts` files (not `.tsx`) so Node ESM test runners (`--experimental-strip-types`) can import them without JSX loader errors.
 - On Windows environments, run chained commands using `cmd /c` and ensure local git user identity (`user.email`/`user.name`) is configured before committing.
+- Ensure `"use client";` is the very first line of any React Client Component file using React state/hooks so Next.js Turbopack builds pass on Vercel without RSC boundary errors.
+- In dual build environments, run both local Vite/Vinext build (`npm run build`) and Vercel Next.js build (`npm run build:vercel`) to verify deployment compatibility before pushing to main.
+
 
