@@ -16,24 +16,13 @@ import {
 import { useLanguage } from "@/lib/i18n";
 
 type NetState =
-  "online" | "weak" | "offline" | "synchronizing" | "complete" | "error";
-const steps = [
-  "Identity",
-  "Consent",
-  "Symptoms",
-  "Vital signs",
-  "Diagnostics",
-  "Review",
-  "Submit",
-];
-const netLabel: Record<NetState, string> = {
-  online: "Online",
-  weak: "Weak / reconnecting",
-  offline: "Offline",
-  synchronizing: "Synchronizing",
-  complete: "Sync complete",
-  error: "Sync error",
-};
+  | "online"
+  | "weak"
+  | "offline"
+  | "synchronizing"
+  | "complete"
+  | "error";
+
 const goldenDraft = {
   patientCode: "QM-2027-0042",
   fullName: "Dilnoza Karimova",
@@ -41,14 +30,15 @@ const goldenDraft = {
   sex: "Ayol",
   consent: "recorded",
   complaint: "Nafas qisishi va ko'krakda bosim",
-  history: "Symptoms began this morning after walking.",
+  history: "Simptomlar bugun ertalab, jismoniy harakatdan keyin boshlangan.",
   spo2: "89",
   pulse: "108",
   bp: "168/96",
   temp: "37.4",
 };
+
 export function MobileWorkspace() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [network, setNetwork] = useState<NetState>("offline");
   const [pending, setPending] = useState(0);
   const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
@@ -67,10 +57,22 @@ export function MobileWorkspace() {
     valid: boolean;
   } | null>(null);
   const [rawFile, setRawFile] = useState<File | null>(null);
+
+  const steps = [
+    t("step1Consent"),
+    t("step2Demographics"),
+    t("step3Symptoms"),
+    t("step4Vitals"),
+    t("step5Labs"),
+    t("step6Diagnostics"),
+    t("step7Review"),
+  ];
+
   async function refresh() {
     setPending(await pendingQueueCount());
     setQueue(await listQueueItems());
   }
+
   useEffect(() => {
     queueMicrotask(() => {
       setNetwork(navigator.onLine ? "online" : "offline");
@@ -85,39 +87,40 @@ export function MobileWorkspace() {
       window.removeEventListener("offline", off);
     };
   }, []);
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (saving) return;
     const data = { ...draft };
     if (!data.patientCode.trim() || !data.fullName.trim() || !data.age.trim()) {
-      setNotice("Patient identity fields are required before submission.");
+      setNotice(t("valPatientRequired"));
       setStep(0);
       return;
     }
     if (data.consent !== "recorded") {
-      setNotice("Recorded patient consent is required before submission.");
+      setNotice(t("valConsentRequired"));
       setStep(1);
       return;
     }
     if (!data.complaint.trim()) {
-      setNotice("A chief complaint is required before submission.");
+      setNotice(t("valComplaintRequired"));
       setStep(2);
       return;
     }
     if (
       [data.spo2, data.pulse, data.bp, data.temp].some((value) => !value.trim())
     ) {
-      setNotice("All vital signs require a value and displayed unit.");
+      setNotice(t("valVitalsRequired"));
       setStep(3);
       return;
     }
     if (labs.some((lab) => !lab.name.trim() || !lab.unit.trim())) {
-      setNotice("Each laboratory result requires a test name and unit.");
+      setNotice(t("valLabsRequired"));
       setStep(4);
       return;
     }
     if (file && !file.valid) {
-      setNotice("Remove the invalid diagnostic file before submission.");
+      setNotice(t("valInvalidFile"));
       setStep(4);
       return;
     }
@@ -152,20 +155,19 @@ export function MobileWorkspace() {
           },
           `asset-binary:${encounterKey}`,
         );
-      setNotice(
-        "Case saved durably on this device. It is safe to continue offline.",
-      );
+      setNotice(t("caseSavedOffline"));
       setStep(6);
       await refresh();
     } catch {
-      setNotice("Local save failed. The encounter was not marked complete.");
+      setNotice(t("localSaveFailed"));
     } finally {
       setSaving(false);
     }
   }
+
   async function sync() {
     if (network === "offline")
-      return setNotice("No connection. Records remain safely queued.");
+      return setNotice(t("noConnectionQueued"));
     setNetwork("synchronizing");
     await synchronizeQueue(async (item) => {
       let response: Response;
@@ -199,25 +201,26 @@ export function MobileWorkspace() {
     await refresh();
     if (after.some((item) => item.status === "failed")) {
       setNetwork("error");
-      setNotice("Some records failed to synchronize. Retry remains available.");
+      setNotice(t("syncFailedRetry"));
       return;
     }
     setNetwork("complete");
-    setNotice("Demo server acknowledged every record without duplication.");
+    setNotice(t("syncAcknowledged"));
     window.setTimeout(() => setNetwork("online"), 1800);
   }
+
   function chooseFile(input: HTMLInputElement) {
     const selected = input.files?.[0];
     if (!selected) return;
     const supported = ["image/jpeg", "image/png"].includes(selected.type);
     const tooLarge = selected.size > 10 * 1024 * 1024;
     const quality = !supported
-      ? "Unsupported type"
+      ? t("unsupportedFileType")
       : tooLarge
-        ? "File exceeds the 10 MB demonstration limit"
+        ? t("fileTooLarge")
         : selected.size < 20_000
-          ? "Warning: unusually small image"
-          : "Basic checks passed — not a radiology quality validation";
+          ? t("smallImageWarning")
+          : t("basicChecksPassed");
     setFile({
       name: selected.name.replace(/[^a-zA-Z0-9._-]/g, "_"),
       size: `${(selected.size / 1024 / 1024).toFixed(2)} MB`,
@@ -226,6 +229,7 @@ export function MobileWorkspace() {
     });
     setRawFile(supported && !tooLarge ? selected : null);
   }
+
   return (
     <main className="field-app">
       <header className="field-header">
@@ -234,49 +238,51 @@ export function MobileWorkspace() {
         </a>
         <div className={`network ${network}`}>
           <span />
-          {language === "uz"
-            ? (
-                {
-                  online: "Onlayn",
-                  weak: "Aloqa sust",
-                  offline: "Oflayn",
-                  synchronizing: "Sinxronlanmoqda",
-                  complete: "Sinxronlash tugadi",
-                  error: "Sinxronlash xatosi",
-                } as const
-              )[network]
-            : netLabel[network]}
+          {
+            (
+              {
+                online: t("statusOnlineText"),
+                weak: t("statusWeakText"),
+                offline: t("statusOfflineText"),
+                synchronizing: t("statusSyncingText"),
+                complete: t("statusCompleteText"),
+                error: t("statusErrorText"),
+              } as const
+            )[network]
+          }
         </div>
         <button
           className="pending-pill"
           onClick={() => setShowQueue(!showQueue)}
         >
-          Pending sync: {pending}
+          {t("pendingSyncPill")}: {pending}
         </button>
         <select
           aria-label="Language"
           value={language}
           onChange={(event) => setLanguage(event.target.value as "uz" | "en")}
         >
-          <option value="uz">O'zbek</option>
+          <option value="uz">O'zbekcha</option>
           <option value="en">English</option>
         </select>
       </header>
+
       <nav className="field-nav">
         <a className="active" href="/mobile">
-          Dashboard
+          {t("dashboard")}
         </a>
-        <a href="#patients">Patients</a>
-        <button onClick={() => setShowQueue(true)}>Pending Sync</button>
-        <a href="#responses">Responses</a>
-        <DemoRoleLink workspace="specialist">Specialist view</DemoRoleLink>
+        <a href="#patients">{t("patients")}</a>
+        <button onClick={() => setShowQueue(true)}>{t("pendingSyncPill")}</button>
+        <a href="#responses">{t("responses")}</a>
+        <DemoRoleLink workspace="specialist">{t("specialistView")}</DemoRoleLink>
       </nav>
+
       <section className="field-content">
         <div className="field-hero">
           <div>
-            <span className="eyebrow">Mobile Clinic Mode · QishloqMed-01</span>
+            <span className="eyebrow">{t("mobileWorkspaceTitle")}</span>
             <h1>Urgut tumani · G'us qishlog'i</h1>
-            <p>Bugungi tashriflar · 10 avgust 2026</p>
+            <p>{t("todayVisits")} · 10 avgust 2026</p>
           </div>
           <div className="network-tools">
             <button
@@ -286,25 +292,26 @@ export function MobileWorkspace() {
               }
             >
               {network === "offline"
-                ? "Restore connection"
-                : "Simulate offline"}
+                ? t("restoreConnection")
+                : t("simulateOffline")}
             </button>
             <button
               className="btn primary"
               onClick={sync}
               disabled={!pending || network === "offline"}
             >
-              Synchronize now
+              {t("syncNow")}
             </button>
           </div>
         </div>
+
         <div className="mobile-metrics">
           {[
-            ["7", "Patients examined"],
-            [String(pending), "Pending synchronization"],
-            ["2", "Waiting for AI"],
-            ["3", "Waiting for specialist"],
-            ["1", "Urgent response"],
+            ["7", t("patientsExamined")],
+            [String(pending), t("pendingSyncCount")],
+            ["2", t("waitingForAi")],
+            ["3", t("waitingForSpecialist")],
+            ["1", t("urgentResponse")],
           ].map(([n, l]) => (
             <div className="mobile-metric" key={l}>
               <b>{n}</b>
@@ -312,17 +319,19 @@ export function MobileWorkspace() {
             </div>
           ))}
         </div>
+
         {notice && (
           <div className="field-notice" role="status">
             ✓ {notice}
           </div>
         )}
+
         {showQueue && (
           <section className="work-card">
             <div className="work-head">
               <div>
-                <h2>Offline synchronization queue</h2>
-                <p>Local records remain until server acknowledgment.</p>
+                <h2>{t("offlineSyncQueue")}</h2>
+                <p>{t("localRecordsRemain")}</p>
               </div>
               <div className="actions">
                 <button
@@ -334,14 +343,14 @@ export function MobileWorkspace() {
                     setFile(null);
                     setRawFile(null);
                     setStep(0);
-                    setNotice("Synthetic demo queue reset safely.");
+                    setNotice(language === "uz" ? "Sintetik demo navbati xavfsiz nollandi." : "Synthetic demo queue reset safely.");
                     await refresh();
                   }}
                 >
-                  Reset demo
+                  {t("resetDemo")}
                 </button>
                 <button className="btn" onClick={() => setShowQueue(false)}>
-                  Close
+                  {t("close")}
                 </button>
               </div>
             </div>
@@ -352,11 +361,11 @@ export function MobileWorkspace() {
                     <div>
                       <b>{item.entity.replace("_", " ")}</b>
                       <small>
-                        {item.localId.slice(0, 12)} · attempt {item.attempts}
+                        {item.localId.slice(0, 12)} · {item.attempts}-urinish
                       </small>
                     </div>
                     <span className={`sync-tag ${item.status}`}>
-                      {item.status.replace("_", " ")}
+                      {item.status === "synced" ? t("statusCompleteText") : t("syncPending")}
                     </span>
                     {(item.status === "failed" ||
                       item.status === "conflict") && (
@@ -367,7 +376,7 @@ export function MobileWorkspace() {
                           refresh();
                         }}
                       >
-                        Retry
+                        {t("tryAgain")}
                       </button>
                     )}
                   </div>
@@ -375,17 +384,18 @@ export function MobileWorkspace() {
               </div>
             ) : (
               <div className="empty">
-                No records are waiting to synchronize.
+                {language === "uz" ? "Sinxronlashni kutayotgan yozuvlar yo'q." : "No records are waiting to synchronize."}
               </div>
             )}
           </section>
         )}
+
         <section className="work-grid">
           <form className="work-card intake" onSubmit={submit}>
             <div className="work-head">
               <div>
-                <span className="synthetic">SYNTHETIC DEMO DATA</span>
-                <h2>New patient encounter</h2>
+                <span className="synthetic">{t("syntheticDemoData")}</span>
+                <h2>{t("newPatientEncounter")}</h2>
               </div>
               <button
                 type="button"
@@ -394,13 +404,16 @@ export function MobileWorkspace() {
                   setDraft({ ...goldenDraft });
                   setStep(0);
                   setNotice(
-                    "Golden case loaded for a fast 2–4 minute walkthrough.",
+                    language === "uz"
+                      ? "Demo bemor ma'lumotlari tezkor ko'rik uchun yuklandi."
+                      : "Golden case loaded for a fast walkthrough.",
                   );
                 }}
               >
-                Load golden case
+                {t("loadGoldenCase")}
               </button>
             </div>
+
             <ol className="stepper">
               {steps.map((name, i) => (
                 <li
@@ -414,13 +427,14 @@ export function MobileWorkspace() {
                 </li>
               ))}
             </ol>
+
             <div className="step-body">
               {step === 0 && (
                 <>
-                  <h3>Patient identity</h3>
+                  <h3>{t("patientIdentity")}</h3>
                   <div className="form-grid">
                     <div className="field">
-                      <label htmlFor="patientCode">Safe patient code</label>
+                      <label htmlFor="patientCode">{t("safePatientCode")}</label>
                       <input
                         id="patientCode"
                         name="patientCode"
@@ -435,7 +449,7 @@ export function MobileWorkspace() {
                       />
                     </div>
                     <div className="field">
-                      <label htmlFor="fullName">Full name</label>
+                      <label htmlFor="fullName">{t("fullName")}</label>
                       <input
                         id="fullName"
                         name="fullName"
@@ -450,7 +464,7 @@ export function MobileWorkspace() {
                       />
                     </div>
                     <div className="field">
-                      <label htmlFor="age">Age</label>
+                      <label htmlFor="age">{t("age")}</label>
                       <input
                         id="age"
                         name="age"
@@ -466,7 +480,7 @@ export function MobileWorkspace() {
                       />
                     </div>
                     <div className="field">
-                      <label htmlFor="sex">Sex</label>
+                      <label htmlFor="sex">{t("gender")}</label>
                       <select
                         id="sex"
                         name="sex"
@@ -478,16 +492,17 @@ export function MobileWorkspace() {
                           }))
                         }
                       >
-                        <option>Ayol</option>
-                        <option>Erkak</option>
+                        <option value="Ayol">{t("female")}</option>
+                        <option value="Erkak">{t("male")}</option>
                       </select>
                     </div>
                   </div>
                 </>
               )}
+
               {step === 1 && (
                 <>
-                  <h3>Consent</h3>
+                  <h3>{t("step1Consent")}</h3>
                   <label className="consent">
                     <input
                       name="consent"
@@ -503,19 +518,16 @@ export function MobileWorkspace() {
                         }))
                       }
                     />
-                    <span>
-                      Patient consent was recorded for clinical data capture and
-                      specialist review. This environment contains synthetic
-                      demonstration data.
-                    </span>
+                    <span>{t("consentDesc")}</span>
                   </label>
                 </>
               )}
+
               {step === 2 && (
                 <>
-                  <h3>Symptoms and history</h3>
+                  <h3>{t("symptomsAndHistory")}</h3>
                   <div className="field">
-                    <label htmlFor="complaint">Chief complaint</label>
+                    <label htmlFor="complaint">{t("chiefComplaint")}</label>
                     <textarea
                       id="complaint"
                       name="complaint"
@@ -530,9 +542,7 @@ export function MobileWorkspace() {
                     />
                   </div>
                   <div className="field">
-                    <label htmlFor="history">
-                      Symptom history and nurse notes
-                    </label>
+                    <label htmlFor="history">{t("nurseNotes")}</label>
                     <textarea
                       id="history"
                       name="history"
@@ -547,15 +557,16 @@ export function MobileWorkspace() {
                   </div>
                 </>
               )}
+
               {step === 3 && (
                 <>
-                  <h3>Vital signs</h3>
+                  <h3>{t("step4Vitals")}</h3>
                   <div className="form-grid">
                     {[
-                      ["spo2", "SpO₂", "%"],
-                      ["pulse", "Heart rate", "bpm"],
-                      ["bp", "Blood pressure", "mmHg"],
-                      ["temp", "Temperature", "°C"],
+                      ["spo2", t("spO2"), "%"],
+                      ["pulse", t("pulseBpm"), "bpm"],
+                      ["bp", t("systolicBp"), "mmHg"],
+                      ["temp", t("tempC"), "°C"],
                     ].map(([id, label, unit]) => (
                       <div className="field" key={id}>
                         <label htmlFor={id}>
@@ -579,18 +590,17 @@ export function MobileWorkspace() {
                   </div>
                 </>
               )}
+
               {step === 4 && (
                 <>
-                  <h3>Diagnostics</h3>
-                  <p className="reference-note">
-                    Reference ranges are demonstration configuration and are not
-                    universally authoritative.
-                  </p>
+                  <h3>{t("step5Labs")}</h3>
+                  <p className="reference-note">{t("referenceNote")}</p>
                   {labs.map((lab, i) => (
                     <div className="lab-row" key={i}>
                       <input
-                        aria-label="Test name"
+                        aria-label={t("testName")}
                         value={lab.name}
+                        placeholder={t("testName")}
                         onChange={(e) =>
                           setLabs(
                             labs.map((x, n) =>
@@ -600,8 +610,9 @@ export function MobileWorkspace() {
                         }
                       />
                       <input
-                        aria-label="Result value"
+                        aria-label={t("resultValue")}
                         type="number"
+                        placeholder={t("resultValue")}
                         value={lab.value}
                         onChange={(e) =>
                           setLabs(
@@ -612,7 +623,8 @@ export function MobileWorkspace() {
                         }
                       />
                       <input
-                        aria-label="Result unit"
+                        aria-label={t("unit")}
+                        placeholder={t("unit")}
                         value={lab.unit}
                         onChange={(e) =>
                           setLabs(
@@ -626,10 +638,10 @@ export function MobileWorkspace() {
                         type="button"
                         onClick={() => setLabs(labs.filter((_, n) => n !== i))}
                       >
-                        Remove
+                        {t("removeBeforeSubmit")}
                       </button>
                       {!lab.unit && (
-                        <small className="error">Unit required</small>
+                        <small className="error">{t("unitRequired")}</small>
                       )}
                     </div>
                   ))}
@@ -640,12 +652,10 @@ export function MobileWorkspace() {
                       setLabs([...labs, { name: "", value: "", unit: "" }])
                     }
                   >
-                    + Add laboratory result
+                    {t("addLabRow")}
                   </button>
                   <div className="upload-box">
-                    <label htmlFor="xray">
-                      Select X-ray (JPEG/PNG, max 10 MB)
-                    </label>
+                    <label htmlFor="xray">{t("uploadImage")}</label>
                     <input
                       id="xray"
                       type="file"
@@ -664,53 +674,46 @@ export function MobileWorkspace() {
                             setRawFile(null);
                           }}
                         >
-                          Remove before submit
+                          {t("removeBeforeSubmit")}
                         </button>
                       </div>
                     )}
-                    <small>
-                      Basic checks cannot validate radiological quality. Image
-                      upload is synchronized separately from encounter metadata.
-                    </small>
+                    <small>{t("uploadCheckNotice")}</small>
                   </div>
                 </>
               )}
+
               {step === 5 && (
                 <>
-                  <h3>Review case</h3>
+                  <h3>{t("reviewCase")}</h3>
                   <div className="review-banner">
                     <b>
                       {draft.patientCode} · {draft.fullName}
                     </b>
+                    <span>{t("reviewReadyNotice")}</span>
                     <span>
-                      Symptoms, vitals, labs, notes, and image metadata are
-                      ready.
-                    </span>
-                    <span>
-                      If offline, the encounter will complete locally and image
-                      upload will remain clearly pending.
+                      {language === "uz"
+                        ? "Oflayn rejimda holat lokal saqlanadi va rasmlar keyinroq yuboriladi."
+                        : "If offline, the encounter will complete locally and image upload will remain pending."}
                     </span>
                   </div>
                 </>
               )}
+
               {step === 6 && (
                 <>
-                  <h3>Submit and synchronize</h3>
+                  <h3>{t("submitAndSync")}</h3>
                   <div className="success-panel">
-                    <b>Ready for offline-safe submission</b>
-                    <span>
-                      Every action receives a local identifier and idempotency
-                      key.
-                    </span>
+                    <b>{t("readyForOfflineSubmit")}</b>
+                    <span>{t("idempotencyNotice")}</span>
                     <button className="btn primary" disabled={saving}>
-                      {saving
-                        ? "Saving safely…"
-                        : "Save encounter to durable queue"}
+                      {saving ? t("savingSafely") : t("saveToDurableQueue")}
                     </button>
                   </div>
                 </>
               )}
             </div>
+
             <div className="step-actions">
               <button
                 type="button"
@@ -718,7 +721,7 @@ export function MobileWorkspace() {
                 disabled={step === 0}
                 onClick={() => setStep(step - 1)}
               >
-                Back
+                {t("back")}
               </button>
               {step < 6 && (
                 <button
@@ -726,22 +729,23 @@ export function MobileWorkspace() {
                   className="btn primary"
                   onClick={() => setStep(step + 1)}
                 >
-                  Continue
+                  {t("continue")}
                 </button>
               )}
             </div>
           </form>
+
           <aside className="work-card recent" id="patients">
             <div className="work-head">
               <div>
-                <h2>Recent patients</h2>
-                <p>Compact tablet view</p>
+                <h2>{t("recentPatients")}</h2>
+                <p>{t("compactTabletView")}</p>
               </div>
             </div>
             <input
               className="patient-search"
-              aria-label="Search patients"
-              placeholder="Search code or name"
+              aria-label={t("searchPatients")}
+              placeholder={t("searchPatients")}
             />
             {DEMO_CASES.slice(0, 5).map((c) => (
               <article key={c.code} className="recent-case">
@@ -751,7 +755,15 @@ export function MobileWorkspace() {
                     {c.name} · {c.village}
                   </span>
                 </div>
-                <span className={`triage-label ${c.triage}`}>{c.triage}</span>
+                <span className={`triage-label ${c.triage}`}>
+                  {c.triage === "emergency"
+                    ? t("emergency")
+                    : c.triage === "urgent"
+                      ? t("urgent")
+                      : c.triage === "priority"
+                        ? t("priority")
+                        : t("routine")}
+                </span>
               </article>
             ))}
           </aside>

@@ -85,8 +85,11 @@ const seedCases: Case[] = [
   },
 ];
 
+import { useLanguage } from "@/lib/i18n";
+
 export function ClinicDashboard() {
   const router = useRouter();
+  const { language, setLanguage, t } = useLanguage();
   const [cases, setCases] = useState(seedCases);
   const [selected, setSelected] = useState("1");
   const [modal, setModal] = useState(false);
@@ -193,7 +196,7 @@ export function ClinicDashboard() {
       router.push("/mobile");
       return;
     }
-    setAuthError("Demo email yoki parol noto'g'ri");
+    setAuthError(language === "uz" ? "Demo email yoki parol noto'g'ri" : "Invalid demo login credentials");
   }
   if (!signedIn) {
     return (
@@ -204,52 +207,53 @@ export function ClinicDashboard() {
             <span>QishloqMed AI</span>
           </div>
           <div>
-            <span className="auth-kicker">Mobile diagnostic network</span>
-            <h1>Specialist diagnostics, wherever the patient lives.</h1>
-            <p>
-              Offline-first mobile clinics connect to AI-assisted triage and
-              specialist verification in Tashkent.
-            </p>
+            <span className="auth-kicker">{t("landingKicker")}</span>
+            <h1>{t("landingTitle")}</h1>
+            <p>{t("landingSubtitle")}</p>
             <div className="architecture-steps">
-              <span>1 · Mobile examines</span>
-              <span>2 · Diagnostics sync</span>
-              <span>3 · AI prioritizes</span>
-              <span>4 · Specialist verifies</span>
+              <span>{t("archStep1")}</span>
+              <span>{t("archStep2")}</span>
+              <span>{t("archStep3")}</span>
+              <span>{t("archStep4")}</span>
             </div>
           </div>
-          <div className="auth-note">
-            AI provides preliminary decision support only. A clinician always
-            makes the final decision.
-          </div>
+          <div className="auth-note">{t("aiNote")}</div>
         </section>
         <section className="auth-panel">
           <form className="auth-card" onSubmit={signIn}>
-            <span className="synthetic">SYNTHETIC DEMO DATA</span>
-            <h2>Choose a workspace</h2>
-            <p>
-              Explore the complete workflow by role, or use conventional staff
-              sign-in.
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <span className="synthetic">{t("syntheticDemoData")}</span>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
+                className="px-2 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-slate-700 font-medium"
+              >
+                <option value="uz">{"O'zbekcha"}</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+            <h2>{t("chooseWorkspace")}</h2>
+            <p>{t("exploreWorkflow")}</p>
             <div className="role-shortcuts">
               <DemoRoleLink workspace="mobile_nurse">
-                <b>Enter as Mobile Nurse</b>
-                <span>Offline intake and synchronization</span>
+                <b>{t("enterMobileNurse")}</b>
+                <span>{t("enterMobileNurseSub")}</span>
               </DemoRoleLink>
               <DemoRoleLink workspace="specialist">
-                <b>Enter as Tashkent Specialist</b>
-                <span>Evidence-first clinical review</span>
+                <b>{t("enterSpecialist")}</b>
+                <span>{t("enterSpecialistSub")}</span>
               </DemoRoleLink>
               <DemoRoleLink workspace="dispatcher">
-                <b>Enter as Dispatcher</b>
-                <span>Referrals, routes, and fleet</span>
+                <b>{t("enterDispatcher")}</b>
+                <span>{t("enterDispatcherSub")}</span>
               </DemoRoleLink>
             </div>
             <div className="demo-credentials">
-              <b>Conventional demo login</b>
+              <b>{t("conventionalLogin")}</b>
               <span>nurse@qishloqmed.demo · demo2026</span>
             </div>
             <div className="field">
-              <label htmlFor="email">Email address</label>
+              <label htmlFor="email">{t("emailAddress")}</label>
               <input
                 id="email"
                 name="email"
@@ -260,7 +264,7 @@ export function ClinicDashboard() {
               />
             </div>
             <div className="field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">{t("password")}</label>
               <input
                 id="password"
                 name="password"
@@ -275,11 +279,8 @@ export function ClinicDashboard() {
                 {authError}
               </div>
             )}
-            <button className="btn primary auth-submit">Sign in</button>
-            <p className="auth-foot">
-              Demo sessions use HttpOnly role cookies and server route guards.
-              Production still requires configured Supabase Auth and RLS.
-            </p>
+            <button className="btn primary auth-submit">{t("signIn")}</button>
+            <p className="auth-foot">{t("demoSessionFoot")}</p>
           </form>
         </section>
       </main>

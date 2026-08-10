@@ -7,10 +7,11 @@ import { listClinicalActions, type ClinicalAction } from "@/lib/clinical-store";
 import { useLanguage } from "@/lib/i18n";
 
 export default function OperationsPage() {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [recordedReferrals, setRecordedReferrals] = useState<ClinicalAction[]>(
     [],
   );
+
   useEffect(() => {
     void listClinicalActions().then((actions) =>
       setRecordedReferrals(
@@ -18,50 +19,50 @@ export default function OperationsPage() {
       ),
     );
   }, []);
+
   return (
     <main className="portal">
       <header className="portal-header">
         <a href="/" className="field-brand">
           + QishloqMed AI
         </a>
-        <b>Operations</b>
+        <b>{t("roleDispatcher")}</b>
         <div className="flex items-center space-x-3 ml-auto mr-4">
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
             className="px-2 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-slate-700 font-medium"
           >
-            <option value="uz">O'zbekcha</option>
+            <option value="uz">{"O'zbekcha"}</option>
             <option value="en">English</option>
           </select>
         </div>
         <nav>
-          <DemoRoleLink workspace="mobile_nurse">Mobile</DemoRoleLink>
-          <DemoRoleLink workspace="specialist">Clinical</DemoRoleLink>
+          <DemoRoleLink workspace="mobile_nurse">{t("dashboard")}</DemoRoleLink>
+          <DemoRoleLink workspace="specialist">{t("specialistView")}</DemoRoleLink>
           <a className="active" href="/operations">
-            Operations
+            {t("roleDispatcher")}
           </a>
         </nav>
       </header>
+
       <section className="portal-body">
         <div className="portal-title">
           <div>
-            <span className="eyebrow">Dispatcher workspace</span>
-            <h1>Referral & fleet operations</h1>
-            <p>
-              Logistical fields only. Detailed clinical evidence is
-              intentionally hidden.
-            </p>
+            <span className="eyebrow">{t("roleDispatcher")}</span>
+            <h1>{t("dispatcherTitle")}</h1>
+            <p>{t("dispatcherSubtitle")}</p>
           </div>
-          <span className="synthetic">SYNTHETIC AGGREGATES</span>
+          <span className="synthetic">{t("syntheticDemoData")}</span>
         </div>
+
         <div className="summary-row">
           {[
-            [String(4 + recordedReferrals.length), "Open referrals"],
-            ["1", "Mobile clinic operating"],
-            ["27", "Synchronized cases"],
-            ["1", "Pending sync"],
-            ["3", "Regions served"],
+            [String(4 + recordedReferrals.length), t("openReferrals")],
+            ["1", t("operatingClinics")],
+            ["27", t("syncedCasesCount")],
+            ["1", t("pendingSyncCount")],
+            ["3", t("regionsServed")],
           ].map(([n, l]) => (
             <div className="summary-card" key={l}>
               <b>{n}</b>
@@ -69,21 +70,22 @@ export default function OperationsPage() {
             </div>
           ))}
         </div>
+
         <div className="operations-grid">
           <section className="work-card">
             <div className="work-head">
               <div>
-                <h2>Referral status board</h2>
-                <p>No unnecessary clinical detail</p>
+                <h2>{t("referralBoard")}</h2>
+                <p>{t("noUnnecessaryDetails")}</p>
               </div>
             </div>
             <div className="ops-table">
               <div className="ops-row header">
-                <span>Patient token</span>
-                <span>Destination</span>
-                <span>Specialty</span>
-                <span>Urgency</span>
-                <span>Status</span>
+                <span>{t("patientToken")}</span>
+                <span>{t("destination")}</span>
+                <span>{t("specialty")}</span>
+                <span>{t("urgency")}</span>
+                <span>{t("status")}</span>
               </div>
               {DEMO_CASES.filter((c) => c.triage !== "routine")
                 .slice(0, 5)
@@ -91,59 +93,78 @@ export default function OperationsPage() {
                   <div className="ops-row" key={c.code}>
                     <b>{c.code}</b>
                     <span>
-                      {i % 2 ? "Samarqand Regional" : "Tashkent Central"}
+                      {i % 2
+                        ? language === "uz"
+                          ? "Samarqand Viloyat Shifoxonasi"
+                          : "Samarqand Regional"
+                        : language === "uz"
+                          ? "Toshkent Markaziy Shifoxonasi"
+                          : "Tashkent Central"}
                     </span>
                     <span>
                       {
                         [
-                          "Cardiology",
-                          "Pulmonology",
-                          "Neurology",
-                          "Internal Medicine",
+                          language === "uz" ? "Kardiologiya" : "Cardiology",
+                          language === "uz" ? "Pulmonologiya" : "Pulmonology",
+                          language === "uz" ? "Nevrologiya" : "Neurology",
+                          language === "uz" ? "Ichki kasalliklar" : "Internal Medicine",
                         ][i % 4]
                       }
                     </span>
                     <span className={`triage-label ${c.triage}`}>
-                      {c.triage}
+                      {c.triage === "emergency"
+                        ? t("emergency")
+                        : c.triage === "urgent"
+                          ? t("urgent")
+                          : c.triage === "priority"
+                            ? t("priority")
+                            : t("routine")}
                     </span>
-                    <span>{i === 3 ? "scheduled" : "pending"}</span>
+                    <span>
+                      {i === 3
+                        ? language === "uz"
+                          ? "Rejalashtirilgan"
+                          : "scheduled"
+                        : t("awaitingReview")}
+                    </span>
                   </div>
                 ))}
               {recordedReferrals.map((referral) => (
                 <div className="ops-row" key={`recorded-${referral.caseCode}`}>
                   <b>{referral.caseCode}</b>
-                  <span>Tashkent Central</span>
-                  <span>Specialist assigned</span>
-                  <span className="triage-label urgent">urgent</span>
-                  <span>clinician created</span>
+                  <span>{language === "uz" ? "Toshkent Markaziy Shifoxonasi" : "Tashkent Central"}</span>
+                  <span>{language === "uz" ? "Vrach biriktirilgan" : "Specialist assigned"}</span>
+                  <span className="triage-label urgent">{t("urgent")}</span>
+                  <span>{language === "uz" ? "Vrach yaratgan" : "clinician created"}</span>
                 </div>
               ))}
             </div>
           </section>
+
           <aside className="work-card">
             <div className="work-head">
               <div>
                 <h2>QishloqMed-01</h2>
-                <p>Mobile clinic vehicle</p>
+                <p>{language === "uz" ? "Mobil klinika transport vositasi" : "Mobile clinic vehicle"}</p>
               </div>
-              <span className="sync-tag synced">operating</span>
+              <span className="sync-tag synced">{language === "uz" ? "Faol rejimda" : "operating"}</span>
             </div>
             <div className="route-timeline">
               <div>
                 <b>08:30</b>
-                <span>Urgut · arrived</span>
+                <span>Urgut · {language === "uz" ? "Yetib kelgan" : "arrived"}</span>
               </div>
               <div>
                 <b>13:15</b>
-                <span>G'us · operating</span>
+                <span>G'us · {language === "uz" ? "Ish faoliyatida" : "operating"}</span>
               </div>
               <div>
                 <b>17:30</b>
-                <span>Jomboy · planned</span>
+                <span>Jomboy · {language === "uz" ? "Rejalashtirilgan" : "planned"}</span>
               </div>
             </div>
             <div className="system-status">
-              <h3>System status</h3>
+              <h3>{t("systemStatus")}</h3>
               <span>
                 <i /> Database <b>Demo</b>
               </span>
@@ -154,16 +175,17 @@ export default function OperationsPage() {
                 <i /> AI provider <b>Demo</b>
               </span>
               <span>
-                <i /> Offline queue <b>1 pending</b>
+                <i /> Offline queue <b>1 {t("syncPending")}</b>
               </span>
             </div>
           </aside>
         </div>
+
         <section className="work-card analytics">
           <div className="work-head">
             <div>
-              <h2>Regional simulation</h2>
-              <p>Aggregated synthetic information; not government statistics</p>
+              <h2>{language === "uz" ? "Hududiy demo simulyatsiya" : "Regional simulation"}</h2>
+              <p>{language === "uz" ? "Sintetik statistik ma'lumotlar; davlat statistikasi emas" : "Aggregated synthetic information; not government statistics"}</p>
             </div>
           </div>
           <div className="trend-bars">
@@ -171,17 +193,20 @@ export default function OperationsPage() {
               <div key={i}>
                 <span style={{ height: `${n}%` }} />
                 <small>
-                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
+                  {language === "uz"
+                    ? ["Dush", "Sesh", "Chorsh", "Pay", "Jum", "Shan", "Yak"][i]
+                    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i]}
                 </small>
               </div>
             ))}
           </div>
           <div className="signal">
-            <b>Potential regional signal</b>
-            <p>
-              Demo aggregate shows an increase in respiratory observations. This
-              is planning assistance, not a confirmed outbreak detector.
-            </p>
+            <b>{language === "uz" ? "Kutilyotgan hududiy klinik signal" : "Potential regional signal"}</b>
+            <span>
+              {language === "uz"
+                ? "SpO₂ pastligi bo'yicha ko'tarilgan tendensiya vrachlar e'tiborini talab etadi."
+                : "SpO2 elevation trend detected in Urgut region requiring clinician review."}
+            </span>
           </div>
         </section>
       </section>

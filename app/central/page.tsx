@@ -1,37 +1,28 @@
-"use client";
 /* eslint-disable @next/next/no-html-link-for-pages */
-import { useEffect, useMemo, useState } from "react";
-import { DEMO_CASES, sortByTriage } from "@/lib/demo-data";
+import { useEffect, useState } from "react";
+import { DEMO_CASES } from "@/lib/demo-data";
 import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
-import { getClinicalAction, saveClinicalAction } from "@/lib/clinical-store";
+import {
+  getClinicalAction,
+  saveClinicalAction,
+} from "@/lib/clinical-store";
 import { useLanguage } from "@/lib/i18n";
 import { printClinicalReport } from "@/lib/report-generator";
 import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 
-export default function CentralPage() {
+export default function CentralReviewPage() {
   const { language, setLanguage, t } = useLanguage();
+  const [cases] = useState(DEMO_CASES);
+  const [selected, setSelected] = useState("QM-2027-0042");
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState("all");
-  const [selected, setSelected] = useState("QM-2027-0042");
   const [finalSummary, setFinalSummary] = useState("");
   const [decision, setDecision] = useState("");
   const [savedAt, setSavedAt] = useState("");
   const [viewerOpen, setViewerOpen] = useState(false);
 
-  const cases = useMemo(
-    () =>
-      sortByTriage(DEMO_CASES).filter(
-        (c) =>
-          (priority === "all" || c.triage === priority) &&
-          (c.code + c.name + c.region)
-            .toLowerCase()
-            .includes(query.toLowerCase()),
-      ),
-    [query, priority],
-  );
-
-  const active = DEMO_CASES.find((c) => c.code === selected) ?? DEMO_CASES[0];
+  const active = cases.find((c) => c.code === selected) ?? cases[0];
 
   useEffect(() => {
     let current = true;
@@ -69,17 +60,17 @@ export default function CentralPage() {
         symptoms: active.reason,
         vitals: [
           { label: "SpO₂", value: active.code === "QM-2027-0042" ? "89%" : "97%", warning: active.code === "QM-2027-0042" },
-          { label: "Heart Rate", value: active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm", warning: active.code === "QM-2027-0042" },
-          { label: "BP", value: "168/96 mmHg" },
-          { label: "Temperature", value: "37.4 °C" },
+          { label: "Yurak urishi", value: active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm", warning: active.code === "QM-2027-0042" },
+          { label: "Qon bosimi", value: "168/96 mmHg" },
+          { label: "Harorat", value: "37.4 °C" },
         ],
         aiTriageLevel: active.triage,
         aiSummary: active.aiSummary,
         clinicianNotes: finalSummary || active.clinicianFinal,
         referral: decision.includes("referral")
           ? {
-              facility: "Regional Emergency Center",
-              specialty: "Cardiology / Pulmonology",
+              facility: "Samarqand Viloyat Shoshilinch Tibbiy Yordam Markazi",
+              specialty: "Kardiologiya / Pulmonologiya",
               urgency: active.triage,
               reason: active.reason,
             }
@@ -122,7 +113,7 @@ export default function CentralPage() {
         <a href="/" className="field-brand">
           + QishloqMed AI
         </a>
-        <b>Tashkent Central Review Center</b>
+        <b>{t("specialistHeader")}</b>
         <div className="flex items-center space-x-3 ml-auto mr-4">
           <select
             value={language}
@@ -134,11 +125,11 @@ export default function CentralPage() {
           </select>
         </div>
         <nav>
-          <DemoRoleLink workspace="mobile_nurse">Mobile</DemoRoleLink>
+          <DemoRoleLink workspace="mobile_nurse">{t("dashboard")}</DemoRoleLink>
           <a className="active" href="/central">
-            Review Queue
+            {t("specialistQueue")}
           </a>
-          <DemoRoleLink workspace="dispatcher">Operations</DemoRoleLink>
+          <DemoRoleLink workspace="dispatcher">{t("roleDispatcher")}</DemoRoleLink>
         </nav>
       </header>
 
@@ -147,7 +138,7 @@ export default function CentralPage() {
           <div>
             <span className="eyebrow">{t("roleSpecialist")}</span>
             <h1>{t("specialistQueue")}</h1>
-            <p>Original evidence first. AI remains secondary decision support.</p>
+            <p>{t("evidenceFirstNotice")}</p>
           </div>
           <div className="flex items-center space-x-2">
             <button
@@ -167,11 +158,11 @@ export default function CentralPage() {
 
         <div className="summary-row">
           {[
-            ["5", "Awaiting review"],
-            ["1", "Emergency"],
-            ["2", "Urgent"],
-            ["3", "Reviewed today"],
-            ["18 min", "Average turnaround · demo"],
+            ["5", t("awaitingReview")],
+            ["1", t("emergency")],
+            ["2", t("urgent")],
+            ["3", t("reviewedToday")],
+            ["18 min", t("avgTurnaround")],
           ].map(([n, l]) => (
             <div className="summary-card" key={l}>
               <b>{n}</b>
@@ -184,17 +175,17 @@ export default function CentralPage() {
           <aside className="review-queue">
             <div className="queue-filters">
               <input
-                aria-label="Search queue"
-                placeholder="Search code, name, region"
+                aria-label={t("searchPlaceholder")}
+                placeholder={t("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
               <select
-                aria-label="Filter priority"
+                aria-label={t("triageLevel")}
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
               >
-                <option value="all">All priorities</option>
+                <option value="all">{t("allPriorities")}</option>
                 <option value="emergency">{t("emergency")}</option>
                 <option value="urgent">{t("urgent")}</option>
                 <option value="priority">{t("priority")}</option>
@@ -209,16 +200,18 @@ export default function CentralPage() {
               >
                 <div>
                   <b>
-                    {c.code} · {c.age} · {c.sex}
+                    {c.code} · {c.age} {t("years")} · {c.sex}
                   </b>
                   <span>
                     {c.village}, {c.region} · {c.submitted}
                   </span>
                   <small>{c.diagnostics.join(" · ")}</small>
                 </div>
-                <span className={`triage-label ${c.triage}`}>▲ {c.triage}</span>
+                <span className={`triage-label ${c.triage}`}>
+                  ▲ {c.triage === "emergency" ? t("emergency") : c.triage === "urgent" ? t("urgent") : c.triage === "priority" ? t("priority") : t("routine")}
+                </span>
                 <p>
-                  <strong>Why prioritized:</strong> {c.reason}
+                  <strong>{t("whyPrioritized")}</strong> {c.reason}
                 </p>
               </button>
             ))}
@@ -227,119 +220,120 @@ export default function CentralPage() {
           <article className="clinical-review">
             <div className="evidence-pane">
               <div className="review-section">
-                <span className="source-label nurse">NURSE ENTERED</span>
+                <span className="source-label nurse">{t("nurseEntered")}</span>
                 <h2>{active.code}</h2>
                 <p>
-                  {active.age} years · {active.sex} · {active.village},{" "}
+                  {active.age} {t("years")} · {active.sex} · {active.village},{" "}
                   {active.region}
                 </p>
-                <h3>Chief complaint</h3>
+                <h3>{t("chiefComplaint")}</h3>
                 <p>{active.complaint}</p>
-                <h3>Vital signs</h3>
+                <h3>{t("step4Vitals")}</h3>
                 <div className="evidence-grid">
                   <span>
                     SpO₂ <b>{active.code === "QM-2027-0042" ? "89%" : "97%"}</b>
                   </span>
                   <span>
-                    Heart rate{" "}
+                    {t("pulseBpm")}{" "}
                     <b>
                       {active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm"}
                     </b>
                   </span>
                   <span>
-                    BP <b>168/96 mmHg</b>
+                    {t("systolicBp")} <b>168/96 mmHg</b>
                   </span>
                   <span>
-                    Temperature <b>37.4 °C</b>
+                    {t("tempC")} <b>37.4 °C</b>
                   </span>
                 </div>
-                <h3>Clinical notes</h3>
+                <h3>{t("nurseNotes")}</h3>
                 <p>
-                  Symptoms and measurements synchronized from {active.clinic}.
-                  Units preserved as entered.
+                  {language === "uz"
+                    ? `${active.clinic} klinikasidan sinxronlangan simptomlar va ko'rsatkichlar.`
+                    : `Symptoms and measurements synchronized from ${active.clinic}. Units preserved as entered.`}
                 </p>
               </div>
             </div>
 
             <div className="image-pane">
-              <span className="source-label nurse">DIAGNOSTIC EVIDENCE</span>
-              {active.diagnostics.includes("X-ray") ? (
+              <span className="source-label nurse">{t("diagnosticEvidence")}</span>
+              {active.diagnostics.includes("Rentgen") || active.diagnostics.includes("X-ray") ? (
                 <button
                   type="button"
                   className="image-placeholder cursor-pointer hover:border-sky-500 transition group relative text-left w-full"
                   onClick={() => setViewerOpen(true)}
                 >
-                  <b className="group-hover:text-sky-400">Synthetic X-ray preview</b>
-                  <span>JPEG demonstration asset</span>
+                  <b className="group-hover:text-sky-400">{t("uploadImage")}</b>
+                  <span>JPEG namoyish tasviri</span>
                   <span className="mt-2 inline-block px-3 py-1 bg-sky-600 text-white rounded text-xs font-semibold shadow">
                     🔍 {t("inspectImage")}
                   </span>
                 </button>
               ) : (
                 <div className="empty">
-                  No diagnostic image uploaded. AI must not claim image inspection.
+                  {t("noImageAttached")}
                 </div>
               )}
             </div>
 
             <div className="assessment-pane">
-              <span className="source-label ai">AI GENERATED</span>
+              <span className="source-label ai">AI TAHLILI</span>
               <h3>
-                {t("aiSummary")} — physician verification required
+                {t("aiSummaryNotice")}
               </h3>
               <p>{active.aiSummary}</p>
-              <h4>Red flags</h4>
+              <h4>{t("redFlags")}</h4>
               <ul>
                 <li>{active.reason}</li>
               </ul>
-              <h4>Limitations</h4>
+              <h4>{t("limitations")}</h4>
               <p>
-                Incomplete history and no validated device integration.
-                Preliminary support only.
+                {language === "uz"
+                  ? "Chala anamnez va tasdiqlanmagan qurilma integratsiyasi. Faqat dastlabki qaror yordami."
+                  : "Incomplete history and no validated device integration. Preliminary support only."}
               </p>
               <label htmlFor="finalSummary">
-                <b>Clinician final summary *</b>
+                <b>{t("clinicianFinalLabel")}</b>
               </label>
               <textarea
                 id="finalSummary"
                 value={finalSummary}
                 onChange={(e) => setFinalSummary(e.target.value)}
-                placeholder="Edit or replace the AI summary before completion"
+                placeholder={t("clinicianNotesPlaceholder")}
               />
               <div className="review-actions">
                 <button
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("approved with edits")}
                 >
-                  {t("modify")}
+                  {t("approvedWithEdits")}
                 </button>
                 <button
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("AI rejected")}
                 >
-                  {t("reject")}
+                  {t("rejectAi")}
                 </button>
                 <button
                   onClick={() =>
                     void recordDecision("additional information requested")
                   }
                 >
-                  Request info
+                  {t("requestInfo")}
                 </button>
                 <button
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("referral created")}
                 >
-                  {t("referralNeeded")}
+                  {t("createReferral")}
                 </button>
               </div>
               {decision && (
                 <div className="field-notice">
-                  Clinician action recorded durably: {decision}. Original AI
-                  text is preserved separately.
+                  {t("durablyRecorded")} {decision}. {t("originalPreserved")}
                   {savedAt && (
                     <small>
-                      Saved {new Date(savedAt).toLocaleString(language === "uz" ? "uz-UZ" : "en-GB")}
+                      {t("savedOn")} {new Date(savedAt).toLocaleString(language === "uz" ? "uz-UZ" : "en-GB")}
                     </small>
                   )}
                 </div>
@@ -347,11 +341,11 @@ export default function CentralPage() {
               {(active.clinicianFinal || (decision && finalSummary)) && (
                 <div className="comparison">
                   <div>
-                    <span>AI PRELIMINARY</span>
+                    <span>AI DASTLABKI TAHLILI</span>
                     <p>{active.aiSummary}</p>
                   </div>
                   <div>
-                    <span>CLINICIAN FINAL</span>
+                    <span>VRACH YAKUNIY XULOSASI</span>
                     <p>{finalSummary || active.clinicianFinal}</p>
                   </div>
                 </div>
@@ -366,7 +360,7 @@ export default function CentralPage() {
         isOpen={viewerOpen}
         onClose={() => setViewerOpen(false)}
         imageSrc="/og.png"
-        imageTitle={`${active.code} - Diagnostic X-Ray Inspection`}
+        imageTitle={`${active.code} - Diagnostik Rentgen Tasviri`}
       />
     </main>
   );

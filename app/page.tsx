@@ -1,8 +1,8 @@
 import { ClinicDashboard } from "./ui/ClinicDashboard";
 
 export const metadata = {
-  title: "QishloqMed AI — Mobile clinic workspace",
-  description: "Clinician-supervised diagnostic coordination for remote communities in Uzbekistan.",
+  title: "QishloqMed AI — Mobil klinika boshqaruv paneli",
+  description: "O'zbekistonning masofaviy hududlari uchun shifokor nazoratidagi diagnostika va tibbiy koordinatsiya tizimi.",
 };
 
 export default function Home() {

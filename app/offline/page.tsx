@@ -1,22 +1,22 @@
-export const metadata = { title: "Offline | QishloqMed AI" };
+"use client";
+
+import Link from "next/link";
+import { useLanguage } from "@/lib/i18n";
 
 export default function OfflinePage() {
+  const { t } = useLanguage();
   return (
     <main className="auth-shell">
       <section className="auth-panel">
         <div className="auth-card">
-          <span className="synthetic">OFFLINE-SAFE SHELL</span>
-          <h1>Connection unavailable</h1>
-          <p>
-            Previously saved demo records remain in browser-local storage and
-            will not be shown on this public fallback page.
-          </p>
+          <span className="synthetic">{t("offlineShellBadge")}</span>
+          <h1>{t("offlineShellTitle")}</h1>
+          <p>{t("offlineShellNotice")}</p>
           <Link className="btn primary" href="/">
-            Try again
+            {t("tryAgain")}
           </Link>
         </div>
       </section>
     </main>
   );
 }
-import Link from "next/link";
