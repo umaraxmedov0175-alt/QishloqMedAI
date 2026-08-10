@@ -9,3 +9,6 @@
 - Run tests, strict TypeScript checking, lint, and a production build before completion. Never deploy a broken build.
 - Keep database changes reproducible through migrations and enforce least privilege in production policies.
 - Update `IMPLEMENTATION_STATUS.md` after each major phase and provide a final implementation report.
+- Keep pure data dictionaries, schemas, and test utilities in `.ts` files (not `.tsx`) so Node ESM test runners (`--experimental-strip-types`) can import them without JSX loader errors.
+- On Windows environments, run chained commands using `cmd /c` and ensure local git user identity (`user.email`/`user.name`) is configured before committing.
+
