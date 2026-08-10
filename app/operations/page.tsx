@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
 import { listClinicalActions, type ClinicalAction } from "@/lib/clinical-store";
+import { useLanguage } from "@/lib/i18n";
+
 export default function OperationsPage() {
+  const { language, setLanguage } = useLanguage();
   const [recordedReferrals, setRecordedReferrals] = useState<ClinicalAction[]>(
     [],
   );
@@ -22,6 +25,16 @@ export default function OperationsPage() {
           + QishloqMed AI
         </a>
         <b>Operations</b>
+        <div className="flex items-center space-x-3 ml-auto mr-4">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
+            className="px-2 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-slate-700 font-medium"
+          >
+            <option value="uz">O'zbekcha</option>
+            <option value="en">English</option>
+          </select>
+        </div>
         <nav>
           <DemoRoleLink workspace="mobile_nurse">Mobile</DemoRoleLink>
           <DemoRoleLink workspace="specialist">Clinical</DemoRoleLink>

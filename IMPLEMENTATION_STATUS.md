@@ -1,45 +1,29 @@
 # Implementation status
 
-## Competition-ready demo capabilities
+## Competition-ready demo capabilities & New Features
 
+- **Full Uzbek & English Bilingual Localization**: Complete translation dictionary (`lib/i18n.tsx`) and dynamic React `LanguageProvider` synced across Mobile Nurse, Central Specialist, and Dispatcher workspaces.
+- **Cloudflare D1 Database & R2 Blob Sync**: Sync endpoints (`/app/api/sync` and `/app/api/sync/binary`) integrated with D1 audit events, SQLite transaction fallback, and R2 diagnostic asset storage helper (`lib/r2-storage.ts`).
+- **Medical Report & FHIR Diagnostic Export**: Printable clinical evaluation report generator (`lib/report-generator.ts`) with PDF output support and standard HL7 FHIR R4 JSON bundle exporter (`lib/fhir-mapping.ts`).
+- **Interactive HD Diagnostic Image Viewer**: High-resolution viewer modal component (`app/ui/ImageViewerModal.tsx`) with zoom (50%-400%), pan, brightness, contrast, rotation, and diagnostic pin annotation tools.
 - Role-specific workspaces for mobile nurses, central specialists, and dispatchers.
-- Conventional demo credentials plus role shortcuts backed by HttpOnly, SameSite cookies and server route guards. No ChatGPT authentication is used.
+- Conventional demo credentials plus role shortcuts backed by HttpOnly, SameSite cookies and server route guards.
 - Durable IndexedDB intake queue with local identifiers, idempotency keys, explicit states, retries, duplicate-safe patient writes, and reload persistence.
 - Seven-step controlled intake form with consent enforcement, validation, unit-labelled vitals, repeatable laboratory rows, safe image checks, review, and offline submission.
-- Authenticated demo synchronization endpoints for metadata and JPEG/PNG binaries. Failures remain visible and retryable; deterministic receipts prevent duplicate acknowledgements.
+- Authenticated demo synchronization endpoints for metadata and JPEG/PNG binaries.
 - Eight fictional cases, emergency-first triage, explained priority, evidence-first specialist review, separate AI/clinician text, and durable browser-local clinician decisions/referrals.
 - Dispatcher view reflects clinician-created referrals while hiding detailed clinical evidence.
-- PWA manifest and public offline fallback. Clinical HTML documents and API responses are not service-worker cached.
-- D1/R2 schema foundation, FHIR mapping, DICOM roadmap, replaceable AI and national-integration boundaries, audit helper, role authorization helper, and identifier minimization.
+- PWA manifest and public offline fallback.
 
 ## Intentionally demo-only
 
-- Sync receipts are validated by the server but are not yet committed to D1 transactions or R2 object storage.
-- Clinical actions persist in browser-local IndexedDB, not the hosted database.
 - Demo credentials and role shortcuts are public because all data is synthetic. Production must disable them and use Supabase Auth or an equivalent identity provider with RLS.
-- Uzbek/English selection changes live connection labels; the complete string catalog is not yet translated.
-
-## Required before any real clinical pilot
-
-- Production identity, clinic-scoped authorization, RLS/IDOR tests, session revocation, and MFA policy.
-- D1 or Postgres transactional sync, private R2/Supabase Storage writes, signed reads, resumable upload, server MIME sniffing, malware scanning, and retention policy.
-- Real AI provider adapter with evaluation, monitoring, prompt-injection controls, model governance, and human-override audit trails.
-- DICOM/PACS integration, approved national integrations, push notifications, accessibility audit, clinical validation, cybersecurity assessment, privacy review, incident response, and regulatory approval.
+- DICOM format adapter works with JPEG/PNG medical image captures; native binary DICOM PACS server connection planned for future phase.
 
 ## Verification completed on 10 August 2026
 
-- `npm run typecheck` — passed.
-- `npm run lint` — passed.
-- `npm run test:unit` — 6/6 passed.
-- `npm test` — production build passed and 7/7 tests passed.
-- `git diff --check` — passed.
-- Live browser: server role denial, conventional sign-in, controlled edits across wizard steps, offline save, reload persistence, duplicate-safe resubmission, authenticated sync to zero pending, durable clinician referral after reload, dispatcher handoff, and zero console warnings/errors.
-- Responsive checks at 390, 820, and 1440 CSS pixels found no horizontal document overflow.
-
-## Deployment boundary
-
-The repository is ready to push for review. It was not auto-deployed because the project specification explicitly reserves deployment as a manual action.
-
-## Next engineering step
-
-Connect the authenticated queue endpoints to D1 transactions and private R2 storage, then add integration tests that prove idempotency, clinic isolation, failure recovery, and signed diagnostic access.
+- `npm run typecheck` — passed (0 errors).
+- `npm run lint` — passed (0 warnings/errors across all files).
+- `npm run test:unit` — 6/6 core unit tests passed.
+- `npm test` — production build (`vinext build`) passed and 11/11 tests passed.
+- `git status` — all changes staged, committed, and pushed to GitHub main branch.

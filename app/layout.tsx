@@ -33,6 +33,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { LanguageProvider } from "@/lib/i18n";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,7 +45,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PwaRegistration />{children}
+        <PwaRegistration />
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

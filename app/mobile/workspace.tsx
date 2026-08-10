@@ -13,6 +13,8 @@ import {
   type OfflineQueueItem,
 } from "@/lib/offline-queue";
 
+import { useLanguage } from "@/lib/i18n";
+
 type NetState =
   "online" | "weak" | "offline" | "synchronizing" | "complete" | "error";
 const steps = [
@@ -46,6 +48,7 @@ const goldenDraft = {
   temp: "37.4",
 };
 export function MobileWorkspace() {
+  const { language, setLanguage } = useLanguage();
   const [network, setNetwork] = useState<NetState>("offline");
   const [pending, setPending] = useState(0);
   const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
@@ -53,7 +56,6 @@ export function MobileWorkspace() {
   const [step, setStep] = useState(0);
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
-  const [language, setLanguage] = useState<"uz" | "en">("uz");
   const [draft, setDraft] = useState({ ...goldenDraft });
   const [labs, setLabs] = useState([
     { name: "Hemoglobin", value: "", unit: "g/dL" },

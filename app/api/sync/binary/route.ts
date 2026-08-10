@@ -1,4 +1,5 @@
 import { readDemoRole } from "@/lib/demo-session";
+import { uploadDiagnosticAssetToR2 } from "@/lib/r2-storage";
 
 async function stableReceipt(idempotencyKey: string) {
   const bytes = await crypto.subtle.digest(
@@ -30,8 +31,18 @@ export async function POST(request: Request) {
     );
   }
 
+  const r2Bucket = (globalThis as unknown as Record<string, unknown>).DIAGNOSTIC_BUCKET as R2Bucket | undefined;
+  const storageResult = await uploadDiagnosticAssetToR2(file, idempotencyKey, r2Bucket);
+
   return Response.json(
-    { acknowledged: true, serverId: await stableReceipt(idempotencyKey) },
+    {
+      acknowledged: true,
+      serverId: await stableReceipt(idempotencyKey),
+      storagePath: storageResult.key,
+      assetUrl: storageResult.url,
+      checksum: storageResult.etag,
+      fileSize: storageResult.size,
+    },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

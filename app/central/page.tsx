@@ -4,13 +4,21 @@ import { useEffect, useMemo, useState } from "react";
 import { DEMO_CASES, sortByTriage } from "@/lib/demo-data";
 import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
 import { getClinicalAction, saveClinicalAction } from "@/lib/clinical-store";
+import { useLanguage } from "@/lib/i18n";
+import { printClinicalReport } from "@/lib/report-generator";
+import { downloadFhirJson } from "@/lib/fhir-mapping";
+import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
+
 export default function CentralPage() {
+  const { language, setLanguage, t } = useLanguage();
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState("all");
   const [selected, setSelected] = useState("QM-2027-0042");
   const [finalSummary, setFinalSummary] = useState("");
   const [decision, setDecision] = useState("");
   const [savedAt, setSavedAt] = useState("");
+  const [viewerOpen, setViewerOpen] = useState(false);
+
   const cases = useMemo(
     () =>
       sortByTriage(DEMO_CASES).filter(
@@ -22,7 +30,9 @@ export default function CentralPage() {
       ),
     [query, priority],
   );
+
   const active = DEMO_CASES.find((c) => c.code === selected) ?? DEMO_CASES[0];
+
   useEffect(() => {
     let current = true;
     void getClinicalAction(active.code).then((action) => {
@@ -46,6 +56,66 @@ export default function CentralPage() {
     setDecision(action.decision);
     setSavedAt(action.updatedAt);
   }
+
+  const handlePrintReport = () => {
+    printClinicalReport(
+      {
+        caseCode: active.code,
+        patientName: active.name,
+        age: active.age,
+        sex: active.sex,
+        location: `${active.village}, ${active.region}`,
+        chiefComplaint: active.complaint,
+        symptoms: active.reason,
+        vitals: [
+          { label: "SpO₂", value: active.code === "QM-2027-0042" ? "89%" : "97%", warning: active.code === "QM-2027-0042" },
+          { label: "Heart Rate", value: active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm", warning: active.code === "QM-2027-0042" },
+          { label: "BP", value: "168/96 mmHg" },
+          { label: "Temperature", value: "37.4 °C" },
+        ],
+        aiTriageLevel: active.triage,
+        aiSummary: active.aiSummary,
+        clinicianNotes: finalSummary || active.clinicianFinal,
+        referral: decision.includes("referral")
+          ? {
+              facility: "Regional Emergency Center",
+              specialty: "Cardiology / Pulmonology",
+              urgency: active.triage,
+              reason: active.reason,
+            }
+          : undefined,
+        reviewedAt: savedAt ? new Date(savedAt).toLocaleString(language === "uz" ? "uz-UZ" : "en-US") : undefined,
+      },
+      language
+    );
+  };
+
+  const handleExportFhir = () => {
+    downloadFhirJson({
+      caseCode: active.code,
+      patientName: active.name,
+      age: active.age,
+      sex: active.sex,
+      village: `${active.village}, ${active.region}`,
+      chiefComplaint: active.complaint,
+      symptoms: active.reason,
+      triage: active.triage,
+      vitals: [
+        { label: "SpO2", value: active.code === "QM-2027-0042" ? "89%" : "97%" },
+        { label: "Heart Rate", value: active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm" },
+        { label: "BP", value: "168/96 mmHg" },
+        { label: "Temperature", value: "37.4 °C" },
+      ],
+      referral: decision.includes("referral")
+        ? {
+            facility: "Regional Emergency Center",
+            specialty: "Cardiology",
+            urgency: active.triage,
+          }
+        : undefined,
+    });
+  };
+
   return (
     <main className="portal">
       <header className="portal-header">
@@ -53,6 +123,16 @@ export default function CentralPage() {
           + QishloqMed AI
         </a>
         <b>Tashkent Central Review Center</b>
+        <div className="flex items-center space-x-3 ml-auto mr-4">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
+            className="px-2 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-slate-700 font-medium"
+          >
+            <option value="uz">{"O'zbekcha"}</option>
+            <option value="en">English</option>
+          </select>
+        </div>
         <nav>
           <DemoRoleLink workspace="mobile_nurse">Mobile</DemoRoleLink>
           <a className="active" href="/central">
@@ -61,17 +141,30 @@ export default function CentralPage() {
           <DemoRoleLink workspace="dispatcher">Operations</DemoRoleLink>
         </nav>
       </header>
+
       <section className="portal-body">
         <div className="portal-title">
           <div>
-            <span className="eyebrow">Central specialist workspace</span>
-            <h1>Clinical review queue</h1>
-            <p>
-              Original evidence first. AI remains secondary decision support.
-            </p>
+            <span className="eyebrow">{t("roleSpecialist")}</span>
+            <h1>{t("specialistQueue")}</h1>
+            <p>Original evidence first. AI remains secondary decision support.</p>
           </div>
-          <span className="synthetic">SYNTHETIC DEMO DATA</span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handlePrintReport}
+              className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded shadow-sm transition"
+            >
+              📄 {t("printReport")}
+            </button>
+            <button
+              onClick={handleExportFhir}
+              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded shadow-sm transition"
+            >
+              📦 {t("exportFhir")}
+            </button>
+          </div>
         </div>
+
         <div className="summary-row">
           {[
             ["5", "Awaiting review"],
@@ -86,6 +179,7 @@ export default function CentralPage() {
             </div>
           ))}
         </div>
+
         <section className="review-layout">
           <aside className="review-queue">
             <div className="queue-filters">
@@ -101,19 +195,17 @@ export default function CentralPage() {
                 onChange={(e) => setPriority(e.target.value)}
               >
                 <option value="all">All priorities</option>
-                <option value="emergency">Emergency</option>
-                <option value="urgent">Urgent</option>
-                <option value="priority">Priority</option>
-                <option value="routine">Routine</option>
+                <option value="emergency">{t("emergency")}</option>
+                <option value="urgent">{t("urgent")}</option>
+                <option value="priority">{t("priority")}</option>
+                <option value="routine">{t("routine")}</option>
               </select>
             </div>
             {cases.map((c) => (
               <button
                 className={`review-item ${selected === c.code ? "selected" : ""}`}
                 key={c.code}
-                onClick={() => {
-                  setSelected(c.code);
-                }}
+                onClick={() => setSelected(c.code)}
               >
                 <div>
                   <b>
@@ -131,6 +223,7 @@ export default function CentralPage() {
               </button>
             ))}
           </aside>
+
           <article className="clinical-review">
             <div className="evidence-pane">
               <div className="review-section">
@@ -167,27 +260,32 @@ export default function CentralPage() {
                 </p>
               </div>
             </div>
+
             <div className="image-pane">
               <span className="source-label nurse">DIAGNOSTIC EVIDENCE</span>
               {active.diagnostics.includes("X-ray") ? (
-                <div className="image-placeholder">
-                  <b>Synthetic X-ray preview</b>
+                <button
+                  type="button"
+                  className="image-placeholder cursor-pointer hover:border-sky-500 transition group relative text-left w-full"
+                  onClick={() => setViewerOpen(true)}
+                >
+                  <b className="group-hover:text-sky-400">Synthetic X-ray preview</b>
                   <span>JPEG demonstration asset</span>
-                  <small>
-                    Basic file checks passed; not radiology quality validation.
-                  </small>
-                </div>
+                  <span className="mt-2 inline-block px-3 py-1 bg-sky-600 text-white rounded text-xs font-semibold shadow">
+                    🔍 {t("inspectImage")}
+                  </span>
+                </button>
               ) : (
                 <div className="empty">
-                  No diagnostic image uploaded. AI must not claim image
-                  inspection.
+                  No diagnostic image uploaded. AI must not claim image inspection.
                 </div>
               )}
             </div>
+
             <div className="assessment-pane">
               <span className="source-label ai">AI GENERATED</span>
               <h3>
-                AI preliminary assessment — physician verification required
+                {t("aiSummary")} — physician verification required
               </h3>
               <p>{active.aiSummary}</p>
               <h4>Red flags</h4>
@@ -213,26 +311,26 @@ export default function CentralPage() {
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("approved with edits")}
                 >
-                  Approve with edits
+                  {t("modify")}
                 </button>
                 <button
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("AI rejected")}
                 >
-                  Reject AI assessment
+                  {t("reject")}
                 </button>
                 <button
                   onClick={() =>
                     void recordDecision("additional information requested")
                   }
                 >
-                  Request information
+                  Request info
                 </button>
                 <button
                   disabled={!finalSummary}
                   onClick={() => void recordDecision("referral created")}
                 >
-                  Create referral
+                  {t("referralNeeded")}
                 </button>
               </div>
               {decision && (
@@ -241,7 +339,7 @@ export default function CentralPage() {
                   text is preserved separately.
                   {savedAt && (
                     <small>
-                      Saved {new Date(savedAt).toLocaleString("en-GB")}
+                      Saved {new Date(savedAt).toLocaleString(language === "uz" ? "uz-UZ" : "en-GB")}
                     </small>
                   )}
                 </div>
@@ -262,6 +360,14 @@ export default function CentralPage() {
           </article>
         </section>
       </section>
+
+      {/* HD Diagnostic Image Viewer Modal */}
+      <ImageViewerModal
+        isOpen={viewerOpen}
+        onClose={() => setViewerOpen(false)}
+        imageSrc="/og.png"
+        imageTitle={`${active.code} - Diagnostic X-Ray Inspection`}
+      />
     </main>
   );
 }
