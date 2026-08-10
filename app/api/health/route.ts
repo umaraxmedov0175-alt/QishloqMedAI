@@ -1,0 +1,1 @@
+export async function GET(){return Response.json({status:"ok",version:"0.2.0",services:{database:"demo",storage:"demo",aiProvider:"demo",offlineQueue:"client-managed"},medicalUse:"prototype-not-for-clinical-use"},{headers:{"cache-control":"no-store"}})}

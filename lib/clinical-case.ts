@@ -1,0 +1,4 @@
+import type{MinimalClinicalContext}from"./clinical-assessment";
+export type CaseInput={patient:{id:string;fullName?:string;phone?:string;nationalId?:string;age:number;sex?:string};encounter:{id:string;chiefComplaint:string;symptomSummary:string;notes?:string};vitals:Record<string,string>;labs:Array<{name:string;value:string;unit:string}>;assets:Array<{type:string;storagePath:string;uploadStatus:string;mimeType:string}>};
+export type ClinicalCase=MinimalClinicalContext&{age:number;sex?:string;notes?:string;assetMetadata:Array<{type:string;available:boolean;mimeType:string}>};
+export function buildClinicalCase(input:CaseInput):ClinicalCase{return{age:input.patient.age,sex:input.patient.sex,complaint:input.encounter.chiefComplaint,symptomSummary:input.encounter.symptomSummary,vitals:input.vitals,labs:input.labs,notes:input.encounter.notes,assetMetadata:input.assets.map(asset=>({type:asset.type,available:asset.uploadStatus==="uploaded",mimeType:asset.mimeType}))}}

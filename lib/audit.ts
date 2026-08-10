@@ -1,0 +1,2 @@
+export type AuditWriter=(event:{id:string;actorId:string;action:string;resourceType:string;resourceId:string;occurredAt:string})=>Promise<void>;
+export async function recordAuditEvent(writer:AuditWriter,input:{actorId:string;action:string;resourceType:string;resourceId:string}){const event={id:crypto.randomUUID(),...input,occurredAt:new Date().toISOString()};try{await writer(event)}catch(error){throw new Error("Primary transition succeeded but mandatory audit recording failed",{cause:error})}return event}
