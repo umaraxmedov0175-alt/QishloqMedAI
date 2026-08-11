@@ -118,13 +118,25 @@
 
 ## Factual Quality Checks & Verification Results
 
+- **Production Issue Audit Resolutions (11 August 2026 Production Release)**:
+  - **100% English i18n Localization (`lib/i18n-dictionary.ts`)**: Completed localization of all UI controls, headers, step indicators, search placeholders, urgency labels, clinician review inbox, and patient detail cards for seamless real-time switching between Uzbek (`uz`) and English (`en`).
+  - **Deduplicated Patient Step Numbering (`app/mobile/workspace.tsx`)**: Removed redundant leading step prefixes from dictionary strings (`"1. Patient Consent"` → `"Patient Consent"`) and updated the step title renderer to eliminate double prefix concatenation (`"1 1. 1. Patient Consent"` → `"[1] Patient Consent"`).
+  - **Typography & Copy Polish (`app/central/page.tsx`, `app/operations/page.tsx`)**: Fixed double colons (`{t("whyPrioritized")}:` → `Why prioritized:`) and updated misspelled GIS links to localized `Toʻliq GIS xaritasi` / `Full GIS Map`.
+  - **Map Controls Accessibility (WCAG 2.2 AA)**: Added explicit `aria-label`, `title`, and keyboard focusable attributes (`tabIndex={0}`) to all map mode toggles, layer controls, and interactive elements in `app/ui/DispatcherMap.tsx` and `app/ui/OutbreakRadarMap.tsx`.
+  - **Environment-Guarded Demo Credentials (`app/ui/ClinicDashboard.tsx`)**: Isolated synthetic demo credentials and pre-fill buttons behind `process.env.NEXT_PUBLIC_ENABLE_DEMO_PREFILL === "true" || process.env.NODE_ENV !== "production"` safeguards.
+  - **Vercel Telemetry Integration (`app/layout.tsx`)**: Integrated `@vercel/analytics` and `@vercel/speed-insights` into the root application layout.
+
+---
+
+## Final Verification Checklist
+
 | Quality Check | Command Line | Result | Metrics |
 | :--- | :--- | :--- | :--- |
-| **Translation Completeness** | `npm run i18n:check` | **PASS** | 287 / 287 keys verified |
+| **Translation Completeness** | `npm run i18n:check` | **PASS** | 289 / 289 keys verified (100% complete) |
 | **TypeScript Typecheck** | `npm run typecheck` | **PASS** | 0 type errors |
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
-| **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
+| **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled (32/32) |
 | **Unit & Integration Tests** | `npm test` | **PASS** | 41 / 41 test suites passed cleanly |
 
 ---
