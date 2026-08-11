@@ -88,6 +88,22 @@ export default function DispatcherWorkspacePage() {
 
         <div className="flex items-center gap-4">
           <a
+            href="/dispatcher/radar"
+            className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-100 text-xs font-semibold rounded-lg border border-red-400/30 transition flex items-center gap-1.5"
+          >
+            <span>☣️</span>
+            <span>Outbreak Radar</span>
+          </a>
+
+          <a
+            href="/hospital/outbreak"
+            className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-100 text-xs font-semibold rounded-lg border border-blue-400/30 transition flex items-center gap-1.5"
+          >
+            <span>🏥</span>
+            <span>Hududiy Shifoxonalar</span>
+          </a>
+
+          <a
             href="/patient/report"
             className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5"
           >

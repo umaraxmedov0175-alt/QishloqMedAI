@@ -2,6 +2,14 @@
 
 ## Fully Completed Features
 
+- **Predictive Regional Outbreak Radar & Zero-Connectivity SMS/Mesh Triage Engine (Signature Flagship Feature)**:
+  - **Epidemiological AI Anomaly Radar (`lib/outbreak-radar.ts`)**: Real-time spatial clustering and statistical **z-score anomaly calculation** ($Z = \frac{X - \mu}{\sigma}$) aggregating mobile laboratory rapid blood panels (hyperglycemia spikes, positive troponin I, hemoglobin drops) and vital sign surges across rural districts (*Urgut*, *Payariq*, *Zomin*, *Baxmal*, *Kegeyli*).
+  - **Zero-Connectivity SMS & P2P Mesh Serialization Engine (`lib/zero-connectivity-payload.ts`)**: Encodes vitals (SBP/DBP, SpO2, HR, Temp), mobile lab test markers, GPS coordinates, and AI triage ratings into an encrypted Base64 string under 60 characters (far below the 140-char SMS limit) with CRC-16 checksum validation for zero cellular coverage dead-zones.
+  - **Instant Recovery Sync API (`/api/ai/outbreak-radar`)**: `GET` returns cluster heatmaps, statistical z-scores, anomaly alerts, and preventive dispatches. `POST` decodes incoming SMS/Mesh Base64 strings and syncs field triage entries to GIS maps without internet connection.
+  - **Interactive Outbreak Radar Map (`app/ui/OutbreakRadarMap.tsx`)**: High-performance Leaflet canvas featuring a real-time mode toggle switch: `[ 📡 Live Patient Dispatch ]` ↔ `[ ☣️ Predictive Outbreak Radar ]` with pulsating cluster circles ($Z \ge 3.0$ critical red), expansion vector trajectory arrows, and one-click preventive mobile lab dispatch actions.
+  - **Dispatcher Outbreak Workstation (`/dispatcher/radar`)**: Full-screen workstation for dispatchers with real-time vector metrics, cluster feed, interactive SMS/Mesh payload simulator & decoder, and automated preventive lab dispatch recommendations.
+  - **Regional Hospital Outbreak Dashboard (`/hospital/outbreak`)**: Dedicated hospital director dashboard for regional medical facilities (*Urgut Tuman Markaziy Shifoxonasi*, *Payariq Tuman Tibbiyot Birlashmasi*, etc.) tracking bed capacity, ICU availability, regional surge warnings, and preventive mobile lab dispatch management.
+
 - **Medical Safety, Accessibility (WCAG 2.2 AA), & Design Refactor**:
   - **Zone A/B/C Safety Boundary Separation (`app/central/page.tsx`)**: Refactored `/central` into three distinct DOM containers: **Zone A (Evidence)** (white card `#FFFFFF`, 1px border `#E2E8F0`, read-only), **Zone B (AI Decision Support)** (tinted background `bg-purple-50/60`, 4px left border, dashed border, attribution strip `Yaratildi: Tomir Triage v2.4 · Ishonch: 92/100 · AI yordamchi vosita (Tashxis emas)`), and **Zone C (Doctor Decision)** (distinct white card with 3px solid blue border `#0B5FFF`, starting completely empty).
   - **Triage Provenance Badges**: Displays `◷ AI TAKLIFI` (dashed) vs `✓ VRACH` (solid) vs Override comparisons inline.
@@ -117,7 +125,7 @@
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 35 / 35 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 41 / 41 test suites passed cleanly |
 
 ---
 
