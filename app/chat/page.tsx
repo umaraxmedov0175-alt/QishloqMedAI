@@ -47,7 +47,7 @@ export default function InnerChatPage() {
   // Audio voice note simulation
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsubscribe = subscribeToChatUpdates((updatedThreads) => {
@@ -64,7 +64,9 @@ export default function InnerChatPage() {
   }, [activeThreadId, activeUserId, threads]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const activeThread = threads.find((t) => t.id === activeThreadId) || threads[0];
@@ -448,7 +450,7 @@ export default function InnerChatPage() {
             )}
 
             {/* Messages History List Container */}
-            <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/20 min-h-[380px]">
+            <div ref={messagesContainerRef} className="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/20 min-h-[380px] max-h-[calc(100vh-280px)]">
               {displayedMessages.map((msg) => {
                 const isMe = msg.senderId === activeUser.id;
 
@@ -541,7 +543,6 @@ export default function InnerChatPage() {
                   </div>
                 );
               })}
-              <div ref={messagesEndRef} />
             </div>
 
             {/* Clinical Action Template Chips (for Doctor ↔ Nurse threads) */}
