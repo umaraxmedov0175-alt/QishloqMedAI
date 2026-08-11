@@ -4,13 +4,15 @@ import { useState, type MouseEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useSunlightMode } from "@/lib/sunlight-mode";
 
-type DemoRole = "mobile_nurse" | "specialist" | "dispatcher" | "patient";
+type DemoRole = "doctor" | "nurse" | "dispatcher" | "patient" | "mobile_nurse" | "specialist";
 
 const destinations: Record<DemoRole, string> = {
+  doctor: "/central",
+  nurse: "/mobile",
+  dispatcher: "/dispatcher",
+  patient: "/patient",
   mobile_nurse: "/mobile",
   specialist: "/central",
-  dispatcher: "/operations",
-  patient: "/patient",
 };
 
 export function DemoRoleLink({

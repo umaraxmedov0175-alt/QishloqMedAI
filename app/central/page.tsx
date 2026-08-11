@@ -15,11 +15,9 @@ import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import { TomirLogo } from "@/app/ui/TomirLogo";
 import { CarePulse } from "@/app/ui/CarePulse";
-import { LaunchDemoExperienceModal } from "@/app/ui/LaunchDemoExperienceModal";
 
 export default function CentralReviewPage() {
   const { language, setLanguage, t } = useLanguage();
-  const [demoExperienceOpen, setDemoExperienceOpen] = useState(false);
   const [cases] = useState(DEMO_CASES);
   const [selected, setSelected] = useState("QM-2027-0042");
   const [query, setQuery] = useState("");
@@ -116,12 +114,6 @@ export default function CentralReviewPage() {
 
   return (
     <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-      <LaunchDemoExperienceModal
-        isOpen={demoExperienceOpen}
-        onClose={() => setDemoExperienceOpen(false)}
-        language={language}
-      />
-
       <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-3 shrink-0">
           <a href="/" className="no-underline shrink-0">
@@ -133,14 +125,6 @@ export default function CentralReviewPage() {
         </div>
 
         <div className="flex items-center flex-wrap md:flex-nowrap gap-2 md:gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => setDemoExperienceOpen(true)}
-            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer animate-pulse shrink-0"
-          >
-            <span>🚀</span>
-            <span>Launch Demo</span>
-          </button>
           <a
             href="/chat"
             className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5 shrink-0 shadow-2xs"

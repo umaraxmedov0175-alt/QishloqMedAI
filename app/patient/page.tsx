@@ -12,8 +12,6 @@ import {
 import { canAccessPatientPortal } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
 import { TomirLogo } from "@/app/ui/TomirLogo";
-import { CareTimeline } from "@/app/ui/CareTimeline";
-import { LaunchDemoExperienceModal } from "@/app/ui/LaunchDemoExperienceModal";
 import {
   createPatientApplication,
   getPatientApplications,
@@ -30,10 +28,8 @@ import {
 
 export default function IsolatedPatientPortalPage() {
   const { language, setLanguage, t } = useLanguage();
-  const [demoExperienceOpen, setDemoExperienceOpen] = useState(false);
 
-  // Active Role Simulator (Patient Portal requires 'patient')
-  const [activeRole, setActiveRole] = useState<string>("patient");
+  const activeRole = "patient";
   const [patientId] = useState<string>("QM-2027-0042");
   const [patientName] = useState<string>("Tomir");
 
@@ -204,12 +200,6 @@ export default function IsolatedPatientPortalPage() {
 
   return (
     <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
-      <LaunchDemoExperienceModal
-        isOpen={demoExperienceOpen}
-        onClose={() => setDemoExperienceOpen(false)}
-        language={language}
-      />
-
       {/* Top Header */}
       <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-4">
@@ -222,39 +212,16 @@ export default function IsolatedPatientPortalPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setDemoExperienceOpen(true)}
-            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer animate-pulse shrink-0"
-          >
-            <span>🚀</span>
-            <span>Launch Demo</span>
-          </button>
-          {/* Active Role Switcher */}
-          <div className="flex items-center gap-2 bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-700/60 text-xs">
-            <span className="text-emerald-300 font-semibold">Rol:</span>
-            <select
-              value={activeRole}
-              onChange={(e) => setActiveRole(e.target.value)}
-              className="bg-transparent text-white font-bold outline-none cursor-pointer"
-            >
-              <option value="patient" className="bg-emerald-900 text-white">👤 Bemor (Tomir - QM-2027-0042)</option>
-              <option value="mobile_nurse" className="bg-emerald-900 text-white">👩‍⚕️ Hamshira (Malika)</option>
-              <option value="specialist" className="bg-emerald-900 text-white">👨‍⚕️ Vrach (Dr. Tomir)</option>
-              <option value="dispatcher" className="bg-emerald-900 text-white">🗺️ Dispetcher</option>
-            </select>
-          </div>
-
-          <SunlightToggle />
-
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
+            className="px-3 py-1.5 bg-emerald-950/70 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none cursor-pointer"
           >
             <option value="uz">{"Oʻzbekcha"}</option>
             <option value="en">English</option>
           </select>
+
+          <SunlightToggle />
         </div>
       </header>
 
@@ -313,31 +280,6 @@ export default function IsolatedPatientPortalPage() {
             </div>
           </div>
         </div>
-
-        {/* STRICT RBAC GUARD BANNER IF NOT PATIENT */}
-        {!isPatientAuthorized && (
-          <div className="p-5 bg-amber-500/10 border-2 border-amber-500 text-amber-950 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">🔒</span>
-              <div>
-                <b className="text-sm font-bold block">{t("forbiddenPatientPortalAccess")}</b>
-                <span className="text-xs text-amber-900 font-medium">
-                  Siz hozirda [{activeRole}] rolida ko'rib chiqapsiz. Bemorlar uchun pochta va arizalar faqat Bemor Portalida ishlaydi.
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveRole("patient")}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer shrink-0"
-            >
-              {t("switchToPatientRole")}
-            </button>
-          </div>
-        )}
-
-        {/* Wow Moment 3: Interactive Patient Care Journey Timeline */}
-        <CareTimeline language={language} className="mb-5" />
 
         {/* Patient Portal Workspace Self-Service Tabs */}
         <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[580px]">

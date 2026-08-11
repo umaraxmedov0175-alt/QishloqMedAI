@@ -7,9 +7,6 @@ import { DemoRoleLink } from "./DemoRoleLink";
 import { TomirLogo } from "./TomirLogo";
 import { UzbekPatternSvg } from "./UzbekPatternSvg";
 import { CinematicUzbekistanMap } from "./CinematicUzbekistanMap";
-import { RoleWorldShift, RoleType } from "./RoleWorldShift";
-import { CareTimeline } from "./CareTimeline";
-import { LaunchDemoExperienceModal } from "./LaunchDemoExperienceModal";
 
 type Triage = "routine" | "priority" | "urgent" | "emergency";
 type Case = {
@@ -208,8 +205,6 @@ export function ClinicDashboard() {
     }
     setAuthError(language === "uz" ? "Demo email yoki parol noto'g'ri" : "Invalid demo login credentials");
   }
-  const [activeDemoRole, setActiveDemoRole] = useState<RoleType>("mobile_nurse");
-  const [demoExperienceOpen, setDemoExperienceOpen] = useState<boolean>(false);
 
   if (!signedIn) {
     return (
@@ -217,26 +212,11 @@ export function ClinicDashboard() {
         {/* Background Uzbek Islimi Geometry Ornament */}
         <UzbekPatternSvg className="absolute inset-0 w-full h-full text-emerald-400 opacity-5" />
 
-        <LaunchDemoExperienceModal
-          isOpen={demoExperienceOpen}
-          onClose={() => setDemoExperienceOpen(false)}
-          language={language}
-        />
-
         {/* Top Header Bar */}
         <header className="relative z-20 px-6 py-4 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md flex items-center justify-between">
           <TomirLogo variant="glass" size="md" />
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setDemoExperienceOpen(true)}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2 border border-emerald-400/40 cursor-pointer animate-pulse"
-            >
-              <span>🚀</span>
-              <span>{language === "uz" ? "Launch Demo Experience" : "Launch Demo Experience"}</span>
-            </button>
-
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
@@ -266,78 +246,63 @@ export function ClinicDashboard() {
             </div>
 
             {/* Interactive 3D/Canvas Uzbekistan Map */}
-            <div className="w-full h-72 lg:h-80">
+            <div className="w-full h-80 lg:h-96">
               <CinematicUzbekistanMap language={language} />
             </div>
-
-            {/* Wow Moment 3: Care Timeline Story */}
-            <CareTimeline language={language} />
           </section>
 
-          {/* Right Role Shift & Interactive Login Panel */}
+          {/* Right Role Authorization Portal */}
           <section className="lg:col-span-5 flex flex-col space-y-6">
-            {/* Wow Moment 2: Role-Based World Shifts */}
-            <RoleWorldShift
-              currentRole={activeDemoRole}
-              onRoleChange={(r) => {
-                setActiveDemoRole(r);
-                if (r === "mobile_nurse") router.push("/mobile");
-                else if (r === "specialist") router.push("/central");
-                else if (r === "dispatcher") router.push("/dispatcher");
-                else if (r === "patient") router.push("/patient");
-              }}
-              language={language}
-            />
-
-            {/* Conventional Login Form Card */}
             <div className="auth-card bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md">
               <div className="flex items-center justify-between mb-4">
-                <span className="synthetic">{t("syntheticDemoData")}</span>
-                <span className="text-[11px] text-slate-400 font-mono">Tomir Auth v2.4</span>
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                  🔒 AUTHENTICATED WORKSPACES (4 ROLES)
+                </span>
+                <span className="text-[11px] text-slate-400 font-mono">Tomir RBAC v2.5</span>
               </div>
-            <div className="flex items-center justify-between mb-6">
-              <span className="synthetic">{t("syntheticDemoData")}</span>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-                className="px-3 py-1.5 bg-white text-slate-800 text-xs rounded-lg border border-slate-200 font-medium shadow-xs"
-              >
-                <option value="uz">{"O'zbekcha"}</option>
-                <option value="en">English</option>
-              </select>
-            </div>
 
-            <h2 className="text-2xl font-serif font-bold text-slate-900 mb-1">
-              {t("chooseWorkspace")}
-            </h2>
-            <p className="text-slate-500 text-xs mb-5">
-              {t("exploreWorkflow")}
-            </p>
+              <h2 className="text-xl font-bold text-white mb-1">
+                {t("chooseWorkspace")}
+              </h2>
+              <p className="text-slate-400 text-xs mb-5">
+                {language === "uz"
+                  ? "Tizimga kirish uchun oʻzingizga ajratilgan tibbiy rolni tanlang:"
+                  : "Select your assigned clinical workspace role to enter:"}
+              </p>
 
-            <div className="space-y-2 mb-6">
-              <DemoRoleLink workspace="mobile_nurse" className="role-shortcut-card">
-                <div className="role-icon-circle">🩺</div>
-                <div>
-                  <b>{t("enterMobileNurse")}</b>
-                  <span>{t("enterMobileNurseSub")}</span>
-                </div>
-              </DemoRoleLink>
+              <div className="space-y-2.5 mb-6">
+                <DemoRoleLink workspace="specialist" className="role-shortcut-card">
+                  <div className="role-icon-circle">🛡️</div>
+                  <div>
+                    <b>{language === "uz" ? "Shifokor Ish Maydoni (Doctor)" : "Doctor Workspace"}</b>
+                    <span>{language === "uz" ? "Regional vrachlik ko'rigi va klinik qarorlar" : "Regional clinician review & decision support"}</span>
+                  </div>
+                </DemoRoleLink>
 
-              <DemoRoleLink workspace="specialist" className="role-shortcut-card">
-                <div className="role-icon-circle">🛡️</div>
-                <div>
-                  <b>{t("enterSpecialist")}</b>
-                  <span>{t("enterSpecialistSub")}</span>
-                </div>
-              </DemoRoleLink>
+                <DemoRoleLink workspace="mobile_nurse" className="role-shortcut-card">
+                  <div className="role-icon-circle">🩺</div>
+                  <div>
+                    <b>{language === "uz" ? "Hamshira Ish Maydoni (Nurse)" : "Nurse Workspace"}</b>
+                    <span>{language === "uz" ? "Mobil klinika oflayn ko'riklari va ekspress tahlillar" : "Mobile clinic offline intake & point-of-care labs"}</span>
+                  </div>
+                </DemoRoleLink>
 
-              <DemoRoleLink workspace="dispatcher" className="role-shortcut-card">
-                <div className="role-icon-circle">🏢</div>
-                <div>
-                  <b>{t("enterDispatcher")}</b>
-                  <span>{t("enterDispatcherSub")}</span>
-                </div>
-              </DemoRoleLink>
+                <DemoRoleLink workspace="dispatcher" className="role-shortcut-card">
+                  <div className="role-icon-circle">🏢</div>
+                  <div>
+                    <b>{language === "uz" ? "Dispetcher Ish Maydoni (Dispatch)" : "Dispatch Workspace"}</b>
+                    <span>{language === "uz" ? "Tez tibbiy yordam marshrutlari va logistika" : "Emergency vehicle logistics & spatial radar"}</span>
+                  </div>
+                </DemoRoleLink>
+
+                <DemoRoleLink workspace="patient" className="role-shortcut-card">
+                  <div className="role-icon-circle">📱</div>
+                  <div>
+                    <b>{language === "uz" ? "Bemor Portali (Patient)" : "Patient Portal"}</b>
+                    <span>{language === "uz" ? "Tibbiy karta tarixi va masofaviy arizalar" : "Medical records history & remote applications"}</span>
+                  </div>
+                </DemoRoleLink>
+              </div>
             </div>
 
             <form onSubmit={signIn} className="demo-credentials-box">
@@ -400,7 +365,6 @@ export function ClinicDashboard() {
                 {t("demoSessionFoot")}
               </p>
             </form>
-          </div>
           </section>
         </div>
       </main>

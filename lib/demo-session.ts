@@ -1,23 +1,27 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export type DemoRole = "mobile_nurse" | "specialist" | "dispatcher" | "patient";
+export type DemoRole = "doctor" | "nurse" | "dispatcher" | "patient" | "mobile_nurse" | "specialist";
 
 export const DEMO_ROLE_COOKIE = "qm_demo_role";
 
 export const DEMO_ROLE_DESTINATIONS: Record<DemoRole, string> = {
+  doctor: "/central",
+  nurse: "/mobile",
+  dispatcher: "/dispatcher",
+  patient: "/patient",
   mobile_nurse: "/mobile",
   specialist: "/central",
-  dispatcher: "/operations",
-  patient: "/patient",
 };
 
 export function isDemoRole(value: unknown): value is DemoRole {
   return (
-    value === "mobile_nurse" ||
-    value === "specialist" ||
+    value === "doctor" ||
+    value === "nurse" ||
     value === "dispatcher" ||
-    value === "patient"
+    value === "patient" ||
+    value === "mobile_nurse" ||
+    value === "specialist"
   );
 }
 
@@ -36,7 +40,8 @@ export function demoSessionCookie(role: DemoRole, secure: boolean) {
 
 export async function requireDemoRole(expected: DemoRole) {
   const store = await cookies();
-  if (store.get(DEMO_ROLE_COOKIE)?.value !== expected) {
+  const current = store.get(DEMO_ROLE_COOKIE)?.value;
+  if (!current || (current !== expected && !(expected === "nurse" && current === "mobile_nurse") && !(expected === "doctor" && current === "specialist"))) {
     redirect("/?auth=required");
   }
 }

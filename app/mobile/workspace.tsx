@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { FormEvent, useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { SunlightToggle } from "@/app/ui/DemoRoleLink";
 import {
   enqueueOfflineAction,
   listQueueItems,
@@ -21,7 +21,6 @@ import {
 import { getAllProtocols } from "@/lib/symptom-protocols/index";
 import { MobileLabBadgeIcon } from "@/app/ui/MedicalIcons";
 import { CarePulse } from "@/app/ui/CarePulse";
-import { LaunchDemoExperienceModal } from "@/app/ui/LaunchDemoExperienceModal";
 
 type NetState =
   | "online"
@@ -47,7 +46,6 @@ const goldenDraft = {
 
 export function MobileWorkspace() {
   const { language, setLanguage, t } = useLanguage();
-  const [demoExperienceOpen, setDemoExperienceOpen] = useState(false);
   const [network, setNetwork] = useState<NetState>("offline");
   const [pending, setPending] = useState(0);
   const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
@@ -260,12 +258,6 @@ export function MobileWorkspace() {
 
   return (
     <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-      <LaunchDemoExperienceModal
-        isOpen={demoExperienceOpen}
-        onClose={() => setDemoExperienceOpen(false)}
-        language={language}
-      />
-
       <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-4 shrink-0">
           <a className="flex items-center gap-2 font-bold text-base md:text-lg text-white no-underline shrink-0" href="/">
@@ -275,14 +267,6 @@ export function MobileWorkspace() {
         </div>
 
         <div className="flex items-center flex-wrap md:flex-nowrap gap-2 md:gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => setDemoExperienceOpen(true)}
-            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer animate-pulse shrink-0"
-          >
-            <span>🚀</span>
-            <span>Launch Demo</span>
-          </button>
           <div className={`status-pill ${network === "offline" || network === "error" ? "offline" : "online"} shrink-0`}>
             <span className="w-2 h-2 rounded-full bg-current"></span>
             <span>
@@ -325,8 +309,6 @@ export function MobileWorkspace() {
         <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition font-bold text-emerald-800 flex items-center gap-1.5 whitespace-nowrap">
           <span>💬 Chat & Telemaslahat</span>
         </a>
-        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">{t("specialistView")}</DemoRoleLink>
-        <DemoRoleLink workspace="dispatcher" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">{t("roleDispatcher")}</DemoRoleLink>
       </nav>
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">

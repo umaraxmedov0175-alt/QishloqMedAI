@@ -13,8 +13,8 @@ import {
 test("canAccessPatientPortal enforces strict RBAC for patient role", () => {
   assert.equal(canAccessPatientPortal("patient"), true);
   assert.equal(canAccessPatientPortal("dispatcher"), false);
-  assert.equal(canAccessPatientPortal("mobile_nurse"), false);
-  assert.equal(canAccessPatientPortal("central_clinician"), false);
+  assert.equal(canAccessPatientPortal("nurse"), false);
+  assert.equal(canAccessPatientPortal("doctor"), false);
 });
 
 test("patient email dispatcher redacts phone numbers and stores email payload", () => {
