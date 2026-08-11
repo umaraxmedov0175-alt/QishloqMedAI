@@ -2,6 +2,15 @@
 
 ## Fully Completed Features
 
+- **Inner Messaging & Teleconsultation Chat System (LinkedIn-Style Architecture)**:
+  - **LinkedIn-Style Split-Pane Interface (`app/chat/page.tsx`)**: Left panel thread list with real-time presence indicators (🟢 Online, 🟡 Away, ⚪ Offline), unread badges, last message previews, role tags (`[Doctor]`, `[Nurse]`, `[Patient]`), search input filter, and category tabs (*All Threads*, *Doctor ↔ Nurse*, *Doctor/Nurse ↔ Patient*).
+  - **Context-Rich Workspace Header**: Top header displaying user details, role badge, district/specialty, online status, and quick action toolbar: `[Start Video Teleconsult]`, `[View Patient Medical Record]`, `[Attach Diagnostic File / ECG]`, and `[Search Conversation]`.
+  - **Privacy Guardrail & Real-Time Phone Number Redaction (`lib/realtime-chat.ts`)**: Automated RegEx sanitization engine detecting international numbers, local Uzbekistan numbers (`+998`, `(90) 123-45-67`), spaced/dotted/hyphenated digits, and written-out digit words in Uzbek and English (`nol bir ikki...`). Replaces matched numbers with `[REDACTED FOR PRIVACY]` and displays a warning toast.
+  - **Role-Based Clinical Templates**: Doctor ↔ Nurse quick action chips (`[Request Repeat ECG]`, `[Confirm Vital Signs]`, `[Approve Transfer]`, `[Order Oxygen Support]`). Doctor/Nurse ↔ Patient threads support high-legibility UI, voice note recording (`🎙️ Voice Note` with waveform visualization), translation placeholders, and structured diagnostic update cards.
+  - **Interactive Video Teleconsultation Modal (`app/ui/VideoTeleconsultModal.tsx`)**: WebRTC video stream preview with live call duration timer, camera toggle, microphone mute/unmute, screen share toggle, clinical notes input, and end call button.
+  - **Patient Medical Record Sidebar (`app/ui/PatientRecordSidebar.tsx`)**: Slide-out drawer displaying patient identity, chief complaint, vitals grid (SpO2, HR, BP, Temp), AI risk summary score (`92/100 · FAVQULODDA`), adaptive protocol follow-up questions summary (with explicit skip badges), and diagnostic attachments.
+  - **Real-Time Stack & Audit Logging**: BroadcastChannel API (`tomir_chat_channel`), localStorage (`tomir_chat_threads_v2`), StorageEvent sync, and REST API endpoints (`GET /api/chat/messages`, `POST /api/chat/messages`) with server-side phone number sanitization and audit logging via `recordAuditEvent()`.
+
 - **Adaptive Symptom Question Flow (Offline Clinical Protocol Engine)**:
   - **Deterministic, Offline, JSON-Driven Rule Engine**: Zero LLM calls, zero network dependency at question selection time. 100% reproducible and clinician-auditable decision tree engine (`lib/symptom-protocols/engine.ts`).
   - **Citable Clinical Protocols**: Includes three citable protocols in `lib/symptom-protocols/`: `chest-pain.json` (OPQRST + ESC/AHA Cardiac Red Flag Criteria), `shortness-of-breath.json` (WHO IMCI + Adult Respiratory Distress Criteria), and `headache.json` (SNOOP4 Neurological Red Flag Criteria + SAMPLE history).
@@ -80,12 +89,12 @@
 
 | Quality Check | Command Line | Result | Metrics |
 | :--- | :--- | :--- | :--- |
-| **Translation Completeness** | `npm run i18n:check` | **PASS** | 212 / 212 keys verified |
+| **Translation Completeness** | `npm run i18n:check` | **PASS** | 251 / 251 keys verified |
 | **TypeScript Typecheck** | `npm run typecheck` | **PASS** | 0 type errors |
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 16 / 16 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 23 / 23 test suites passed cleanly |
 
 ---
 
