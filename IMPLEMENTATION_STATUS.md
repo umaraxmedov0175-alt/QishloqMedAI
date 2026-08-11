@@ -2,6 +2,13 @@
 
 ## Fully Completed Features
 
+- **Medical Safety, Accessibility (WCAG 2.2 AA), & Design Refactor**:
+  - **Zone A/B/C Safety Boundary Separation (`app/central/page.tsx`)**: Refactored `/central` into three distinct DOM containers: **Zone A (Evidence)** (white card `#FFFFFF`, 1px border `#E2E8F0`, read-only), **Zone B (AI Decision Support)** (tinted background `bg-purple-50/60`, 4px left border, dashed border, attribution strip `Yaratildi: Tomir Triage v2.4 · Ishonch: 92/100 · AI yordamchi vosita (Tashxis emas)`), and **Zone C (Doctor Decision)** (distinct white card with 3px solid blue border `#0B5FFF`, starting completely empty).
+  - **Triage Provenance Badges**: Displays `◷ AI TAKLIFI` (dashed) vs `✓ VRACH` (solid) vs Override comparisons inline.
+  - **Intake Flow Reconstruction (`app/mobile/workspace.tsx`)**: Step 1 split into `1. Rozilik` (unselected 64px row with 48x48px checkbox touch container + `Rad etildi / Consent Refused` option) and `2. Bemor shaxsi`. Step 4 split blood pressure into **SBP** and **DBP** input fields with range validation highlights. Step 5 added semantic `<label>` elements. Step 6 added custom 96px touch target camera button (`📷 Rentgen / Hujjat suratini olish`). Step 7 reconstructed with accordion read-back review, **Kritik qiymatlar** panel with mandatory out-of-range vitals checkbox confirmation, and blocked submit button for missing fields. Link `"Klinik xulosalar"` targets `/mobile#responses`.
+  - **WCAG 2.2 AA Accessibility & High-Contrast Sunlight Mode**: Added CSS tokens (`--control-h-mobile: 56px`, `--control-h-desktop: 48px`, `--touch-target-min: 48px`, `font-variant-numeric: tabular-nums`, 3px focus ring). Added persistent **Quyosh rejimi** (Sunlight Mode) toggle in headers and demo bar.
+  - **Uzbek Latin Orthography Normalization (`lib/orthography.ts`)**: Replaced ASCII quotes with official Uzbek Latin `oʻ`/`gʻ` (`U+02BB`) and glottal stop `ʼ` (`U+02BC`) across strings, seed data, and search filters.
+
 - **Nearest Regional Hospital Dynamic Routing Engine & Mobile Laboratory Integration**:
   - **Dynamic Regional Routing Engine (`lib/regional-routing.ts`)**: Redirects all emergency referrals, notifications, and telemedicine dispatches away from Tashkent default routing to the **nearest regional/district hospital facility** using exact Haversine geospatial proximity calculation (`findNearestHospital`). Includes citable regional medical centers (*Urgut Tuman Kasalxonasi*, *Payariq Tibbiyot Birlashmasi*, *Samarqand Viloyat Shoshilinch Markazi*, *Zomin Tuman Kasalxonasi*, *Baxmal Kasalxonasi*, *Kegeyli District Hospital*, *Nukus Regional Center*).
   - **On-Board Mobile Diagnostic Laboratory Fleet (`MOBILE_LAB_EQUIPMENT`)**: Vehicle fleet updated to `Tomir-01 Mobil Diagnostik Laboratoriya Klinikasi` equipped with Point-of-Care blood analyzers (Glucose, Lipid Profile, Hemoglobin, HbA1c), portable 12-lead digital ECG modules, ultrasound scanners, and blood pressure monitors.
@@ -110,7 +117,7 @@
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 32 / 32 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 35 / 35 test suites passed cleanly |
 
 ---
 
