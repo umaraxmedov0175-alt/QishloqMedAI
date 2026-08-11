@@ -38,6 +38,11 @@
   - **High-Visibility Offline Status Badge**: Added status pills (`🟢 Onlayn — Server bog'langan` / `🟡 Oflayn — Lokal saqlanmoqda`) for instant connection state awareness.
   - **Telemedicine Risk Score Integration**: Added numeric AI risk score pills (`92/100 · Favqulodda Xavf` / `75/100 · Yuqori Xavf`) in the central review workstation.
 
+- **Dispatcher GIS Mapping & Patient Emergency Reporting Portal**:
+  - **GIS Dispatcher Map Engine (`/dispatcher` & `/operations`)**: Embedded Leaflet vector mapping engine displaying real-time patient incident pins color-coded by triage level (pulsing red for critical, amber for urgent, green for routine). Popups display patient vitals summary, GPS coordinates, timestamp, and direct buttons: `[Open Teleconsultation]` and `[Assign Mobile Bus]`.
+  - **Patient Geospatial Reporting Portal (`/patient/report`)**: Auto-detects GPS coordinates via Web Geolocation API with fallback interactive coordinate picker. Allows patients/nurses to input symptoms, attach vitals, and dispatch requests directly to the dispatcher map.
+  - **Bidirectional Real-Time Synchronization (`lib/realtime-dispatcher.ts` & `/api/dispatcher`)**: Instant cross-tab/cross-window event streaming via `BroadcastChannel` API and REST endpoints tracking status progression: `[Sent]` → `[Dispatcher Reviewing]` → `[Mobile Unit Dispatched / Teleconsult Scheduled]`.
+
 ---
 
 ## Uzbek Localization Audit
