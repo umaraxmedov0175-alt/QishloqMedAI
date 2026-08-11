@@ -97,6 +97,7 @@ export function ClinicDashboard() {
   const [processing, setProcessing] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const active = cases.find((item) => item.id === selected) ?? cases[0];
   const urgent = useMemo(
     () =>
@@ -202,86 +203,148 @@ export function ClinicDashboard() {
     return (
       <main className="auth-shell">
         <section className="auth-story">
-          <div className="brand">
-            <div className="brand-mark">+</div>
-            <span>QishloqMed AI</span>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-white flex items-center justify-center font-bold text-lg">
+              +
+            </div>
+            <span className="text-xl font-bold text-white tracking-tight">QishloqMed AI</span>
           </div>
-          <div>
+          <div className="my-auto py-8">
             <span className="auth-kicker">{t("landingKicker")}</span>
-            <h1>{t("landingTitle")}</h1>
-            <p>{t("landingSubtitle")}</p>
-            <div className="architecture-steps">
-              <span>{t("archStep1")}</span>
-              <span>{t("archStep2")}</span>
-              <span>{t("archStep3")}</span>
-              <span>{t("archStep4")}</span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight my-4">
+              {t("landingTitle")}
+            </h1>
+            <p className="text-emerald-100 text-sm md:text-base leading-relaxed max-w-lg mb-8">
+              {t("landingSubtitle")}
+            </p>
+
+            <div className="auth-flow-steps">
+              <div className="auth-flow-step">
+                <span className="step-dot"></span>
+                <span>1 · Mobil ko'rik</span>
+              </div>
+              <div className="auth-flow-step">
+                <span className="step-dot"></span>
+                <span>2 · Diagnostika sinxronlash</span>
+              </div>
+              <div className="auth-flow-step">
+                <span className="step-dot"></span>
+                <span>3 · AI ustuvorlik saralash</span>
+              </div>
+              <div className="auth-flow-step active">
+                <span className="step-dot"></span>
+                <span>4 · Vrach tasdiqlashi</span>
+              </div>
             </div>
           </div>
-          <div className="auth-note">{t("aiNote")}</div>
+
+          <div className="auth-note">
+            {t("aiNote")}
+          </div>
         </section>
+
         <section className="auth-panel">
-          <form className="auth-card" onSubmit={signIn}>
-            <div className="flex items-center justify-between mb-2">
+          <div className="auth-card">
+            <div className="flex items-center justify-between mb-6">
               <span className="synthetic">{t("syntheticDemoData")}</span>
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-                className="px-2 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-slate-700 font-medium"
+                className="px-3 py-1.5 bg-white text-slate-800 text-xs rounded-lg border border-slate-200 font-medium shadow-xs"
               >
                 <option value="uz">{"O'zbekcha"}</option>
                 <option value="en">English</option>
               </select>
             </div>
-            <h2>{t("chooseWorkspace")}</h2>
-            <p>{t("exploreWorkflow")}</p>
-            <div className="role-shortcuts">
-              <DemoRoleLink workspace="mobile_nurse">
-                <b>{t("enterMobileNurse")}</b>
-                <span>{t("enterMobileNurseSub")}</span>
+
+            <h2 className="text-2xl font-serif font-bold text-slate-900 mb-1">
+              {t("chooseWorkspace")}
+            </h2>
+            <p className="text-slate-500 text-xs mb-5">
+              {t("exploreWorkflow")}
+            </p>
+
+            <div className="space-y-2 mb-6">
+              <DemoRoleLink workspace="mobile_nurse" className="role-shortcut-card">
+                <div className="role-icon-circle">🩺</div>
+                <div>
+                  <b>{t("enterMobileNurse")}</b>
+                  <span>{t("enterMobileNurseSub")}</span>
+                </div>
               </DemoRoleLink>
-              <DemoRoleLink workspace="specialist">
-                <b>{t("enterSpecialist")}</b>
-                <span>{t("enterSpecialistSub")}</span>
+
+              <DemoRoleLink workspace="specialist" className="role-shortcut-card">
+                <div className="role-icon-circle">🛡️</div>
+                <div>
+                  <b>{t("enterSpecialist")}</b>
+                  <span>{t("enterSpecialistSub")}</span>
+                </div>
               </DemoRoleLink>
-              <DemoRoleLink workspace="dispatcher">
-                <b>{t("enterDispatcher")}</b>
-                <span>{t("enterDispatcherSub")}</span>
+
+              <DemoRoleLink workspace="dispatcher" className="role-shortcut-card">
+                <div className="role-icon-circle">🏢</div>
+                <div>
+                  <b>{t("enterDispatcher")}</b>
+                  <span>{t("enterDispatcherSub")}</span>
+                </div>
               </DemoRoleLink>
             </div>
-            <div className="demo-credentials">
-              <b>{t("conventionalLogin")}</b>
-              <span>nurse@qishloqmed.demo · demo2026</span>
-            </div>
-            <div className="field">
-              <label htmlFor="email">{t("emailAddress")}</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                defaultValue="nurse@qishloqmed.demo"
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="password">{t("password")}</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                defaultValue="demo2026"
-              />
-            </div>
-            {authError && (
-              <div className="auth-error" role="alert">
-                {authError}
+
+            <form onSubmit={signIn} className="demo-credentials-box">
+              <div className="flex items-center justify-between text-xs mb-3">
+                <span className="font-bold text-emerald-900">{t("conventionalLogin")}</span>
+                <span className="text-emerald-700 font-mono text-[11px]">nurse@qishloqmed.demo · demo2026</span>
               </div>
-            )}
-            <button className="btn primary auth-submit">{t("signIn")}</button>
-            <p className="auth-foot">{t("demoSessionFoot")}</p>
-          </form>
+
+              <div className="field mt-0">
+                <label htmlFor="email">{t("emailAddress")}</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  defaultValue="nurse@qishloqmed.demo"
+                />
+              </div>
+
+              <div className="field">
+                <label htmlFor="password">{t("password")}</label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    defaultValue="demo2026"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-slate-800 border-0 bg-transparent text-sm cursor-pointer min-h-0"
+                    aria-label={showPassword ? "Parolni berkitish" : "Parolni ko'rsatish"}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+              </div>
+
+              {authError && (
+                <div className="auth-error mt-3 text-xs" role="alert">
+                  {authError}
+                </div>
+              )}
+
+              <button type="submit" className="btn-primary-dark cursor-pointer mt-4">
+                {t("signIn")}
+              </button>
+              <p className="text-[11px] text-center text-slate-500 mt-3 mb-0">
+                {t("demoSessionFoot")}
+              </p>
+            </form>
+          </div>
         </section>
       </main>
     );

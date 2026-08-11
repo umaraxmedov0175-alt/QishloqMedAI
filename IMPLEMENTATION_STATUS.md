@@ -25,6 +25,19 @@
   - Printable HTML/PDF clinical report generator ([lib/report-generator.ts](file:///c:/Users/Umar/QishloqMedAI/lib/report-generator.ts)) and HL7 FHIR R4 JSON bundle exporter ([lib/fhir-mapping.ts](file:///c:/Users/Umar/QishloqMedAI/lib/fhir-mapping.ts)).
   - Interactive HD diagnostic image viewer modal with zoom, pan, brightness, contrast, rotation, and annotation pins ([app/ui/ImageViewerModal.tsx](file:///c:/Users/Umar/QishloqMedAI/app/ui/ImageViewerModal.tsx)).
 
+- **Pixel-Accurate Context-Aware Design Mockup Alignment**:
+  - **Auth / Sign-In view (`/`)**: Rebuilt split screen with dark emerald hero (`#05332a`), workflow steps timeline (1..4), bottom AI glass box, role cards with icons (Stethoscope, Shield, Dispatcher), and green traditional demo login container matching `input_file_1.png`.
+  - **Field Nurse Mobile Dashboard (`/mobile`)**: Updated header tags (`MOBIL KLINIKA REJIMI · QISHLOQMED-01`), serif title `Urgut tumani · G'us qishlog'i`, metrics row, 7-step wizard stepper, vitals 2-column input grid with icons, and `So'nggi bemorlar` list with custom urgency badges matching `input_file_4.png`.
+  - **Central Doctor Review Queue (`/central`)**: Matched top nav tabs, title `Markaziy vrach navbati` with PDF/FHIR export buttons, 5 summary metric cards, 3-column layout (Left patient queue with reasoning tags; Middle nurse vitals grid & dark diagnostic image box; Right AI tahlili panel with gold alert, danger flags, clinician conclusion, and decision buttons) matching `input_file_0.png` & `input_file_2.png`.
+  - **Dispatcher & Logistics Dashboard (`/operations`)**: Rebuilt top header navbar, title `Dispetcherlik va Tibbiy logistika boshqaruvi`, 5 summary cards, hospital referral board table with urgency pills, mobile clinic transit timeline sidebar, system status block, and regional bar chart with alert notification signal matching `input_file_3.png`.
+
+- **Enterprise Medical Design System & Anti-AI-Slop Audit**:
+  - **High-Contrast Clinical Color System**: Refined tokens (`#f8fafc` canvas background, `#0f172a` slate body text, `#064e3b` deep emerald primary, `#dc2626` emergency red).
+  - **Sunlight & Field Nurse Usability**: Enforced minimum 44px touch targets on all form controls, buttons, and inputs. Added explicit unit badges (`.unit-badge`) (`%`, `bpm`, `mmHg`, `°C`) and real-time red warning highlights when SpO₂ drops below 90%.
+  - **Interactive Password Visibility Toggle**: Added interactive show/hide password toggle (`👁️` / `🙈`) to traditional login fields.
+  - **High-Visibility Offline Status Badge**: Added status pills (`🟢 Onlayn — Server bog'langan` / `🟡 Oflayn — Lokal saqlanmoqda`) for instant connection state awareness.
+  - **Telemedicine Risk Score Integration**: Added numeric AI risk score pills (`92/100 · Favqulodda Xavf` / `75/100 · Yuqori Xavf`) in the central review workstation.
+
 ---
 
 ## Uzbek Localization Audit
@@ -46,7 +59,8 @@
 | **Translation Completeness** | `npm run i18n:check` | **PASS** | 212 / 212 keys verified |
 | **TypeScript Typecheck** | `npm run typecheck` | **PASS** | 0 type errors |
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
-| **Production Build** | `npm run build` (`vinext build`) | **PASS** | 5/5 RSC client & server bundles built |
+| **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
+| **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
 | **Unit & Integration Tests** | `npm test` | **PASS** | 14 / 14 test suites passed cleanly |
 
 ---

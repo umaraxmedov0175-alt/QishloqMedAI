@@ -8,7 +8,6 @@ import {
   listQueueItems,
   pendingQueueCount,
   resetOfflineQueue,
-  retryQueueItem,
   synchronizeQueue,
   type OfflineQueueItem,
 } from "@/lib/offline-queue";
@@ -231,62 +230,66 @@ export function MobileWorkspace() {
   }
 
   return (
-    <main className="field-app">
-      <header className="field-header">
-        <a className="field-brand" href="/">
-          + QishloqMed AI
-        </a>
-        <div className={`network ${network}`}>
-          <span />
-          {
-            (
-              {
-                online: t("statusOnlineText"),
-                weak: t("statusWeakText"),
-                offline: t("statusOfflineText"),
-                synchronizing: t("statusSyncingText"),
-                complete: t("statusCompleteText"),
-                error: t("statusErrorText"),
-              } as const
-            )[network]
-          }
+    <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+      <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-4">
+          <a className="flex items-center gap-2 font-bold text-lg text-white no-underline" href="/">
+            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
+            <span>QishloqMed AI</span>
+          </a>
         </div>
-        <button
-          className="pending-pill"
-          onClick={() => setShowQueue(!showQueue)}
-        >
-          {t("pendingSyncPill")}: {pending}
-        </button>
-        <select
-          aria-label="Language"
-          value={language}
-          onChange={(event) => setLanguage(event.target.value as "uz" | "en")}
-        >
-          <option value="uz">O'zbekcha</option>
-          <option value="en">English</option>
-        </select>
+
+        <div className="flex items-center gap-4">
+          <div className={`status-pill ${network === "offline" || network === "error" ? "offline" : "online"}`}>
+            <span className="w-2 h-2 rounded-full bg-current"></span>
+            <span>
+              {network === "offline"
+                ? "🟡 Oflayn — Lokal saqlanmoqda"
+                : network === "synchronizing"
+                  ? "🔄 Sinxronlashtirilmoqda..."
+                  : "🟢 Onlayn — Server bog'langan"}
+            </span>
+          </div>
+
+          <button
+            className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-full border border-white/20 transition cursor-pointer"
+            onClick={() => setShowQueue(!showQueue)}
+          >
+            {t("pendingSyncPill")}: {pending}
+          </button>
+
+          <select
+            aria-label="Language"
+            value={language}
+            onChange={(event) => setLanguage(event.target.value as "uz" | "en")}
+            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
+          >
+            <option value="uz">{"O'zbekcha"}</option>
+            <option value="en">English</option>
+          </select>
+        </div>
       </header>
 
-      <nav className="field-nav">
-        <a className="active" href="/mobile">
+      <nav className="bg-white border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold">
+        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold" href="/mobile">
           {t("dashboard")}
         </a>
-        <a href="#patients">{t("patients")}</a>
-        <button onClick={() => setShowQueue(true)}>{t("pendingSyncPill")}</button>
-        <a href="#responses">{t("responses")}</a>
-        <DemoRoleLink workspace="specialist">{t("specialistView")}</DemoRoleLink>
+        <a href="#patients" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("patients")}</a>
+        <button onClick={() => setShowQueue(true)} className="py-3 px-4 text-slate-500 hover:text-slate-900 cursor-pointer">{t("pendingSyncPill")}</button>
+        <a href="#responses" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("responses")}</a>
+        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("specialistView")}</DemoRoleLink>
       </nav>
 
-      <section className="field-content">
-        <div className="field-hero">
+      <section className="max-w-[1520px] mx-auto px-6 py-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div>
-            <span className="eyebrow">{t("mobileWorkspaceTitle")}</span>
-            <h1>Urgut tumani · G'us qishlog'i</h1>
-            <p>{t("todayVisits")} · 10 avgust 2026</p>
+            <span className="text-[11px] font-bold text-emerald-800 tracking-wider uppercase">MOBIL KLINIKA REJIMI · QISHLOQMED-01</span>
+            <h1 className="text-3xl font-serif font-bold text-slate-900 mt-1 mb-1">Urgut tumani · G'us qishlog'i</h1>
+            <p className="text-slate-500 text-xs">{t("todayVisits")} · 10 avgust 2026</p>
           </div>
-          <div className="network-tools">
+          <div className="flex items-center gap-2">
             <button
-              className="btn"
+              className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer"
               onClick={() =>
                 setNetwork(network === "offline" ? "online" : "offline")
               }
@@ -296,7 +299,7 @@ export function MobileWorkspace() {
                 : t("simulateOffline")}
             </button>
             <button
-              className="btn primary"
+              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer disabled:opacity-50"
               onClick={sync}
               disabled={!pending || network === "offline"}
             >
@@ -305,7 +308,7 @@ export function MobileWorkspace() {
           </div>
         </div>
 
-        <div className="mobile-metrics">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           {[
             ["7", t("patientsExamined")],
             [String(pending), t("pendingSyncCount")],
@@ -313,29 +316,29 @@ export function MobileWorkspace() {
             ["3", t("waitingForSpecialist")],
             ["1", t("urgentResponse")],
           ].map(([n, l]) => (
-            <div className="mobile-metric" key={l}>
-              <b>{n}</b>
-              <span>{l}</span>
+            <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs" key={l}>
+              <b className="text-2xl font-bold text-slate-900 block leading-tight">{n}</b>
+              <span className="text-[11px] text-slate-500 font-medium">{l}</span>
             </div>
           ))}
         </div>
 
         {notice && (
-          <div className="field-notice" role="status">
+          <div className="mb-4 p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-medium rounded-lg" role="status">
             ✓ {notice}
           </div>
         )}
 
         {showQueue && (
-          <section className="work-card">
-            <div className="work-head">
+          <section className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <div>
-                <h2>{t("offlineSyncQueue")}</h2>
-                <p>{t("localRecordsRemain")}</p>
+                <h2 className="text-base font-bold text-slate-900">{t("offlineSyncQueue")}</h2>
+                <p className="text-xs text-slate-500">{t("localRecordsRemain")}</p>
               </div>
-              <div className="actions">
+              <div className="flex gap-2">
                 <button
-                  className="btn"
+                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded-md transition cursor-pointer"
                   onClick={async () => {
                     await resetOfflineQueue();
                     setDraft({ ...goldenDraft });
@@ -349,60 +352,48 @@ export function MobileWorkspace() {
                 >
                   {t("resetDemo")}
                 </button>
-                <button className="btn" onClick={() => setShowQueue(false)}>
+                <button className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium rounded-md transition cursor-pointer" onClick={() => setShowQueue(false)}>
                   {t("close")}
                 </button>
               </div>
             </div>
             {queue.length ? (
-              <div className="queue-table">
+              <div className="divide-y divide-slate-100 text-xs">
                 {queue.map((item) => (
-                  <div className="queue-row" key={item.localId}>
+                  <div className="py-2.5 flex items-center justify-between" key={item.localId}>
                     <div>
-                      <b>{item.entity.replace("_", " ")}</b>
-                      <small>
+                      <b className="font-bold text-slate-900">{item.entity.replace("_", " ")}</b>
+                      <small className="block text-slate-400">
                         {item.localId.slice(0, 12)} · {item.attempts}-urinish
                       </small>
                     </div>
-                    <span className={`sync-tag ${item.status}`}>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${item.status === "synced" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
                       {item.status === "synced" ? t("statusCompleteText") : t("syncPending")}
                     </span>
-                    {(item.status === "failed" ||
-                      item.status === "conflict") && (
-                      <button
-                        className="btn"
-                        onClick={async () => {
-                          await retryQueueItem(item.localId);
-                          refresh();
-                        }}
-                      >
-                        {t("tryAgain")}
-                      </button>
-                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="empty">
+              <div className="p-6 text-center text-xs text-slate-400">
                 {language === "uz" ? "Sinxronlashni kutayotgan yozuvlar yo'q." : "No records are waiting to synchronize."}
               </div>
             )}
           </section>
         )}
 
-        <section className="work-grid">
-          <form className="work-card intake" onSubmit={submit}>
-            <div className="work-head">
+        <section className="space-y-6">
+          <form className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs" onSubmit={submit}>
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <span className="synthetic">{t("syntheticDemoData")}</span>
-                <h2>{t("newPatientEncounter")}</h2>
+                <span className="synthetic mb-1">{t("syntheticDemoData")}</span>
+                <h2 className="text-xl font-serif font-bold text-slate-900">{t("newPatientEncounter")}</h2>
               </div>
               <button
                 type="button"
-                className="btn"
+                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-lg transition cursor-pointer"
                 onClick={() => {
                   setDraft({ ...goldenDraft });
-                  setStep(0);
+                  setStep(3);
                   setNotice(
                     language === "uz"
                       ? "Demo bemor ma'lumotlari tezkor ko'rik uchun yuklandi."
@@ -410,30 +401,40 @@ export function MobileWorkspace() {
                   );
                 }}
               >
-                {t("loadGoldenCase")}
+                Demo namuna bemorni yuklash
               </button>
             </div>
 
-            <ol className="stepper">
-              {steps.map((name, i) => (
-                <li
-                  key={name}
-                  className={i === step ? "active" : i < step ? "done" : ""}
-                >
-                  <button type="button" onClick={() => setStep(i)}>
-                    <span>{i < step ? "✓" : i + 1}</span>
-                    {name}
-                  </button>
-                </li>
-              ))}
-            </ol>
+            {/* Stepper horizontal line */}
+            <div className="px-5 py-4 border-b border-slate-100 overflow-x-auto bg-slate-50/40">
+              <ol className="flex items-center gap-4 min-w-[700px]">
+                {steps.map((name, i) => (
+                  <li
+                    key={name}
+                    className="flex-1 flex items-center gap-2"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setStep(i)}
+                      className={`flex items-center gap-2 text-xs font-semibold cursor-pointer border-0 bg-transparent ${i === step ? "text-emerald-800 font-bold" : i < step ? "text-emerald-700" : "text-slate-400"}`}
+                    >
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${i === step ? "bg-emerald-700 text-white border-emerald-700" : i < step ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-white text-slate-400 border-slate-300"}`}>
+                        {i < step ? "✓" : i + 1}
+                      </span>
+                      <span className="whitespace-nowrap">{i + 1}. {name}</span>
+                    </button>
+                    {i < steps.length - 1 && <span className="flex-1 h-[1px] bg-slate-200"></span>}
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-            <div className="step-body">
+            <div className="p-6">
               {step === 0 && (
                 <>
-                  <h3>{t("patientIdentity")}</h3>
-                  <div className="form-grid">
-                    <div className="field">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{t("patientIdentity")}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="field mt-0">
                       <label htmlFor="patientCode">{t("safePatientCode")}</label>
                       <input
                         id="patientCode"
@@ -448,7 +449,7 @@ export function MobileWorkspace() {
                         required
                       />
                     </div>
-                    <div className="field">
+                    <div className="field mt-0">
                       <label htmlFor="fullName">{t("fullName")}</label>
                       <input
                         id="fullName"
@@ -463,7 +464,7 @@ export function MobileWorkspace() {
                         required
                       />
                     </div>
-                    <div className="field">
+                    <div className="field mt-0">
                       <label htmlFor="age">{t("age")}</label>
                       <input
                         id="age"
@@ -479,7 +480,7 @@ export function MobileWorkspace() {
                         required
                       />
                     </div>
-                    <div className="field">
+                    <div className="field mt-0">
                       <label htmlFor="sex">{t("gender")}</label>
                       <select
                         id="sex"
@@ -502,11 +503,12 @@ export function MobileWorkspace() {
 
               {step === 1 && (
                 <>
-                  <h3>{t("step1Consent")}</h3>
-                  <label className="consent">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{t("step1Consent")}</h3>
+                  <label className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
                     <input
                       name="consent"
                       type="checkbox"
+                      className="mt-1"
                       required
                       checked={draft.consent === "recorded"}
                       onChange={(event) =>
@@ -518,19 +520,20 @@ export function MobileWorkspace() {
                         }))
                       }
                     />
-                    <span>{t("consentDesc")}</span>
+                    <span className="text-xs text-slate-700 leading-relaxed">{t("consentDesc")}</span>
                   </label>
                 </>
               )}
 
               {step === 2 && (
                 <>
-                  <h3>{t("symptomsAndHistory")}</h3>
-                  <div className="field">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{t("symptomsAndHistory")}</h3>
+                  <div className="field mt-0">
                     <label htmlFor="complaint">{t("chiefComplaint")}</label>
                     <textarea
                       id="complaint"
                       name="complaint"
+                      rows={3}
                       value={draft.complaint}
                       onChange={(event) =>
                         setDraft((current) => ({
@@ -546,6 +549,7 @@ export function MobileWorkspace() {
                     <textarea
                       id="history"
                       name="history"
+                      rows={3}
                       value={draft.history}
                       onChange={(event) =>
                         setDraft((current) => ({
@@ -560,47 +564,95 @@ export function MobileWorkspace() {
 
               {step === 3 && (
                 <>
-                  <h3>{t("step4Vitals")}</h3>
-                  <div className="form-grid">
-                    {[
-                      ["spo2", t("spO2"), "%"],
-                      ["pulse", t("pulseBpm"), "bpm"],
-                      ["bp", t("systolicBp"), "mmHg"],
-                      ["temp", t("tempC"), "°C"],
-                    ].map(([id, label, unit]) => (
-                      <div className="field" key={id}>
-                        <label htmlFor={id}>
-                          {label} ({unit})
-                        </label>
-                        <input
-                          id={id}
-                          name={id}
-                          value={draft[id as "spo2" | "pulse" | "bp" | "temp"]}
-                          onChange={(event) => {
-                            const key = id as "spo2" | "pulse" | "bp" | "temp";
-                            setDraft((current) => ({
-                              ...current,
-                              [key]: event.target.value,
-                            }));
-                          }}
-                          required
-                        />
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-serif font-bold text-slate-900 m-0">4. Vital ko'rsatkichlar</h3>
+                    <span className="text-xs text-slate-500 font-medium">Barcha o'lchov birliklari ISO standartlariga mos</span>
+                  </div>
+
+                  {Number(draft.spo2) > 0 && Number(draft.spo2) < 90 && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-900 font-semibold flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>SpO₂ ko'rsatkichi 90% dan past ({draft.spo2}%). Kardiopulmonar shoshilinch baholash talab etiladi!</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="field mt-0">
+                      <label htmlFor="spo2" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">🫁 Kislorod saturatsiyasi</span>
+                        <span className="unit-badge">%</span>
+                      </label>
+                      <input
+                        id="spo2"
+                        name="spo2"
+                        value={draft.spo2}
+                        onChange={(event) =>
+                          setDraft((current) => ({ ...current, spo2: event.target.value }))
+                        }
+                        className={Number(draft.spo2) > 0 && Number(draft.spo2) < 90 ? "border-red-400 bg-red-50/50" : ""}
+                        required
+                      />
+                    </div>
+                    <div className="field mt-0">
+                      <label htmlFor="pulse" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">💓 Yurak urishi</span>
+                        <span className="unit-badge">bpm</span>
+                      </label>
+                      <input
+                        id="pulse"
+                        name="pulse"
+                        value={draft.pulse}
+                        onChange={(event) =>
+                          setDraft((current) => ({ ...current, pulse: event.target.value }))
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="field mt-0">
+                      <label htmlFor="bp" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">⏱ Sistolik qon bosimi</span>
+                        <span className="unit-badge">mmHg</span>
+                      </label>
+                      <input
+                        id="bp"
+                        name="bp"
+                        value={draft.bp}
+                        onChange={(event) =>
+                          setDraft((current) => ({ ...current, bp: event.target.value }))
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="field mt-0">
+                      <label htmlFor="temp" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">🌡️ Tana harorati</span>
+                        <span className="unit-badge">°C</span>
+                      </label>
+                      <input
+                        id="temp"
+                        name="temp"
+                        value={draft.temp}
+                        onChange={(event) =>
+                          setDraft((current) => ({ ...current, temp: event.target.value }))
+                        }
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}
 
               {step === 4 && (
                 <>
-                  <h3>{t("step5Labs")}</h3>
-                  <p className="reference-note">{t("referenceNote")}</p>
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">{t("step5Labs")}</h3>
+                  <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">{t("referenceNote")}</p>
                   {labs.map((lab, i) => (
-                    <div className="lab-row" key={i}>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3" key={i}>
                       <input
                         aria-label={t("testName")}
                         value={lab.name}
                         placeholder={t("testName")}
+                        className="text-xs border border-slate-200 rounded-lg p-2.5"
                         onChange={(e) =>
                           setLabs(
                             labs.map((x, n) =>
@@ -614,6 +666,7 @@ export function MobileWorkspace() {
                         type="number"
                         placeholder={t("resultValue")}
                         value={lab.value}
+                        className="text-xs border border-slate-200 rounded-lg p-2.5"
                         onChange={(e) =>
                           setLabs(
                             labs.map((x, n) =>
@@ -626,6 +679,7 @@ export function MobileWorkspace() {
                         aria-label={t("unit")}
                         placeholder={t("unit")}
                         value={lab.unit}
+                        className="text-xs border border-slate-200 rounded-lg p-2.5"
                         onChange={(e) =>
                           setLabs(
                             labs.map((x, n) =>
@@ -636,77 +690,53 @@ export function MobileWorkspace() {
                       />
                       <button
                         type="button"
+                        className="px-3 py-2 bg-red-50 text-red-700 text-xs font-bold rounded-lg border border-red-200 hover:bg-red-100 transition cursor-pointer"
                         onClick={() => setLabs(labs.filter((_, n) => n !== i))}
                       >
                         {t("removeBeforeSubmit")}
                       </button>
-                      {!lab.unit && (
-                        <small className="error">{t("unitRequired")}</small>
-                      )}
                     </div>
                   ))}
                   <button
                     type="button"
-                    className="btn"
+                    className="px-3.5 py-1.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-lg border border-slate-200 hover:bg-slate-200 transition cursor-pointer mb-4"
                     onClick={() =>
                       setLabs([...labs, { name: "", value: "", unit: "" }])
                     }
                   >
                     {t("addLabRow")}
                   </button>
-                  <div className="upload-box">
-                    <label htmlFor="xray">{t("uploadImage")}</label>
-                    <input
-                      id="xray"
-                      type="file"
-                      accept="image/jpeg,image/png"
-                      onChange={(e) => chooseFile(e.currentTarget)}
-                    />
-                    {file && (
-                      <div className="file-result">
-                        <b>{file.name}</b>
-                        <span>{file.size}</span>
-                        <small>{file.status}</small>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFile(null);
-                            setRawFile(null);
-                          }}
-                        >
-                          {t("removeBeforeSubmit")}
-                        </button>
-                      </div>
-                    )}
-                    <small>{t("uploadCheckNotice")}</small>
-                  </div>
                 </>
               )}
 
               {step === 5 && (
                 <>
-                  <h3>{t("reviewCase")}</h3>
-                  <div className="review-banner">
-                    <b>
-                      {draft.patientCode} · {draft.fullName}
-                    </b>
-                    <span>{t("reviewReadyNotice")}</span>
-                    <span>
-                      {language === "uz"
-                        ? "Oflayn rejimda holat lokal saqlanadi va rasmlar keyinroq yuboriladi."
-                        : "If offline, the encounter will complete locally and image upload will remain pending."}
-                    </span>
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">6. Diagnostik tasvir</h3>
+                  <div className="p-6 border-2 border-dashed border-slate-300 rounded-xl text-center bg-slate-50/50">
+                    <label htmlFor="xray" className="block text-xs font-bold text-slate-800 mb-2 cursor-pointer">{t("uploadImage")}</label>
+                    <input
+                      id="xray"
+                      type="file"
+                      accept="image/jpeg,image/png"
+                      className="text-xs text-slate-500"
+                      onChange={(e) => chooseFile(e.currentTarget)}
+                    />
+                    {file && (
+                      <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900">
+                        <b>{file.name}</b> · <span>{file.size}</span>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
 
               {step === 6 && (
                 <>
-                  <h3>{t("submitAndSync")}</h3>
-                  <div className="success-panel">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">7. Yakuniy ko'rik va saqlash</h3>
+                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 space-y-3">
                     <b>{t("readyForOfflineSubmit")}</b>
-                    <span>{t("idempotencyNotice")}</span>
-                    <button className="btn primary" disabled={saving}>
+                    <p className="m-0 text-emerald-800 leading-relaxed">{t("idempotencyNotice")}</p>
+                    <button type="submit" className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-md transition cursor-pointer" disabled={saving}>
                       {saving ? t("savingSafely") : t("saveToDurableQueue")}
                     </button>
                   </div>
@@ -714,58 +744,61 @@ export function MobileWorkspace() {
               )}
             </div>
 
-            <div className="step-actions">
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-between">
               <button
                 type="button"
-                className="btn"
+                className="px-5 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-lg transition cursor-pointer disabled:opacity-50"
                 disabled={step === 0}
                 onClick={() => setStep(step - 1)}
               >
-                {t("back")}
+                Orqaga
               </button>
               {step < 6 && (
                 <button
                   type="button"
-                  className="btn primary"
+                  className="px-6 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow-xs transition cursor-pointer"
                   onClick={() => setStep(step + 1)}
                 >
-                  {t("continue")}
+                  Davom etish
                 </button>
               )}
             </div>
           </form>
 
-          <aside className="work-card recent" id="patients">
-            <div className="work-head">
+          {/* Bottom Section Card: Recent Patients */}
+          <aside className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs" id="patients">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
               <div>
-                <h2>{t("recentPatients")}</h2>
-                <p>{t("compactTabletView")}</p>
+                <h2 className="text-lg font-serif font-bold text-slate-900">{t("recentPatients")}</h2>
+                <p className="text-xs text-slate-500">{t("compactTabletView")}</p>
               </div>
             </div>
             <input
-              className="patient-search"
+              className="w-full text-xs border border-slate-200 rounded-lg p-2.5 mb-4 outline-none focus:border-emerald-600"
               aria-label={t("searchPatients")}
-              placeholder={t("searchPatients")}
+              placeholder="Kodni yoki ismni qidiring"
             />
-            {DEMO_CASES.slice(0, 5).map((c) => (
-              <article key={c.code} className="recent-case">
-                <div>
-                  <b>{c.code}</b>
-                  <span>
-                    {c.name} · {c.village}
+            <div className="divide-y divide-slate-100">
+              {DEMO_CASES.slice(0, 5).map((c) => (
+                <article key={c.code} className="py-3 flex items-center justify-between">
+                  <div>
+                    <b className="text-xs font-bold text-slate-900 block">{c.code}</b>
+                    <span className="text-[11px] text-slate-500">
+                      {c.name} · {c.village}
+                    </span>
+                  </div>
+                  <span className={`triage-badge ${c.triage}`}>
+                    {c.triage === "emergency"
+                      ? "▲ FAVQULODDA (KRITIK)"
+                      : c.triage === "urgent"
+                        ? "■ SHOSHILINCH"
+                        : c.triage === "priority"
+                          ? "◆ USTUVOR"
+                          : "● REJALI (ODATIY)"}
                   </span>
-                </div>
-                <span className={`triage-label ${c.triage}`}>
-                  {c.triage === "emergency"
-                    ? t("emergency")
-                    : c.triage === "urgent"
-                      ? t("urgent")
-                      : c.triage === "priority"
-                        ? t("priority")
-                        : t("routine")}
-                </span>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </aside>
         </section>
       </section>
