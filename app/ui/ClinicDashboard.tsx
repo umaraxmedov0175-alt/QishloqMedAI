@@ -9,6 +9,7 @@ import { UzbekPatternSvg } from "./UzbekPatternSvg";
 import { CinematicUzbekistanMap } from "./CinematicUzbekistanMap";
 import { RoleWorldShift, RoleType } from "./RoleWorldShift";
 import { CareTimeline } from "./CareTimeline";
+import { LaunchDemoExperienceModal } from "./LaunchDemoExperienceModal";
 
 type Triage = "routine" | "priority" | "urgent" | "emergency";
 type Case = {
@@ -208,6 +209,7 @@ export function ClinicDashboard() {
     setAuthError(language === "uz" ? "Demo email yoki parol noto'g'ri" : "Invalid demo login credentials");
   }
   const [activeDemoRole, setActiveDemoRole] = useState<RoleType>("mobile_nurse");
+  const [demoExperienceOpen, setDemoExperienceOpen] = useState<boolean>(false);
 
   if (!signedIn) {
     return (
@@ -215,11 +217,26 @@ export function ClinicDashboard() {
         {/* Background Uzbek Islimi Geometry Ornament */}
         <UzbekPatternSvg className="absolute inset-0 w-full h-full text-emerald-400 opacity-5" />
 
+        <LaunchDemoExperienceModal
+          isOpen={demoExperienceOpen}
+          onClose={() => setDemoExperienceOpen(false)}
+          language={language}
+        />
+
         {/* Top Header Bar */}
         <header className="relative z-20 px-6 py-4 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md flex items-center justify-between">
           <TomirLogo variant="glass" size="md" />
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setDemoExperienceOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center gap-2 border border-emerald-400/40 cursor-pointer animate-pulse"
+            >
+              <span>🚀</span>
+              <span>{language === "uz" ? "Launch Demo Experience" : "Launch Demo Experience"}</span>
+            </button>
+
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as "uz" | "en")}

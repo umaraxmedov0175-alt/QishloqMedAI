@@ -13,6 +13,7 @@ import { canAccessPatientPortal } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
 import { TomirLogo } from "@/app/ui/TomirLogo";
 import { CareTimeline } from "@/app/ui/CareTimeline";
+import { LaunchDemoExperienceModal } from "@/app/ui/LaunchDemoExperienceModal";
 import {
   createPatientApplication,
   getPatientApplications,
@@ -29,6 +30,7 @@ import {
 
 export default function IsolatedPatientPortalPage() {
   const { language, setLanguage, t } = useLanguage();
+  const [demoExperienceOpen, setDemoExperienceOpen] = useState(false);
 
   // Active Role Simulator (Patient Portal requires 'patient')
   const [activeRole, setActiveRole] = useState<string>("patient");
@@ -202,6 +204,12 @@ export default function IsolatedPatientPortalPage() {
 
   return (
     <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
+      <LaunchDemoExperienceModal
+        isOpen={demoExperienceOpen}
+        onClose={() => setDemoExperienceOpen(false)}
+        language={language}
+      />
+
       {/* Top Header */}
       <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-4">
@@ -214,6 +222,14 @@ export default function IsolatedPatientPortalPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setDemoExperienceOpen(true)}
+            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer animate-pulse shrink-0"
+          >
+            <span>🚀</span>
+            <span>Launch Demo</span>
+          </button>
           {/* Active Role Switcher */}
           <div className="flex items-center gap-2 bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-700/60 text-xs">
             <span className="text-emerald-300 font-semibold">Rol:</span>

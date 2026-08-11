@@ -14,9 +14,11 @@ import {
 } from "@/lib/realtime-dispatcher";
 import { useLanguage } from "@/lib/i18n";
 import { TomirLogo } from "@/app/ui/TomirLogo";
+import { LaunchDemoExperienceModal } from "@/app/ui/LaunchDemoExperienceModal";
 
 export default function DispatcherWorkspacePage() {
   const { language, setLanguage, t } = useLanguage();
+  const [demoExperienceOpen, setDemoExperienceOpen] = useState(false);
   const [items, setItems] = useState<DispatchItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -75,6 +77,12 @@ export default function DispatcherWorkspacePage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col">
+      <LaunchDemoExperienceModal
+        isOpen={demoExperienceOpen}
+        onClose={() => setDemoExperienceOpen(false)}
+        language={language}
+      />
+
       {/* Header Bar */}
       <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs shrink-0 z-20">
         <div className="flex items-center gap-4">
@@ -87,6 +95,14 @@ export default function DispatcherWorkspacePage() {
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setDemoExperienceOpen(true)}
+            className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-bold text-xs rounded-lg shadow-md transition flex items-center gap-1.5 border border-emerald-400/40 cursor-pointer animate-pulse shrink-0"
+          >
+            <span>🚀</span>
+            <span>Launch Demo</span>
+          </button>
           <a
             href="/dispatcher/radar"
             className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-100 text-xs font-semibold rounded-lg border border-red-400/30 transition flex items-center gap-1.5"
