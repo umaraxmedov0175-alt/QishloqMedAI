@@ -17,7 +17,7 @@ export async function GET(
   }
 
   await recordAuditEvent(null, {
-    actorId: "clinician",
+    actorId: "tomir_clinician",
     action: "read_visit",
     resourceType: "visit",
     resourceId: visitId,

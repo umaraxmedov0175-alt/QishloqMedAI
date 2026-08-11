@@ -17,7 +17,7 @@ async function getEncryptionKey(secretKey: string): Promise<CryptoKey> {
   return crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: enc.encode("qishloqmed-pdpl-salt-2026"),
+      salt: enc.encode("tomir-pdpl-salt-2026"),
       iterations: 100000,
       hash: "SHA-256",
     },

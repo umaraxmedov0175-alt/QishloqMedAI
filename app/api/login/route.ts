@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       : "mobile_nurse";
 
   // Validate credentials & 2FA if provided
-  const username = body.username || "demo_user";
+  const username = body.username || "tomir";
   const twoFactorCode = body.twoFactorCode || "123456";
 
   const is2FaValid = verify2FaCode(username, twoFactorCode);

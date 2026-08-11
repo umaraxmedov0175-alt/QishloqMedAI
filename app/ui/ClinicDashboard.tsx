@@ -28,7 +28,7 @@ const seedCases: Case[] = [
   {
     id: "1",
     code: "QM-2608-014",
-    name: "Dilnoza Karimova",
+    name: "Tomir",
     age: 67,
     sex: "Ayol",
     village: "Urgut tumani, G'us",
@@ -207,7 +207,7 @@ export function ClinicDashboard() {
             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-white flex items-center justify-center font-bold text-lg">
               +
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">QishloqMed AI</span>
+            <span className="text-xl font-bold text-white tracking-tight">Tomir AI</span>
           </div>
           <div className="my-auto py-8">
             <span className="auth-kicker">{t("landingKicker")}</span>
@@ -293,7 +293,7 @@ export function ClinicDashboard() {
             <form onSubmit={signIn} className="demo-credentials-box">
               <div className="flex items-center justify-between text-xs mb-3">
                 <span className="font-bold text-emerald-900">{t("conventionalLogin")}</span>
-                <span className="text-emerald-700 font-mono text-[11px]">nurse@qishloqmed.demo · demo2026</span>
+                <span className="text-emerald-700 font-mono text-[11px]">tomir@tomir.demo · demo2026</span>
               </div>
 
               <div className="field mt-0">
@@ -304,7 +304,7 @@ export function ClinicDashboard() {
                   type="email"
                   autoComplete="email"
                   required
-                  defaultValue="nurse@qishloqmed.demo"
+                  defaultValue="tomir@tomir.demo"
                 />
               </div>
 
@@ -354,7 +354,7 @@ export function ClinicDashboard() {
       <aside className="sidebar">
         <div className="brand">
           <div className="brand-mark">+</div>
-          <span>QishloqMed AI</span>
+          <span>Tomir AI</span>
         </div>
         <div className="clinic-info">
           <div className="clinic-label">Faol klinika</div>

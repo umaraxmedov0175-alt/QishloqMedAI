@@ -5,7 +5,7 @@ export async function POST() {
   const cookieHeader = `${DEMO_ROLE_COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`;
 
   await recordAuditEvent(null, {
-    actorId: "authenticated_user",
+    actorId: "authenticated_tomir",
     action: "logout",
     resourceType: "auth_session",
     resourceId: "session_cleared",

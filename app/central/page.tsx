@@ -43,7 +43,7 @@ export default function CentralReviewPage() {
       caseCode: active.code,
       finalSummary,
       decision: nextDecision,
-      clinician: "Demo specialist",
+      clinician: "Tomir",
     });
     setDecision(action.decision);
     setSavedAt(action.updatedAt);
@@ -114,7 +114,7 @@ export default function CentralReviewPage() {
         <div className="flex items-center gap-4">
           <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>QishloqMed AI</span>
+            <span>Tomir AI</span>
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             Toshkent Markaziy Tibbiy Ko'rik Markazi

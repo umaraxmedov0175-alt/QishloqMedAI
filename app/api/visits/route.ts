@@ -104,7 +104,7 @@ export async function POST(request: Request) {
   visitDatabase.push(newVisit);
 
   await recordAuditEvent(null, {
-    actorId: "field_nurse",
+    actorId: "tomir_field_nurse",
     action: "create_visit",
     resourceType: "visit",
     resourceId: visitId,

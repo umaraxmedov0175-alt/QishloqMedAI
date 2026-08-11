@@ -1,7 +1,7 @@
 import { translations } from "../lib/i18n-dictionary.ts";
 
 console.log("--------------------------------------------------");
-console.log("🔍 Checking QishloqMed AI Uzbek Translation Completeness...");
+console.log("🔍 Checking Tomir AI Uzbek Translation Completeness...");
 console.log("--------------------------------------------------");
 
 const uzKeys = Object.keys(translations.uz).sort();

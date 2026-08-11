@@ -23,7 +23,7 @@ export interface ClinicalReportData {
 
 export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" = "uz"): string {
   const isUz = lang === "uz";
-  const title = isUz ? "QISHLOQMED AI - TIBBIY KO'RIK XULOSASI" : "QISHLOQMED AI - CLINICAL EVALUATION REPORT";
+  const title = isUz ? "TOMIR AI - TIBBIY KO'RIK XULOSASI" : "TOMIR AI - CLINICAL EVALUATION REPORT";
   const generatedAt = data.reviewedAt || new Date().toLocaleString(isUz ? "uz-UZ" : "en-US");
 
   return `
@@ -59,7 +59,7 @@ export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" =
 <body>
   <div class="header">
     <div>
-      <div class="brand">QishloqMed AI</div>
+      <div class="brand">Tomir AI</div>
       <div class="subtitle">${isUz ? "Masofaviy tibbiy yordam va mutaxassis nazorati" : "Remote care coordination with clinician supervision"}</div>
     </div>
     <div style="text-align: right;">

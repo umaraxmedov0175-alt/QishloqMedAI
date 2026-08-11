@@ -1,4 +1,4 @@
-const CACHE = "qishloqmed-shell-v2";
+const CACHE = "tomir-shell-v2";
 const PUBLIC_SHELL = ["/offline", "/favicon.svg"];
 
 self.addEventListener("install", (event) => {

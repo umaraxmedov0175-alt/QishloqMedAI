@@ -1,4 +1,4 @@
-# QishloqMed AI — Implementation Status & Verification Report
+# Tomir AI — Implementation Status & Verification Report
 
 ## Fully Completed Features
 
@@ -27,7 +27,7 @@
 
 - **Pixel-Accurate Context-Aware Design Mockup Alignment**:
   - **Auth / Sign-In view (`/`)**: Rebuilt split screen with dark emerald hero (`#05332a`), workflow steps timeline (1..4), bottom AI glass box, role cards with icons (Stethoscope, Shield, Dispatcher), and green traditional demo login container matching `input_file_1.png`.
-  - **Field Nurse Mobile Dashboard (`/mobile`)**: Updated header tags (`MOBIL KLINIKA REJIMI · QISHLOQMED-01`), serif title `Urgut tumani · G'us qishlog'i`, metrics row, 7-step wizard stepper, vitals 2-column input grid with icons, and `So'nggi bemorlar` list with custom urgency badges matching `input_file_4.png`.
+  - **Field Nurse Mobile Dashboard (`/mobile`)**: Updated header tags (`MOBIL KLINIKA REJIMI · TOMIR-01`), serif title `Urgut tumani · G'us qishlog'i`, metrics row, 7-step wizard stepper, vitals 2-column input grid with icons, and `So'nggi bemorlar` list with custom urgency badges matching `input_file_4.png`.
   - **Central Doctor Review Queue (`/central`)**: Matched top nav tabs, title `Markaziy vrach navbati` with PDF/FHIR export buttons, 5 summary metric cards, 3-column layout (Left patient queue with reasoning tags; Middle nurse vitals grid & dark diagnostic image box; Right AI tahlili panel with gold alert, danger flags, clinician conclusion, and decision buttons) matching `input_file_0.png` & `input_file_2.png`.
   - **Dispatcher & Logistics Dashboard (`/operations`)**: Rebuilt top header navbar, title `Dispetcherlik va Tibbiy logistika boshqaruvi`, 5 summary cards, hospital referral board table with urgency pills, mobile clinic transit timeline sidebar, system status block, and regional bar chart with alert notification signal matching `input_file_3.png`.
 
@@ -42,6 +42,14 @@
   - **GIS Dispatcher Map Engine (`/dispatcher` & `/operations`)**: Embedded Leaflet vector mapping engine displaying real-time patient incident pins color-coded by triage level (pulsing red for critical, amber for urgent, green for routine). Popups display patient vitals summary, GPS coordinates, timestamp, and direct buttons: `[Open Teleconsultation]` and `[Assign Mobile Bus]`.
   - **Patient Geospatial Reporting Portal (`/patient/report`)**: Auto-detects GPS coordinates via Web Geolocation API with fallback interactive coordinate picker. Allows patients/nurses to input symptoms, attach vitals, and dispatch requests directly to the dispatcher map.
   - **Bidirectional Real-Time Synchronization (`lib/realtime-dispatcher.ts` & `/api/dispatcher`)**: Instant cross-tab/cross-window event streaming via `BroadcastChannel` API and REST endpoints tracking status progression: `[Sent]` → `[Dispatcher Reviewing]` → `[Mobile Unit Dispatched / Teleconsult Scheduled]`.
+
+- **Global Codebase Refactor (Default User Name: Tomir)**:
+  - Default user full name updated to **Tomir** across all mock data, database seeders, auth context defaults, API response payloads, frontend UI components, and test suites.
+  - Contextual casing applied cleanly: `Tomir` / `Dr. Tomir` for UI display names; `tomir` / `tomir@tomir.demo` / `user-tomir` for usernames, emails, and database actor identifiers.
+  - Re-established clean TypeScript build configuration in `build/sites-vite-plugin.ts`.
+
+- **Global Project Rename (Tomir AI)**:
+  - Project name refactored across entire repository to **Tomir AI** (`tomir-ai` for package, `Tomir-01` for mobile fleet, `tomir-clinical-v1` / `tomir-field-v1` for IndexedDB stores, `tomir_dispatcher_channel` for BroadcastChannel, `tomir@tomir.demo` for demo credentials).
 
 ---
 

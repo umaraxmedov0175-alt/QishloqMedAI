@@ -1,6 +1,6 @@
-# QishloqMed AI
+# Tomir AI
 
-QishloqMed AI is an offline-first mobile diagnostic coordination prototype for remote communities in Uzbekistan. Mobile nurses capture encounters during unreliable connectivity, synchronize them idempotently, and send evidence to a central specialist queue where AI remains preliminary decision support and clinicians make final decisions.
+Tomir AI is an offline-first mobile diagnostic coordination prototype for remote communities in Uzbekistan. Mobile nurses capture encounters during unreliable connectivity, synchronize them idempotently, and send evidence to a central specialist queue where AI remains preliminary decision support and clinicians make final decisions.
 
 > Medical-use disclaimer: this is synthetic hackathon software, not a licensed medical device and not for clinical use. Production use requires clinical validation, legal and regulatory review, cybersecurity assessment, data-governance approval, specialist oversight, training, and incident response.
 
@@ -28,7 +28,7 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. The public demo login is `nurse@qishloqmed.demo` / `demo2026`; all records are synthetic. Protected workspaces require a server-issued role session.
+Open `http://localhost:3000`. The public demo login is `tomir@tomir.demo` / `demo2026`; all records are synthetic. Protected workspaces require a server-issued role session.
 
 ## Environment variables
 

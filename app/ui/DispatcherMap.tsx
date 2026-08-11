@@ -202,7 +202,7 @@ export function DispatcherMap({
           const teleBtn = document.getElementById(`btn-teleconsult-${item.id}`);
           if (teleBtn) {
             teleBtn.onclick = () => {
-              onScheduleTeleconsult(item.id, "Dr. Abdullayev (Markaziy Shifoxona)");
+              onScheduleTeleconsult(item.id, "Dr. Tomir (Markaziy Shifoxona)");
               marker.closePopup();
             };
           }
@@ -210,7 +210,7 @@ export function DispatcherMap({
           const busBtn = document.getElementById(`btn-bus-${item.id}`);
           if (busBtn) {
             busBtn.onclick = () => {
-              onAssignVehicle(item.id, "QishloqMed-01 Mobile Bus");
+              onAssignVehicle(item.id, "Tomir-01 Mobile Bus");
               marker.closePopup();
             };
           }

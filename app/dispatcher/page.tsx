@@ -35,7 +35,7 @@ export default function DispatcherWorkspacePage() {
     return () => unsubscribe();
   }, []);
 
-  const handleAssignVehicle = (id: string, vehicle: string = "QishloqMed-01 Mobile Bus") => {
+  const handleAssignVehicle = (id: string, vehicle: string = "Tomir-01 Mobile Bus") => {
     const updated = updateDispatchStatus(id, "dispatched", {
       assignedVehicle: vehicle,
       notes: `Mobil klinika avtobusi (${vehicle}) dispetcher tomonidan yuborildi.`,
@@ -46,7 +46,7 @@ export default function DispatcherWorkspacePage() {
     }
   };
 
-  const handleScheduleTeleconsult = (id: string, doctor: string = "Markaziy vrach-mutaxassis") => {
+  const handleScheduleTeleconsult = (id: string, doctor: string = "Dr. Tomir") => {
     const updated = updateDispatchStatus(id, "teleconsult_scheduled", {
       assignedDoctor: doctor,
       notes: `Telemaslahat seansi ${doctor} bilan belgilandi.`,
@@ -79,7 +79,7 @@ export default function DispatcherWorkspacePage() {
         <div className="flex items-center gap-4">
           <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>QishloqMed AI</span>
+            <span>Tomir AI</span>
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             🗺️ Dispetcherlik Geolokatsion Markazi

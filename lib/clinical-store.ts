@@ -7,7 +7,7 @@ export type ClinicalAction = {
   updatedAt: string;
 };
 
-const DB_NAME = "qishloqmed-clinical-v1";
+const DB_NAME = "tomir-clinical-v1";
 const STORE = "clinical_actions";
 
 function openDb(): Promise<IDBDatabase> {

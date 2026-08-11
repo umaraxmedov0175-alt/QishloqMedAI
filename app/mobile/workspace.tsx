@@ -24,7 +24,7 @@ type NetState =
 
 const goldenDraft = {
   patientCode: "QM-2027-0042",
-  fullName: "Dilnoza Karimova",
+  fullName: "Tomir",
   age: "67",
   sex: "Ayol",
   consent: "recorded",
@@ -235,7 +235,7 @@ export function MobileWorkspace() {
         <div className="flex items-center gap-4">
           <a className="flex items-center gap-2 font-bold text-lg text-white no-underline" href="/">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>QishloqMed AI</span>
+            <span>Tomir AI</span>
           </a>
         </div>
 
@@ -283,7 +283,7 @@ export function MobileWorkspace() {
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div>
-            <span className="text-[11px] font-bold text-emerald-800 tracking-wider uppercase">MOBIL KLINIKA REJIMI · QISHLOQMED-01</span>
+            <span className="text-[11px] font-bold text-emerald-800 tracking-wider uppercase">MOBIL KLINIKA REJIMI · TOMIR-01</span>
             <h1 className="text-3xl font-serif font-bold text-slate-900 mt-1 mb-1">Urgut tumani · G'us qishlog'i</h1>
             <p className="text-slate-500 text-xs">{t("todayVisits")} · 10 avgust 2026</p>
           </div>

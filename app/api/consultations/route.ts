@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   const record: ConsultationRecord = {
     consultId,
     visitId: body.visitId,
-    specialistId: body.specialistId || "central-doctor-demo",
+    specialistId: body.specialistId || "tomir-specialist",
     notes: body.notes,
     recommendations: body.recommendations || "Routine follow-up in 7 days.",
     decision: body.decision || "approved",

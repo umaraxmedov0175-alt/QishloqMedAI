@@ -18,7 +18,7 @@ const patientDatabase: PatientRecord[] = [
   {
     id: "pat-001",
     patientCode: "QM-2027-0042",
-    name: "Dilnoza Karimova",
+    name: "Tomir",
     dob: "1959-04-12",
     sex: "Ayol",
     address: "Urgut tumani, G'us qishlog'i",
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
 
   await recordAuditEvent(null, {
-    actorId: "clinician_user",
+    actorId: "clinician_tomir",
     action: "read_patient",
     resourceType: "patient_list",
     resourceId: code || "all",
@@ -119,7 +119,7 @@ export async function POST(request: Request) {
 
   // Record PDPL audit trail
   await recordAuditEvent(null, {
-    actorId: "mobile_nurse",
+    actorId: "tomir_nurse",
     action: "create_patient",
     resourceType: "patient",
     resourceId: patientId,

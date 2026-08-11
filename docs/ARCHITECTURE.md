@@ -4,4 +4,4 @@ The hackathon prototype uses Vinext/React with strict TypeScript, a server-side 
 
 `ClinicalAnalysisProvider` isolates model vendors. All responses pass `ClinicalAssessmentSchema`, request data is minimized, duplicate generation is prevented by request ID, and `requiresHumanReview` is forced to true.
 
-Seed identities represent QishloqMed Mobile Clinic Network, Mobile Clinic 01 - Samarqand Region, and Tashkent Central Review Center. All demo records are synthetic.
+Seed identities represent Tomir Mobile Clinic Network, Mobile Clinic 01 - Samarqand Region, and Tashkent Central Review Center. All demo records are synthetic.

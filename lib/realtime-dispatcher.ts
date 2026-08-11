@@ -41,7 +41,7 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
   {
     id: "disp-001",
     patientCode: "QM-2027-0042",
-    patientName: "Dilnoza Karimova",
+    patientName: "Tomir",
     age: 67,
     sex: "Ayol",
     village: "G'us",
@@ -110,7 +110,7 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "priority",
     status: "dispatched",
-    assignedVehicle: "QishloqMed-01",
+    assignedVehicle: "Tomir-01",
     submittedAt: new Date(Date.now() - 41 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
   },
@@ -186,14 +186,14 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "urgent",
     status: "teleconsult_scheduled",
-    assignedDoctor: "Markaziy vrach",
+    assignedDoctor: "Dr. Tomir",
     submittedAt: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
   },
 ];
 
-const STORAGE_KEY = "qishloqmed_dispatcher_items_v1";
-const BROADCAST_CHANNEL_NAME = "qishloqmed_dispatcher_channel";
+const STORAGE_KEY = "tomir_dispatcher_items_v1";
+const BROADCAST_CHANNEL_NAME = "tomir_dispatcher_channel";
 
 let memoryItems: DispatchItem[] = [...INITIAL_DISPATCH_ITEMS];
 

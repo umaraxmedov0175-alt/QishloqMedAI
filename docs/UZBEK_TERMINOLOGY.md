@@ -1,6 +1,6 @@
-# QishloqMed AI — Uzbek Canonical Product & Medical Terminology Dictionary
+# Tomir AI — Uzbek Canonical Product & Medical Terminology Dictionary
 
-This document standardizes product, medical, and interface terminology across QishloqMed AI to ensure natural, professional Uzbek Latin usage without English leakage.
+This document standardizes product, medical, and interface terminology across Tomir AI to ensure natural, professional Uzbek Latin usage without English leakage.
 
 | English Concept | Canonical Uzbek Term | Context & Usage Notes |
 | :--- | :--- | :--- |

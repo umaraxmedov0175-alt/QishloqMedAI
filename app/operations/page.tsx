@@ -34,7 +34,7 @@ export default function OperationsPage() {
     return () => unsubscribe();
   }, []);
 
-  const handleAssignVehicle = (id: string, vehicle: string = "QishloqMed-01 Mobile Bus") => {
+  const handleAssignVehicle = (id: string, vehicle: string = "Tomir-01 Mobile Bus") => {
     const updated = updateDispatchStatus(id, "dispatched", {
       assignedVehicle: vehicle,
       notes: `Mobil klinika (${vehicle}) yuborildi.`,
@@ -45,7 +45,7 @@ export default function OperationsPage() {
     }
   };
 
-  const handleScheduleTeleconsult = (id: string, doctor: string = "Markaziy vrach") => {
+  const handleScheduleTeleconsult = (id: string, doctor: string = "Dr. Tomir") => {
     const updated = updateDispatchStatus(id, "teleconsult_scheduled", {
       assignedDoctor: doctor,
       notes: `Telemaslahat seansi ${doctor} bilan rejalashtirildi.`,
@@ -64,7 +64,7 @@ export default function OperationsPage() {
         <div className="flex items-center gap-4">
           <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>QishloqMed AI</span>
+            <span>Tomir AI</span>
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             Dispetcherlik va Tibbiy logistika boshqaruvi
@@ -257,7 +257,7 @@ export default function OperationsPage() {
             <div className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-sm">🚚 QishloqMed-01</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">🚚 Tomir-01</h3>
                   <p className="text-xs text-slate-500">{language === "uz" ? "Mobil klinika transport vositasi" : "Mobile clinic vehicle"}</p>
                 </div>
                 <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full uppercase">

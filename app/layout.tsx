@@ -15,20 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "QishloqMed AI — Masofaviy tibbiy yordam va diagnostika",
+  title: "Tomir AI — Masofaviy tibbiy yordam va diagnostika",
   description: "Masofaviy hududlar uchun shifokor nazoratidagi diagnostika va tibbiy koordinatsiya tizimi.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "QishloqMed AI — Masofaviy tibbiy yordam va diagnostika",
+    title: "Tomir AI — Masofaviy tibbiy yordam va diagnostika",
     description: "Masofaviy hududlar uchun shifokor nazoratidagi diagnostika va tibbiy koordinatsiya tizimi.",
     images: [{ url: "/og.png", width: 1536, height: 1024 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "QishloqMed AI — Masofaviy tibbiy yordam va diagnostika",
+    title: "Tomir AI — Masofaviy tibbiy yordam va diagnostika",
     description: "Masofaviy hududlar uchun shifokor nazoratidagi diagnostika va tibbiy koordinatsiya tizimi.",
     images: ["/og.png"],
   },

@@ -3,9 +3,9 @@ export type Language = "uz" | "en";
 export const translations = {
   uz: {
     // App header & branding
-    appTitle: "QishloqMed AI",
+    appTitle: "Tomir AI",
     tagline: "Masofaviy tibbiy yordam va mutaxassis nazorati",
-    metaTitle: "QishloqMed AI — Masofaviy tibbiy yordam va diagnostika",
+    metaTitle: "Tomir AI — Masofaviy tibbiy yordam va diagnostika",
     metaDescription: "Masofaviy hududlar uchun shifokor nazoratidagi diagnostika va tibbiy koordinatsiya tizimi.",
     roleMobileNurse: "Mobil klinika hamshirasi",
     roleSpecialist: "Markaziy vrach-mutaxassis",
@@ -50,7 +50,7 @@ export const translations = {
     pendingSyncPill: "Sinxronlash kutilmoqda",
     responses: "Klinik xulosalar",
     specialistView: "Markaziy vrach bo'limi",
-    mobileWorkspaceTitle: "Mobil klinika rejimi · QishloqMed-01",
+    mobileWorkspaceTitle: "Mobil klinika rejimi · Tomir-01",
     todayVisits: "Bugungi tashriflar",
 
     // Step names
@@ -225,7 +225,7 @@ export const translations = {
     errorTitle: "Xatolik yuz berdi",
     errorNotice: "Sizning mahalliy saqlangan klinik ma'lumotlaringiz o'chirilmadi.",
     notFoundTitle: "Sahifa topilmadi",
-    notFoundNotice: "So'ralgan QishloqMed ishchi sahifasi mavjud emas.",
+    notFoundNotice: "So'ralgan Tomir ishchi sahifasi mavjud emas.",
     offlineShellTitle: "Internet ulanishi mavjud emas",
     offlineShellNotice: "Ilgari saqlangan demo yozuvlar brauzer xotirasida xavfsiz saqlanmoqda.",
     offlineShellBadge: "OFLAYN-XAVFSIZ QOBIQ",
@@ -243,15 +243,15 @@ export const translations = {
     clickToAnnotate: "Tasvirga belgi qo'yish uchun rasmni bosing",
 
     // Printable Report
-    reportTitle: "QISHLOQMED AI - RASMIY TIBBIY KO'RIK XULOSASI",
+    reportTitle: "TOMIR AI - RASMIY TIBBIY KO'RIK XULOSASI",
     generatedOn: "Shakllantirilgan vaqt",
     clinicianSignature: "Ma'sul vrach imzosi",
   },
   en: {
     // App header & branding
-    appTitle: "QishloqMed AI",
+    appTitle: "Tomir AI",
     tagline: "Remote care coordination with clinician supervision",
-    metaTitle: "QishloqMed AI — Remote Medical Care & Diagnostics",
+    metaTitle: "Tomir AI — Remote Medical Care & Diagnostics",
     metaDescription: "Clinician-supervised diagnostic coordination for remote communities in Uzbekistan.",
     roleMobileNurse: "Mobile Nurse",
     roleSpecialist: "Central Specialist Clinician",
@@ -296,7 +296,7 @@ export const translations = {
     pendingSyncPill: "Pending Sync",
     responses: "Clinical Responses",
     specialistView: "Specialist Workspace",
-    mobileWorkspaceTitle: "Mobile Clinic Mode · QishloqMed-01",
+    mobileWorkspaceTitle: "Mobile Clinic Mode · Tomir-01",
     todayVisits: "Today's Visits",
 
     // Step names
@@ -471,7 +471,7 @@ export const translations = {
     errorTitle: "Something went wrong",
     errorNotice: "Your locally queued clinical data has not been deleted.",
     notFoundTitle: "Page not found",
-    notFoundNotice: "The requested QishloqMed workspace does not exist.",
+    notFoundNotice: "The requested Tomir workspace does not exist.",
     offlineShellTitle: "Connection unavailable",
     offlineShellNotice: "Previously saved demo records remain in browser-local storage.",
     offlineShellBadge: "OFFLINE-SAFE SHELL",
@@ -489,7 +489,7 @@ export const translations = {
     clickToAnnotate: "Click image to place diagnostic annotation pin",
 
     // Printable Report
-    reportTitle: "QISHLOQMED AI - OFFICIAL CLINICAL EVALUATION REPORT",
+    reportTitle: "TOMIR AI - OFFICIAL CLINICAL EVALUATION REPORT",
     generatedOn: "Generated On",
     clinicianSignature: "Attending Clinician Signature",
   },

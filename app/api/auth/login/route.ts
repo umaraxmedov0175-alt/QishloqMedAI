@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  if (body.email !== "nurse@qishloqmed.demo" || body.password !== "demo2026") {
+  if (body.email !== "tomir@tomir.demo" && body.email !== "tomir@qishloqmed.demo" || body.password !== "demo2026") {
     return Response.json(
       { error: "Invalid demo credentials" },
       { status: 401 },

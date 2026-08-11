@@ -62,7 +62,7 @@ export function createQueueItem<T>(
   };
 }
 
-const DB_NAME = "qishloqmed-field-v1",
+const DB_NAME = "tomir-field-v1",
   STORE = "sync_queue";
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

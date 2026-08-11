@@ -71,7 +71,7 @@ export function generateFhirR4Bundle(input: FhirCaseInput) {
           id: patientId,
           identifier: [
             {
-              system: "https://qishloqmed.uz/identifiers/patient-code",
+              system: "https://tomir.uz/identifiers/patient-code",
               value: input.caseCode,
             },
           ],

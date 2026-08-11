@@ -9,8 +9,8 @@ test("i18n dictionary has matching keys for Uzbek and English", () => {
   const uzKeys = Object.keys(translations.uz).sort();
   const enKeys = Object.keys(translations.en).sort();
   assert.deepEqual(uzKeys, enKeys);
-  assert.equal(translations.uz.appTitle, "QishloqMed AI");
-  assert.equal(translations.en.appTitle, "QishloqMed AI");
+  assert.equal(translations.uz.appTitle, "Tomir AI");
+  assert.equal(translations.en.appTitle, "Tomir AI");
 });
 
 test("report generator builds clean HTML containing patient details and vitals", () => {
@@ -35,7 +35,7 @@ test("report generator builds clean HTML containing patient details and vitals",
 test("FHIR R4 bundle generator produces compliant HL7 FHIR bundle", () => {
   const bundle = generateFhirR4Bundle({
     caseCode: "QM-2027-0042",
-    patientName: "Dilnoza Karimova",
+    patientName: "Tomir",
     age: 67,
     sex: "Ayol",
     village: "Urgut, G'us",
