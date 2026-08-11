@@ -302,6 +302,7 @@ export function MobileWorkspace() {
         <a href="#patients" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("patients")}</a>
         <button onClick={() => setShowQueue(true)} className="py-3 px-4 text-slate-500 hover:text-slate-900 cursor-pointer">{t("pendingSyncPill")}</button>
         <a href="#responses" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("responses")}</a>
+        <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition font-bold text-emerald-800">💬 Chat & Telekonsultatsiya</a>
         <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">{t("specialistView")}</DemoRoleLink>
       </nav>
 
