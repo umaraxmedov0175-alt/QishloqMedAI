@@ -2,6 +2,12 @@
 
 ## Fully Completed Features
 
+- **Nearest Regional Hospital Dynamic Routing Engine & Mobile Laboratory Integration**:
+  - **Dynamic Regional Routing Engine (`lib/regional-routing.ts`)**: Redirects all emergency referrals, notifications, and telemedicine dispatches away from Tashkent default routing to the **nearest regional/district hospital facility** using exact Haversine geospatial proximity calculation (`findNearestHospital`). Includes citable regional medical centers (*Urgut Tuman Kasalxonasi*, *Payariq Tibbiyot Birlashmasi*, *Samarqand Viloyat Shoshilinch Markazi*, *Zomin Tuman Kasalxonasi*, *Baxmal Kasalxonasi*, *Kegeyli District Hospital*, *Nukus Regional Center*).
+  - **On-Board Mobile Diagnostic Laboratory Fleet (`MOBILE_LAB_EQUIPMENT`)**: Vehicle fleet updated to `Tomir-01 Mobil Diagnostik Laboratoriya Klinikasi` equipped with Point-of-Care blood analyzers (Glucose, Lipid Profile, Hemoglobin, HbA1c), portable 12-lead digital ECG modules, ultrasound scanners, and blood pressure monitors.
+  - **Rapid Test Entry & AI Risk Pre-Analysis**: Field nurses process rapid blood tests on-site in the vehicle (`app/mobile/workspace.tsx`). Mobile lab test outputs feed directly into the AI Risk Assessment engine (`/api/ai/assess` & `lib/clinical-assessment.ts`) to compute risk tiers and highlight lab red flags (e.g. `🩸 Mobil Laboratoriya: Qonda giperglikemiya / Troponin I ijobiy ⚠️`) before transmitting to the nearest hospital.
+  - **GIS Dispatcher Map & Dashboard Updates (`app/ui/DispatcherMap.tsx` & `app/operations/page.tsx`)**: Plots regional hospital pins (`🏥`) alongside patient incident pins with nearest hospital proximity badges (e.g. `🏥 YAQIN SHIFOXONA: Urgut Tuman Kasalxonasi - 4.2 km`).
+
 - **Isolated Patient Portal Workspace (`/patient`) & Email Dispatch Relocation**:
   - **Restructured Workspace Architecture**: Extracted patient communication tools and email dispatching out of Dispatcher/Admin window into a dedicated, isolated Patient Portal Workspace (`/patient`).
   - **Strict Server & Client RBAC Guards**: Enforces `User.role === 'patient'` via `canAccessPatientPortal(role)` and API middleware (`app/api/patient/email/route.ts` & `app/api/patient/applications/route.ts`). Non-patient callers attempting to initiate email dispatches receive `403 Forbidden`.
@@ -99,12 +105,12 @@
 
 | Quality Check | Command Line | Result | Metrics |
 | :--- | :--- | :--- | :--- |
-| **Translation Completeness** | `npm run i18n:check` | **PASS** | 279 / 279 keys verified |
+| **Translation Completeness** | `npm run i18n:check` | **PASS** | 287 / 287 keys verified |
 | **TypeScript Typecheck** | `npm run typecheck` | **PASS** | 0 type errors |
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 27 / 27 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 32 / 32 test suites passed cleanly |
 
 ---
 
