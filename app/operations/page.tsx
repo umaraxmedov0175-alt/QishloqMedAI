@@ -98,6 +98,9 @@ export default function OperationsPage() {
           </select>
 
           <nav className="flex items-center gap-1 text-xs font-medium">
+            <a className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300" href="/patient">
+              📱 Bemor Portali
+            </a>
             <DemoRoleLink workspace="mobile_nurse" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
               {t("dashboard")}
             </DemoRoleLink>

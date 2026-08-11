@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export type DemoRole = "mobile_nurse" | "specialist" | "dispatcher";
+export type DemoRole = "mobile_nurse" | "specialist" | "dispatcher" | "patient";
 
 export const DEMO_ROLE_COOKIE = "qm_demo_role";
 
@@ -9,11 +9,15 @@ export const DEMO_ROLE_DESTINATIONS: Record<DemoRole, string> = {
   mobile_nurse: "/mobile",
   specialist: "/central",
   dispatcher: "/operations",
+  patient: "/patient",
 };
 
 export function isDemoRole(value: unknown): value is DemoRole {
   return (
-    value === "mobile_nurse" || value === "specialist" || value === "dispatcher"
+    value === "mobile_nurse" ||
+    value === "specialist" ||
+    value === "dispatcher" ||
+    value === "patient"
   );
 }
 
