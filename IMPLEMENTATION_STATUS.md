@@ -2,6 +2,16 @@
 
 ## Fully Completed Features
 
+- **Isolated Patient Portal Workspace (`/patient`) & Email Dispatch Relocation**:
+  - **Restructured Workspace Architecture**: Extracted patient communication tools and email dispatching out of Dispatcher/Admin window into a dedicated, isolated Patient Portal Workspace (`/patient`).
+  - **Strict Server & Client RBAC Guards**: Enforces `User.role === 'patient'` via `canAccessPatientPortal(role)` and API middleware (`app/api/patient/email/route.ts` & `app/api/patient/applications/route.ts`). Non-patient callers attempting to initiate email dispatches receive `403 Forbidden`.
+  - **5-Tab Patient Self-Service Suite (`app/patient/page.tsx`)**:
+    1. 📨 **Bemor Xavfsiz Elektron Pochta (Email & Direct Messaging Dispatcher)**: Patient-only email dispatcher to send secure emails directly to Doctors, Nurses, or Dispatchers with automatic RegEx phone redaction (`[REDACTED FOR PRIVACY]`).
+    2. 📝 **Qabul Formasi va Murojaatlar (Application & Intake Form Center)**: Digital intake forms for medical history updates, symptom reports (with adaptive protocol question intake), and emergency mobile clinic requests.
+    3. 📊 **Murojaatlar Monitoringi (Live Application & Request Tracker Pipeline)**: Visual 5-stage status pipeline (`[Draft]` → `[Submitted]` → `[Under Review]` → `[Dispatcher Assigned]` → `[Resolved]`) updating in real-time.
+    4. 🩺 **Vital Ko'rsatkichlar va Diagnostika Tarixi (Vitals & Diagnostic History Viewer)**: High-legibility view of historic vitals (SpO2, HR, BP, Temp), diagnostic assets (ECG sheet preview, X-ray), and doctor consultation notes.
+    5. 💬 **Shifokor bilan Muloqot Chati (Inner Chat Window)**: Direct access to the inner chat interface.
+
 - **Inner Messaging & Teleconsultation Chat System (LinkedIn-Style Architecture)**:
   - **LinkedIn-Style Split-Pane Interface (`app/chat/page.tsx`)**: Left panel thread list with real-time presence indicators (🟢 Online, 🟡 Away, ⚪ Offline), unread badges, last message previews, role tags (`[Doctor]`, `[Nurse]`, `[Patient]`), search input filter, and category tabs (*All Threads*, *Doctor ↔ Nurse*, *Doctor/Nurse ↔ Patient*).
   - **Context-Rich Workspace Header**: Top header displaying user details, role badge, district/specialty, online status, and quick action toolbar: `[Start Video Teleconsult]`, `[View Patient Medical Record]`, `[Attach Diagnostic File / ECG]`, and `[Search Conversation]`.
@@ -89,12 +99,12 @@
 
 | Quality Check | Command Line | Result | Metrics |
 | :--- | :--- | :--- | :--- |
-| **Translation Completeness** | `npm run i18n:check` | **PASS** | 251 / 251 keys verified |
+| **Translation Completeness** | `npm run i18n:check` | **PASS** | 279 / 279 keys verified |
 | **TypeScript Typecheck** | `npm run typecheck` | **PASS** | 0 type errors |
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 23 / 23 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 27 / 27 test suites passed cleanly |
 
 ---
 
