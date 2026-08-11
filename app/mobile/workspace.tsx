@@ -528,27 +528,45 @@ export function MobileWorkspace() {
               )}
 
               {step === 1 && (
-                <>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{t("step1Consent")}</h3>
-                  <label className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer">
-                    <input
-                      name="consent"
-                      type="checkbox"
-                      className="mt-1"
-                      required
-                      checked={draft.consent === "recorded"}
-                      onChange={(event) =>
-                        setDraft((current) => ({
-                          ...current,
-                          consent: event.target.checked
-                            ? "recorded"
-                            : "not_recorded",
-                        }))
-                      }
-                    />
-                    <span className="text-xs text-slate-700 leading-relaxed">{t("consentDesc")}</span>
-                  </label>
-                </>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">{t("step1Consent")}</h3>
+
+                  {/* 1. Rozilik Gate */}
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">1. ROZILIK BOʻLIMI</span>
+                    <p className="text-lg font-bold text-slate-900 leading-snug">
+                      {t("consentDesc")}
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                      <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition control-h-mobile ${draft.consent === "recorded" ? "bg-emerald-50 border-emerald-600 font-extrabold text-emerald-950" : "bg-white border-slate-300 text-slate-800"}`}>
+                        <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg border border-slate-300">
+                          <input
+                            name="consent"
+                            type="radio"
+                            className="w-6 h-6 accent-emerald-700 cursor-pointer"
+                            checked={draft.consent === "recorded"}
+                            onChange={() => setDraft((c) => ({ ...c, consent: "recorded" }))}
+                          />
+                        </div>
+                        <span className="text-sm font-bold">✓ Rozilik Olingan (Consent Confirmed)</span>
+                      </label>
+
+                      <label className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition control-h-mobile ${draft.consent === "refused" ? "bg-red-50 border-red-600 font-extrabold text-red-950" : "bg-white border-slate-300 text-slate-800"}`}>
+                        <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg border border-slate-300">
+                          <input
+                            name="consent"
+                            type="radio"
+                            className="w-6 h-6 accent-red-700 cursor-pointer"
+                            checked={draft.consent === "refused"}
+                            onChange={() => setDraft((c) => ({ ...c, consent: "refused" }))}
+                          />
+                        </div>
+                        <span className="text-sm font-bold">🛑 Rad Etildi (Consent Refused)</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {step === 2 && (
@@ -890,19 +908,64 @@ export function MobileWorkspace() {
                       />
                     </div>
                     <div className="field mt-0">
-                      <label htmlFor="bp" className="flex items-center justify-between">
-                        <span className="flex items-center gap-1.5">⏱ Sistolik qon bosimi</span>
+                      <label htmlFor="sbp" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">⏱ Sistolik qon bosimi (SBP)</span>
                         <span className="unit-badge">mmHg</span>
                       </label>
                       <input
-                        id="bp"
-                        name="bp"
-                        value={draft.bp}
-                        onChange={(event) =>
-                          setDraft((current) => ({ ...current, bp: event.target.value }))
+                        id="sbp"
+                        name="sbp"
+                        type="number"
+                        placeholder="Masalan: 120"
+                        value={draft.bp.split("/")[0] || ""}
+                        onChange={(event) => {
+                          const dbp = draft.bp.split("/")[1] || "80";
+                          setDraft((current) => ({ ...current, bp: `${event.target.value}/${dbp}` }));
+                        }}
+                        className={
+                          Number(draft.bp.split("/")[0]) > 0 &&
+                          (Number(draft.bp.split("/")[0]) < 70 || Number(draft.bp.split("/")[0]) > 220)
+                            ? "border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500 font-bold"
+                            : ""
                         }
                         required
                       />
+                      {Number(draft.bp.split("/")[0]) > 0 &&
+                        (Number(draft.bp.split("/")[0]) < 70 || Number(draft.bp.split("/")[0]) > 220) && (
+                          <small className="text-red-700 font-bold text-[10px] block mt-1">
+                            ⚠️ SBP me'yordan tashqarida (70-220 mmHg)
+                          </small>
+                        )}
+                    </div>
+                    <div className="field mt-0">
+                      <label htmlFor="dbp" className="flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">⏱ Diastolik qon bosimi (DBP)</span>
+                        <span className="unit-badge">mmHg</span>
+                      </label>
+                      <input
+                        id="dbp"
+                        name="dbp"
+                        type="number"
+                        placeholder="Masalan: 80"
+                        value={draft.bp.split("/")[1] || ""}
+                        onChange={(event) => {
+                          const sbp = draft.bp.split("/")[0] || "120";
+                          setDraft((current) => ({ ...current, bp: `${sbp}/${event.target.value}` }));
+                        }}
+                        className={
+                          Number(draft.bp.split("/")[1]) > 0 &&
+                          (Number(draft.bp.split("/")[1]) < 40 || Number(draft.bp.split("/")[1]) > 130)
+                            ? "border-red-500 bg-red-50 focus:ring-2 focus:ring-red-500 font-bold"
+                            : ""
+                        }
+                        required
+                      />
+                      {Number(draft.bp.split("/")[1]) > 0 &&
+                        (Number(draft.bp.split("/")[1]) < 40 || Number(draft.bp.split("/")[1]) > 130) && (
+                          <small className="text-red-700 font-bold text-[10px] block mt-1">
+                            ⚠️ DBP me'yordan tashqarida (40-130 mmHg)
+                          </small>
+                        )}
                     </div>
                     <div className="field mt-0">
                       <label htmlFor="temp" className="flex items-center justify-between">
@@ -933,54 +996,71 @@ export function MobileWorkspace() {
                   </div>
                   <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">{t("referenceNote")}</p>
                   {labs.map((lab, i) => (
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3" key={i}>
-                      <input
-                        aria-label={t("testName")}
-                        value={lab.name}
-                        placeholder={t("testName")}
-                        className="text-xs border border-slate-200 rounded-lg p-2.5"
-                        onChange={(e) =>
-                          setLabs(
-                            labs.map((x, n) =>
-                              n === i ? { ...x, name: e.target.value } : x,
-                            ),
-                          )
-                        }
-                      />
-                      <input
-                        aria-label={t("resultValue")}
-                        type="number"
-                        placeholder={t("resultValue")}
-                        value={lab.value}
-                        className="text-xs border border-slate-200 rounded-lg p-2.5"
-                        onChange={(e) =>
-                          setLabs(
-                            labs.map((x, n) =>
-                              n === i ? { ...x, value: e.target.value } : x,
-                            ),
-                          )
-                        }
-                      />
-                      <input
-                        aria-label={t("unit")}
-                        placeholder={t("unit")}
-                        value={lab.unit}
-                        className="text-xs border border-slate-200 rounded-lg p-2.5"
-                        onChange={(e) =>
-                          setLabs(
-                            labs.map((x, n) =>
-                              n === i ? { ...x, unit: e.target.value } : x,
-                            ),
-                          )
-                        }
-                      />
-                      <button
-                        type="button"
-                        className="px-3 py-2 bg-red-50 text-red-700 text-xs font-bold rounded-lg border border-red-200 hover:bg-red-100 transition cursor-pointer"
-                        onClick={() => setLabs(labs.filter((_, n) => n !== i))}
-                      >
-                        {t("removeBeforeSubmit")}
-                      </button>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3 bg-slate-50 p-3 rounded-lg border border-slate-200" key={i}>
+                      <div>
+                        <label htmlFor={`lab-name-${i}`} className="block text-[10px] font-bold text-slate-700 uppercase mb-1">
+                          {t("testName")} *
+                        </label>
+                        <input
+                          id={`lab-name-${i}`}
+                          value={lab.name}
+                          placeholder={t("testName")}
+                          className="w-full text-xs border border-slate-300 bg-white rounded-lg p-2"
+                          onChange={(e) =>
+                            setLabs(
+                              labs.map((x, n) =>
+                                n === i ? { ...x, name: e.target.value } : x,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor={`lab-val-${i}`} className="block text-[10px] font-bold text-slate-700 uppercase mb-1">
+                          {t("resultValue")} *
+                        </label>
+                        <input
+                          id={`lab-val-${i}`}
+                          type="number"
+                          placeholder={t("resultValue")}
+                          value={lab.value}
+                          className="w-full text-xs border border-slate-300 bg-white rounded-lg p-2"
+                          onChange={(e) =>
+                            setLabs(
+                              labs.map((x, n) =>
+                                n === i ? { ...x, value: e.target.value } : x,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor={`lab-unit-${i}`} className="block text-[10px] font-bold text-slate-700 uppercase mb-1">
+                          {t("unit")} *
+                        </label>
+                        <input
+                          id={`lab-unit-${i}`}
+                          placeholder={t("unit")}
+                          value={lab.unit}
+                          className="w-full text-xs border border-slate-300 bg-white rounded-lg p-2"
+                          onChange={(e) =>
+                            setLabs(
+                              labs.map((x, n) =>
+                                n === i ? { ...x, unit: e.target.value } : x,
+                              ),
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <button
+                          type="button"
+                          className="w-full py-2 bg-red-50 text-red-700 text-xs font-bold rounded-lg border border-red-200 hover:bg-red-100 transition cursor-pointer"
+                          onClick={() => setLabs(labs.filter((_, n) => n !== i))}
+                        >
+                          {t("removeBeforeSubmit")}
+                        </button>
+                      </div>
                     </div>
                   ))}
                   <button
@@ -999,17 +1079,21 @@ export function MobileWorkspace() {
                 <>
                   <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">6. Diagnostik tasvir</h3>
                   <div className="p-6 border-2 border-dashed border-slate-300 rounded-xl text-center bg-slate-50/50">
-                    <label htmlFor="xray" className="block text-xs font-bold text-slate-800 mb-2 cursor-pointer">{t("uploadImage")}</label>
+                    <label htmlFor="xray" className="flex flex-col items-center justify-center h-24 p-4 bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-500 rounded-xl cursor-pointer transition shadow-xs">
+                      <span className="text-2xl mb-1">📷</span>
+                      <span className="text-xs font-extrabold text-emerald-950">Rentgen / Hujjat suratini olish</span>
+                      <span className="text-[10px] text-emerald-700 font-medium">JPEG / PNG kameralar uchun 96px bosish maydoni</span>
+                    </label>
                     <input
                       id="xray"
                       type="file"
                       accept="image/jpeg,image/png"
-                      className="text-xs text-slate-500"
+                      className="hidden"
                       onChange={(e) => chooseFile(e.currentTarget)}
                     />
                     {file && (
-                      <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900">
-                        <b>{file.name}</b> · <span>{file.size}</span>
+                      <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900 font-bold">
+                        ✓ {file.name} · {file.size}
                       </div>
                     )}
                   </div>
@@ -1018,11 +1102,66 @@ export function MobileWorkspace() {
 
               {step === 6 && (
                 <>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">7. Yakuniy ko'rik va saqlash</h3>
+                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3">7. Yakuniy koʻrik va saqlash</h3>
+
+                  {/* Accordion Read-Back Summary of Steps 1-6 */}
+                  <div className="space-y-2 mb-4">
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                      <b className="text-slate-900 block font-bold mb-1">👤 1. Rozilik & Bemor Shaxsi:</b>
+                      <div className="text-slate-700">
+                        Ism: <b>{draft.fullName || "Kiritilmagan"}</b> · Yoshi: <b>{draft.age}</b> · Jinsi: <b>{draft.sex}</b> · Rozilik: <b className={draft.consent === "recorded" ? "text-emerald-700" : "text-red-700"}>{draft.consent === "recorded" ? "✓ Olingan" : "⚠️ Olinmagan"}</b>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                      <b className="text-slate-900 block font-bold mb-1">🩺 2-3. Shikoyat & Protokol:</b>
+                      <div className="text-slate-700">
+                        Asosiy shikoyat: <b>{draft.complaint || "Kiritilmagan"}</b>
+                      </div>
+                    </div>
+                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+                      <b className="text-slate-900 block font-bold mb-1">⏱ 4. Vital koʻrsatkichlar:</b>
+                      <div className="text-slate-700">
+                        SpO₂: <b>{draft.spo2}%</b> · Puls: <b>{draft.pulse} bpm</b> · Qon bosimi: <b>{draft.bp} mmHg</b> · Harorat: <b>{draft.temp} °C</b>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Out of Range Critical Values Panel with Required Confirmation */}
+                  {(Number(draft.spo2) < 90 || Number(draft.bp.split("/")[0]) > 160 || Number(draft.temp) > 38.5) && (
+                    <div className="mb-4 p-3.5 bg-red-50 border-2 border-red-300 rounded-xl text-xs text-red-950 font-bold space-y-2">
+                      <div className="text-sm font-black text-red-900 uppercase tracking-wide">
+                        🚨 KRITIK QIYMATLAR ANIQLANDI!
+                      </div>
+                      {Number(draft.spo2) < 90 && <div>• SpO₂ kardiogipoksiya darajasida: {draft.spo2}% (&lt;90%)</div>}
+                      {Number(draft.bp.split("/")[0]) > 160 && <div>• Arterial gipertenziya: SBP {draft.bp.split("/")[0]} mmHg (&gt;160)</div>}
+                      {Number(draft.temp) > 38.5 && <div>• Yuqori isitma harorati: {draft.temp} °C (&gt;38.5)</div>}
+
+                      <label className="flex items-center gap-2 pt-2 border-t border-red-200 cursor-pointer text-xs font-extrabold text-red-900">
+                        <input
+                          type="checkbox"
+                          required
+                          className="w-5 h-5 accent-red-700"
+                        />
+                        <span>Tasdiqlayman: qiymat toʻgʻri oʻlchandi</span>
+                      </label>
+                    </div>
+                  )}
+
                   <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 space-y-3">
                     <b>{t("readyForOfflineSubmit")}</b>
                     <p className="m-0 text-emerald-800 leading-relaxed">{t("idempotencyNotice")}</p>
-                    <button type="submit" className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-md transition cursor-pointer" disabled={saving}>
+
+                    {draft.consent !== "recorded" && (
+                      <div className="p-2.5 bg-red-100 border border-red-300 rounded text-red-900 font-bold text-xs">
+                        ⚠️ Bemor roziligi olmaguncha saqlash taqiqlanadi!
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg shadow-md transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      disabled={saving || draft.consent !== "recorded" || !draft.fullName || !draft.complaint}
+                    >
                       {saving ? t("savingSafely") : t("saveToDurableQueue")}
                     </button>
                   </div>
@@ -1084,6 +1223,39 @@ export function MobileWorkspace() {
                   </span>
                 </article>
               ))}
+            </div>
+          </aside>
+
+          {/* Clinician Responses Inbox Section */}
+          <aside className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs" id="responses">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+              <div>
+                <h2 className="text-lg font-serif font-bold text-slate-900">📑 Klinik Xulosalar va Vrach Javoblari Inbox</h2>
+                <p className="text-xs text-slate-500">Markaziy vrach-mutaxassislar tomonidan tasdiqlangan tashxislar va davolash rejalari</p>
+              </div>
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-900 font-bold text-xs rounded-full">
+                3 ta yangi xulosa
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs space-y-1">
+                <div className="flex items-center justify-between font-bold text-emerald-950">
+                  <span>QM-2027-0042 (Tomir)</span>
+                  <span className="px-2 py-0.5 bg-emerald-700 text-white rounded text-[10px]">✓ TASDIQLANDI</span>
+                </div>
+                <p className="text-slate-800 m-0"><b>Vrach xulosasi:</b> Zudlik bilan kislorod bering va Urgut Tuman Kasalxonasiga o'tkazing.</p>
+                <div className="text-[10px] text-slate-500 font-mono pt-1">Shifokor: Dr. Tomir (Kardiolog) · 10:42 AM</div>
+              </div>
+
+              <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-xl text-xs space-y-1">
+                <div className="flex items-center justify-between font-bold text-amber-950">
+                  <span>QM-2027-0039 (Anvar Rahimov)</span>
+                  <span className="px-2 py-0.5 bg-amber-600 text-white rounded text-[10px]">❓ MA'LUMOT SO'RALDI</span>
+                </div>
+                <p className="text-slate-800 m-0"><b>Vrach xulosasi:</b> Qayta tana haroratini o'lchang va o'pka auskultatsiya natijasini yuboring.</p>
+                <div className="text-[10px] text-slate-500 font-mono pt-1">Shifokor: Dr. Rahmonov · 09:15 AM</div>
+              </div>
             </div>
           </aside>
         </section>

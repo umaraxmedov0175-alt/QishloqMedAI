@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
+  --control-h-mobile: 56px;
+  --control-h-desktop: 48px;
+  --touch-target-min: 48px;
+  --med-primary: #0B5FFF;
+  --med-ai-purple: #8B5CF6;
   --ink: #0f172a;
-  --muted: #475569;
+  --muted: #334155;
   --line: #cbd5e1;
   --green: #087f68;
   --green-dark: #064e3b;
@@ -19,11 +24,70 @@ body {
   margin: 0;
   background: var(--cream);
   color: var(--ink);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: Inter, "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
-button, input, textarea, select { font: inherit; min-height: 44px; }
+/* WCAG 2.2 Focus Ring */
+:focus-visible {
+  outline: 3px solid var(--med-primary) !important;
+  outline-offset: 2px !important;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  min-height: var(--touch-target-min);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Touch Targets Height Classes */
+.control-h-mobile {
+  min-height: var(--control-h-mobile);
+}
+.control-h-desktop {
+  min-height: var(--control-h-desktop);
+}
+
+/* High-Contrast Sunlight Mode ("Quyosh rejimi") */
+html.sunlight-mode,
+html.sunlight-mode body {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+html.sunlight-mode * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.sunlight-mode input,
+html.sunlight-mode select,
+html.sunlight-mode textarea,
+html.sunlight-mode button {
+  border: 2px solid #000000 !important;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+html.sunlight-mode .bg-white,
+html.sunlight-mode .bg-slate-50,
+html.sunlight-mode .bg-purple-50\/60,
+html.sunlight-mode .bg-emerald-50,
+html.sunlight-mode .bg-amber-50,
+html.sunlight-mode .bg-red-50 {
+  background-color: #FFFFFF !important;
+  border-color: #000000 !important;
+}
+
+html.sunlight-mode .triage-badge,
+html.sunlight-mode .provenance-badge {
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  border: 2px solid #000000 !important;
+  font-weight: 900 !important;
+}
 button { cursor: pointer; }
 
 .unit-badge {

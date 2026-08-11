@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
+import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
 import { DispatcherMap } from "@/app/ui/DispatcherMap";
 import { listClinicalActions, type ClinicalAction } from "@/lib/clinical-store";
 import {
@@ -88,12 +88,14 @@ export default function OperationsPage() {
             <span>Toliq GIS Xarita Rejimi</span>
           </a>
 
+          <SunlightToggle />
+
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
             className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
           >
-            <option value="uz">{"O'zbekcha"}</option>
+            <option value="uz">{"Oʻzbekcha"}</option>
             <option value="en">English</option>
           </select>
 

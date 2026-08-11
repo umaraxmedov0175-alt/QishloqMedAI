@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
+import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
 import {
   getClinicalAction,
   saveClinicalAction,
@@ -123,12 +123,13 @@ export default function CentralReviewPage() {
         </div>
 
         <div className="flex items-center gap-6">
+          <SunlightToggle />
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
             className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
           >
-            <option value="uz">{"O'zbekcha"}</option>
+            <option value="uz">{"Oʻzbekcha"}</option>
             <option value="en">English</option>
           </select>
 
@@ -241,14 +242,18 @@ export default function CentralReviewPage() {
             </div>
           </aside>
 
-          {/* Middle Column: Detailed Nurse & Diagnostic Evidence */}
-          <article className="lg:col-span-5 space-y-4">
-            <div className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs">
-              <span className="inline-block px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-[10px] tracking-wider rounded uppercase mb-3">
-                📋 HAMSHIRA KIRITGAN MA'LUMOTLAR
-              </span>
-              <h2 className="text-xl font-bold font-serif text-slate-900 mb-1">{active.code}</h2>
-              <p className="text-xs text-slate-500 mb-4">
+          {/* Middle Column: Zone A — Evidence (Read Only) */}
+          <article id="zone-a-evidence" className="lg:col-span-4 space-y-4">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-800 font-bold text-[10px] tracking-wider rounded uppercase">
+                  📋 ZONE A: KLINIK DALILLAR (OʻQISH REJIMI)
+                </span>
+                <span className="text-xs text-slate-500 font-semibold font-mono">QM-RECORD-RAW</span>
+              </div>
+
+              <h2 className="text-xl font-bold font-serif text-slate-900 mb-1">{active.code} — {active.name}</h2>
+              <p className="text-xs text-slate-500 mb-4 font-medium">
                 {active.age} {t("years")} · {active.sex} · {active.village}, {active.region}
               </p>
 
@@ -295,7 +300,7 @@ export default function CentralReviewPage() {
                         if (isAnswered) {
                           const val = entry.value;
                           if (typeof val === "boolean") {
-                            formattedAnswer = val ? (language === "uz" ? "Ha" : "Yes") : (language === "uz" ? "Yo'q" : "No");
+                            formattedAnswer = val ? (language === "uz" ? "Ha" : "Yes") : (language === "uz" ? "Yoʻq" : "No");
                           } else if (Array.isArray(val)) {
                             formattedAnswer = val
                               .map((v) => q.options?.find((o) => o.value === v)?.[language] || v)
@@ -329,7 +334,7 @@ export default function CentralReviewPage() {
                                   {formattedAnswer}
                                 </span>
                               ) : (
-                                <span className="text-slate-400 italic text-[10px]">[Javob yo'q]</span>
+                                <span className="text-slate-400 italic text-[10px]">[Javob yoʻq]</span>
                               )}
                             </div>
                             {isRedFlag && (
@@ -356,7 +361,7 @@ export default function CentralReviewPage() {
                 );
               })()}
 
-              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">{t("step4Vitals")}</h3>
+              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">{t("step4Vitals")}</h3>
               <div className="grid grid-cols-2 gap-2.5 mb-4">
                 <div className="border border-slate-200 rounded-lg p-3 bg-white">
                   <span className="text-xs text-slate-500 block mb-1">🫁 SpO₂</span>
@@ -379,12 +384,12 @@ export default function CentralReviewPage() {
               <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">{t("nurseNotes")}</h3>
               <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded-md border border-slate-200/50">
                 {language === "uz"
-                  ? `${active.clinic} klinikasidan sinxronlangan simptomlar va ko'rsatkichlar.`
+                  ? `${active.clinic} klinikasidan sinxronlangan simptomlar va koʻrsatkichlar.`
                   : `Symptoms and measurements synchronized from ${active.clinic}. Units preserved as entered.`}
               </p>
             </div>
 
-            <div className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
               <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-bold text-[10px] tracking-wider rounded uppercase mb-3">
                 🖼 DIAGNOSTIK DALILLAR
               </span>
@@ -398,7 +403,7 @@ export default function CentralReviewPage() {
                     className="mt-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold shadow-md transition cursor-pointer"
                     onClick={() => setViewerOpen(true)}
                   >
-                    HD Tasvirni ko'rish va analiz qilish
+                    HD Tasvirni koʻrish va analiz qilish
                   </button>
                 </div>
               ) : (
@@ -409,93 +414,108 @@ export default function CentralReviewPage() {
             </div>
           </article>
 
-          {/* Right Column: AI Tahlili & Decision Panel */}
-          <article className="lg:col-span-4 bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="inline-block px-2.5 py-1 bg-amber-100 text-amber-900 font-bold text-[10px] tracking-wider rounded uppercase">
-                🪄 AI TAHLILI
-              </span>
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${active.triage === "emergency" ? "bg-red-100 text-red-900 border border-red-200" : "bg-amber-100 text-amber-900 border border-amber-200"}`}>
-                {active.triage === "emergency" ? "92/100 · Favqulodda Xavf" : "75/100 · Yuqori Xavf"}
-              </span>
-            </div>
-
-            <div className="ai-warning-box">
-              <b className="block font-bold text-amber-950 text-xs mb-1 uppercase tracking-wide">
-                AI BOSHLANG'ICH TAHLILI — SHIFOKOR TASDIQ'I TALAB ETILADI
-              </b>
-              {active.aiSummary}
-            </div>
-
-            <div>
-              <h4 className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">{t("redFlags")}</h4>
-              <p className="text-xs text-slate-800 bg-red-50 p-2.5 rounded border border-red-100 font-medium">
-                {active.reason}
-              </p>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("limitations")}</h4>
-              <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded border border-slate-200/60 leading-relaxed">
-                {language === "uz"
-                  ? "Chala anamnez va tasdiqlanmagan qurilma integratsiyasi. Faqat dastlabki qaror yordami."
-                  : "Incomplete history and no validated device integration. Preliminary support only."}
-              </p>
-            </div>
-
-            <div className="pt-2 border-t border-slate-100">
-              <label htmlFor="finalSummary" className="block text-xs font-bold text-slate-900 mb-1.5">
-                {t("clinicianFinalLabel")} *
-              </label>
-              <textarea
-                id="finalSummary"
-                rows={4}
-                value={finalSummary}
-                onChange={(e) => setFinalSummary(e.target.value)}
-                placeholder={t("clinicianNotesPlaceholder")}
-                className="w-full text-xs p-3 border border-slate-200 rounded-lg outline-none focus:border-emerald-600 resize-y"
-              />
-
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                <button
-                  disabled={!finalSummary}
-                  onClick={() => void recordDecision("approved with edits")}
-                  className="p-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold rounded-lg border border-amber-200/80 transition cursor-pointer disabled:opacity-50"
-                >
-                  {t("approvedWithEdits")}
-                </button>
-                <button
-                  disabled={!finalSummary}
-                  onClick={() => void recordDecision("AI rejected")}
-                  className="p-2.5 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-lg border border-slate-200 transition cursor-pointer disabled:opacity-50"
-                >
-                  {t("rejectAi")}
-                </button>
-                <button
-                  onClick={() => void recordDecision("additional information requested")}
-                  className="p-2.5 bg-sky-50 hover:bg-sky-100 text-sky-900 text-xs font-bold rounded-lg border border-sky-200 transition cursor-pointer"
-                >
-                  {t("requestInfo")}
-                </button>
-                <button
-                  disabled={!finalSummary}
-                  onClick={() => void recordDecision("referral created")}
-                  className="p-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-xs font-bold rounded-lg border border-emerald-200 transition cursor-pointer disabled:opacity-50"
-                >
-                  {t("createReferral")}
-                </button>
+          {/* Right Column: Zone B (AI Decision Support) & Zone C (Doctor Decision) */}
+          <article className="lg:col-span-4 space-y-5">
+            {/* ZONE B: AI Decision Support */}
+            <div id="zone-b-ai" className="bg-purple-50/60 border-l-4 border-l-purple-600 border-dashed border-purple-200 rounded-r-xl p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span className="font-bold text-xs text-purple-950 uppercase tracking-wider">ZONE B: AI DECISION SUPPORT</span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-purple-300 bg-purple-100 text-purple-900 border-dashed">
+                  ◷ AI TAKLIFI
+                </span>
               </div>
 
-              {decision && (
-                <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs rounded-lg">
-                  {t("durablyRecorded")} {decision}. {t("originalPreserved")}
-                  {savedAt && (
-                    <small className="block mt-1 text-slate-500 font-mono text-[10px]">
-                      {t("savedOn")} {new Date(savedAt).toLocaleString(language === "uz" ? "uz-UZ" : "en-GB")}
-                    </small>
-                  )}
+              {/* Attribution Strip */}
+              <div className="p-2.5 bg-purple-100/70 border border-purple-200 rounded-lg text-[11px] text-purple-950 font-medium">
+                Yaratildi: <b>Tomir Triage v2.4</b> · Ishonch: <b>92/100</b> · <i>AI yordamchi vosita (Tashxis emas)</i>
+              </div>
+
+              <div className="bg-white/80 p-3 rounded-lg border border-purple-100 text-xs text-slate-800 leading-relaxed font-medium">
+                <b className="block font-bold text-purple-900 text-xs mb-1">
+                  AI BOSHLANGʻICH TAHLILI:
+                </b>
+                {active.aiSummary}
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">{t("redFlags")}</h4>
+                <p className="text-xs text-slate-800 bg-red-50 p-2.5 rounded border border-red-100 font-medium">
+                  {active.reason}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("limitations")}</h4>
+                <p className="text-xs text-slate-600 bg-white/70 p-2.5 rounded border border-purple-100 text-[11px] leading-relaxed">
+                  {language === "uz"
+                    ? "Chala anamnez va tasdiqlanmagan qurilma integratsiyasi. Faqat dastlabki qaror yordami."
+                    : "Incomplete history and no validated device integration. Preliminary support only."}
+                </p>
+              </div>
+            </div>
+
+            {/* ZONE C: Doctor Decision Container (Starts Completely Empty) */}
+            <div id="zone-c-doctor" className="bg-white border-3 border-[#0B5FFF] shadow-md rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-blue-100 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#0B5FFF] animate-pulse"></span>
+                  <span className="font-extrabold text-xs text-blue-950 uppercase tracking-wider">ZONE C: VRACH QARORI</span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-600 text-white shadow-xs">
+                  ✓ VRACH
+                </span>
+              </div>
+
+              <div>
+                <label htmlFor="finalSummary" className="block text-xs font-bold text-slate-900 mb-1.5">
+                  {t("clinicianFinalLabel")} *
+                </label>
+                <textarea
+                  id="finalSummary"
+                  rows={4}
+                  className="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-3 focus:bg-white focus:border-[#0B5FFF] focus:ring-2 focus:ring-blue-500/20 outline-none"
+                  value={finalSummary}
+                  onChange={(e) => setFinalSummary(e.target.value)}
+                  placeholder="Yakuniy klinik xulosangizni va davolash rejasini kiriting..."
+                />
+              </div>
+
+              {savedAt && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-950 font-bold">
+                  ✓ {t("durablyRecorded")} {decision} ({new Date(savedAt).toLocaleTimeString()})
                 </div>
               )}
+
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  className="w-full py-2.5 px-4 bg-[#0B5FFF] hover:bg-blue-700 text-white font-extrabold text-xs rounded-lg shadow-sm transition cursor-pointer"
+                  onClick={() => void recordDecision("APPROVED_WITH_EDITS")}
+                >
+                  ✓ {t("confirmReview")}
+                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    className="py-2 px-3 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition cursor-pointer"
+                    onClick={() => void recordDecision("REQUEST_MORE_INFO")}
+                  >
+                    ❓ {t("requestInfo")}
+                  </button>
+                  <button
+                    type="button"
+                    className="py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition cursor-pointer"
+                    onClick={() => void recordDecision("CREATE_REFERRAL")}
+                  >
+                    🏥 {t("createReferral")}
+                  </button>
+                </div>
+              </div>
             </div>
           </article>
         </section>
