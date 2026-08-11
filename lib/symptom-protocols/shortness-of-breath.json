@@ -1,0 +1,81 @@
+{
+  "id": "shortness-of-breath",
+  "label": {
+    "uz": "Nafas qisishi",
+    "en": "Shortness of breath"
+  },
+  "source": "WHO IMCI (Integrated Management of Childhood Illness) + Adult Respiratory Distress Criteria",
+  "questions": [
+    {
+      "id": "speech_capacity",
+      "text": {
+        "uz": "Bemor gapirish qobiliyatiga egami?",
+        "en": "Can the patient speak full sentences?"
+      },
+      "type": "single",
+      "options": [
+        { "value": "full_sentences", "uz": "Toʻliq jumlalar bilan gapira oladi", "en": "Speaks full sentences" },
+        { "value": "short_phrases", "uz": "Faqat qisqa iboralar bilan", "en": "Short phrases only" },
+        { "value": "single_words", "uz": "Faqat bitta-bitta soʻz / Gapira olmaydi", "en": "Single words only / Unable" }
+      ],
+      "redFlag": {
+        "whenValueIn": ["single_words", "short_phrases"],
+        "level": "emergency"
+      },
+      "source": "WHO IMCI — Respiratory Distress Severity"
+    },
+    {
+      "id": "airway_sounds",
+      "text": {
+        "uz": "Nafas olayotganda qoʻshimcha tovushlar eshitiladimi?",
+        "en": "Audible abnormal breathing sounds present?"
+      },
+      "type": "multi",
+      "options": [
+        { "value": "stridor", "uz": "Stridor (ingichka hushtaksimon nafas olganda)", "en": "Inspiratory stridor" },
+        { "value": "wheezing", "uz": "Xirillash (nafas chiqarganda)", "en": "Expiratory wheezing" },
+        { "value": "grunting", "uz": "Gʻultillash / Inrash", "en": "Grunting" },
+        { "value": "none", "uz": "Yoʻq", "en": "None" }
+      ],
+      "redFlag": {
+        "whenValueIn": ["stridor", "grunting"],
+        "level": "emergency"
+      },
+      "source": "WHO IMCI — Danger Signs"
+    },
+    {
+      "id": "work_of_breathing",
+      "text": {
+        "uz": "Qovurgʻalararo tortilish yoki yordamchi mushaklar qatnashuvi bormi?",
+        "en": "Chest indrawing or accessory muscle use visible?"
+      },
+      "type": "boolean",
+      "redFlag": {
+        "whenTrue": true,
+        "level": "emergency"
+      },
+      "source": "WHO IMCI — Severe Respiratory Distress"
+    },
+    {
+      "id": "onset_duration",
+      "text": {
+        "uz": "Nafas qisishi qancha vaqtdan beri davom etmoqda?",
+        "en": "Duration of acute shortness of breath?"
+      },
+      "type": "duration",
+      "unit": "soat / hours",
+      "source": "SAMPLE History — Onset"
+    }
+  ],
+  "suggestedActions": [
+    {
+      "when": {
+        "anyRedFlagAtLeast": "urgent"
+      },
+      "text": {
+        "uz": "SpO₂ va nafas chastotasini oʻlchang, kislorod manbasini tayyorlang",
+        "en": "Measure SpO₂ and respiratory rate, prepare oxygen supply"
+      }
+    }
+  ]
+}

@@ -21,6 +21,21 @@ export type MinimalClinicalContext = {
   vitals: Record<string, string>;
   labs?: Array<{ name: string; value: string; unit: string }>;
   outputLanguage?: "uz" | "en";
+  protocolAnswers?: {
+    protocolId: string;
+    answers: Record<
+      string,
+      | { status: "answered"; value: boolean | string | string[] | number }
+      | { status: "skipped" }
+      | { status: "unanswered" }
+    >;
+    completeness?: { answered: number; skipped: number; total: number };
+    redFlagsTriggered?: Array<{
+      questionId: string;
+      level: string;
+      source: string;
+    }>;
+  };
 };
 
 export interface ClinicalAnalysisProvider {
@@ -39,6 +54,7 @@ export function minimizeForAi(
     vitals: input.vitals,
     labs: input.labs,
     outputLanguage: input.outputLanguage || "uz",
+    protocolAnswers: input.protocolAnswers,
   };
 }
 

@@ -2,6 +2,17 @@
 
 ## Fully Completed Features
 
+- **Adaptive Symptom Question Flow (Offline Clinical Protocol Engine)**:
+  - **Deterministic, Offline, JSON-Driven Rule Engine**: Zero LLM calls, zero network dependency at question selection time. 100% reproducible and clinician-auditable decision tree engine (`lib/symptom-protocols/engine.ts`).
+  - **Citable Clinical Protocols**: Includes three citable protocols in `lib/symptom-protocols/`: `chest-pain.json` (OPQRST + ESC/AHA Cardiac Red Flag Criteria), `shortness-of-breath.json` (WHO IMCI + Adult Respiratory Distress Criteria), and `headache.json` (SNOOP4 Neurological Red Flag Criteria + SAMPLE history).
+  - **Build-Time Bundling & Zod Validation**: Protocol JSON files are bundled at build time and strictly validated at load time against Zod schemas (`lib/symptom-protocols/schema.ts`).
+  - **Nurse Intake UI Integration (`app/mobile/workspace.tsx`)**: Renders protocol follow-up questions inline within Step 3 (Complaints & Symptoms) without adding an 8th step. Supports boolean, single-select, multi-select, number with unit, duration, and text question types.
+  - **Explicit Skips & Completeness Indicator**: Every question includes a skip action toggle. Skipped state is recorded as `{ status: "skipped" }` and is never treated as a negative answer or red flag. Displays real-time completeness percentage (e.g. `6/8 (75%) · 1 o'tkazildi`).
+  - **Red Flags & Suggested Actions**: Answers triggering red flags immediately highlight with triage alert visual styling (`.triage-label` / red flag badges). Suggested clinical actions appear in a protocol hint banner attributed to protocol sources.
+  - **Specialist Telemedicine View (`app/central/page.tsx`)**: Displays full protocol response detail, completeness score, explicit `🛑 SKIPPED` badges for skipped questions, red flag citations, and protocol suggestions for the Tashkent specialist doctor.
+  - **Downstream Sync & AI Preservation**: Protocol answers pass through `MinimalClinicalContext` and `minimizeForAi()` untouched, persisting in the IndexedDB offline queue without PII leakage.
+  - **Extensible Architecture**: Adding a 4th protocol requires ONLY creating a new JSON file and adding an index entry to `lib/symptom-protocols/index.ts`, with zero code changes.
+
 - **100% Uzbek Localization & Zero-Fake-Done Quality**:
   - Primary language is natural, professional Uzbek Latin (`uz`).
   - ZERO hardcoded English strings visible in Uzbek UI mode across all routes (`/`, `/mobile`, `/central`, `/operations`, `/offline`, `404`, error boundaries).
@@ -74,7 +85,7 @@
 | **ESLint Check** | `npm run lint` | **PASS** | 0 errors, 0 warnings |
 | **Vinext Build** | `npm run build` | **PASS** | 5/5 RSC client & server bundles built |
 | **Next.js Vercel Build** | `npm run build:vercel` | **PASS** | 100% static & server routes compiled |
-| **Unit & Integration Tests** | `npm test` | **PASS** | 14 / 14 test suites passed cleanly |
+| **Unit & Integration Tests** | `npm test` | **PASS** | 16 / 16 test suites passed cleanly |
 
 ---
 

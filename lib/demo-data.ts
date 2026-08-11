@@ -15,6 +15,15 @@ export type DemoCase = {
   aiSummary: string;
   clinicianFinal?: string;
   syncStatus: "synced" | "pending_sync";
+  protocolAnswers?: {
+    protocolId: string;
+    answers: Record<
+      string,
+      | { status: "answered"; value: boolean | string | string[] | number }
+      | { status: "skipped" }
+      | { status: "unanswered" }
+    >;
+  };
 };
 
 export const DEMO_CASES: DemoCase[] = [
@@ -34,6 +43,16 @@ export const DEMO_CASES: DemoCase[] = [
     submitted: "8 min oldin",
     aiSummary: "Namoyish uchun sintetik tahlil. Klinik shoshilinch xulosa. Bir nechta kardiopulmonar xavfli belgilar zudlik bilan vrach tasdig'ini talab etadi.",
     syncStatus: "synced",
+    protocolAnswers: {
+      protocolId: "chest-pain",
+      answers: {
+        radiation: { status: "answered", value: ["left_arm", "jaw"] },
+        diaphoresis: { status: "answered", value: true },
+        pleuritic: { status: "answered", value: false },
+        onset_speed: { status: "skipped" },
+        severity_score: { status: "answered", value: 9 },
+      },
+    },
   },
   {
     code: "QM-2027-0039",

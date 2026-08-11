@@ -1,0 +1,94 @@
+{
+  "id": "chest-pain",
+  "label": {
+    "uz": "Koʻkrak qafasidagi ogʻriq",
+    "en": "Chest pain"
+  },
+  "source": "OPQRST Pain Assessment Standard + ESC/AHA Cardiac Red Flag Criteria",
+  "questions": [
+    {
+      "id": "radiation",
+      "text": {
+        "uz": "Ogʻriq qayerga tarqaladi?",
+        "en": "Where does the pain radiate?"
+      },
+      "type": "multi",
+      "options": [
+        { "value": "left_arm", "uz": "Chap qoʻlga", "en": "Left arm" },
+        { "value": "jaw", "uz": "Jagʻga", "en": "Jaw" },
+        { "value": "back", "uz": "Orqaga", "en": "Back" },
+        { "value": "none", "uz": "Tarqalmaydi", "en": "No radiation" }
+      ],
+      "redFlag": {
+        "whenValueIn": ["left_arm", "jaw"],
+        "level": "emergency"
+      },
+      "source": "OPQRST — Radiation"
+    },
+    {
+      "id": "diaphoresis",
+      "text": {
+        "uz": "Sovuq ter yoki koʻngil aynishi bormi?",
+        "en": "Cold sweat or nausea present?"
+      },
+      "type": "boolean",
+      "redFlag": {
+        "whenTrue": true,
+        "level": "urgent"
+      },
+      "source": "Cardiac Red Flag Criteria"
+    },
+    {
+      "id": "pleuritic",
+      "text": {
+        "uz": "Chuqur nafas olganda yoki yoʻtalganda ogʻriq kuchayadimi?",
+        "en": "Does pain worsen on deep inspiration or coughing?"
+      },
+      "type": "boolean",
+      "source": "OPQRST — Provocation"
+    },
+    {
+      "id": "onset_speed",
+      "text": {
+        "uz": "Ogʻriq qanchalik tez eng yuqori darajaga yetdi?",
+        "en": "How quickly did the pain reach peak intensity?"
+      },
+      "type": "single",
+      "options": [
+        { "value": "abrupt", "uz": "Toʻsatdan (bir necha soniya)", "en": "Abrupt (seconds)" },
+        { "value": "gradual", "uz": "Daqiqalar davomida", "en": "Gradual (minutes)" },
+        { "value": "slow", "uz": "Sekin-asta (soatlar)", "en": "Slow (hours)" }
+      ],
+      "redFlag": {
+        "whenValueIn": ["abrupt"],
+        "level": "urgent"
+      },
+      "source": "OPQRST — Onset"
+    },
+    {
+      "id": "severity_score",
+      "text": {
+        "uz": "Ogʻriq intensivligi (1-10 shkala boʻyicha)?",
+        "en": "Pain severity scale (1-10)?"
+      },
+      "type": "number",
+      "unit": "/10",
+      "redFlag": {
+        "whenGreaterThan": 7,
+        "level": "urgent"
+      },
+      "source": "OPQRST — Severity"
+    }
+  ],
+  "suggestedActions": [
+    {
+      "when": {
+        "anyRedFlagAtLeast": "urgent"
+      },
+      "text": {
+        "uz": "ECG yozuvini oling va SpO₂ ni oʻlchang",
+        "en": "Record an ECG and measure SpO₂"
+      }
+    }
+  ]
+}

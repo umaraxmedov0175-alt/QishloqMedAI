@@ -1,0 +1,79 @@
+{
+  "id": "headache",
+  "label": {
+    "uz": "Bosh ogʻrigʻi",
+    "en": "Headache"
+  },
+  "source": "SNOOP4 Neurological Red Flag Criteria + SAMPLE History Mnemonic",
+  "questions": [
+    {
+      "id": "thunderclap",
+      "text": {
+        "uz": "Ogʻriq 1 daqiqa ichida eng yuqori darajaga yetdimi ('Momaqaldiroqsimon' toʻsatdan ogʻriq)?",
+        "en": "Did pain reach maximum intensity within 1 minute ('thunderclap' onset)?"
+      },
+      "type": "boolean",
+      "redFlag": {
+        "whenTrue": true,
+        "level": "emergency"
+      },
+      "source": "SNOOP4 — Sudden Onset (Thunderclap)"
+    },
+    {
+      "id": "stiff_neck_fever",
+      "text": {
+        "uz": "Ensa mushaklari qotishi (boʻyin bukilmasligi) yoki yuqori isitma bormi?",
+        "en": "Neck stiffness or high fever present?"
+      },
+      "type": "boolean",
+      "redFlag": {
+        "whenTrue": true,
+        "level": "emergency"
+      },
+      "source": "SNOOP4 — Systemic Symptoms / Meningism"
+    },
+    {
+      "id": "neuro_deficits",
+      "text": {
+        "uz": "Koʻrish buzilishi, qoʻl-oyoqda holsizlik yoki miyada chalkashlik bormi?",
+        "en": "Vision loss, limb weakness, or confusion present?"
+      },
+      "type": "multi",
+      "options": [
+        { "value": "vision_loss", "uz": "Koʻrish pasayishi yoki ikkilanish", "en": "Vision loss or double vision" },
+        { "value": "limb_weakness", "uz": "Qoʻl yoki oyoqda boʻshashish / holsizlik", "en": "Limb weakness / paralysis" },
+        { "value": "confusion", "uz": "Chalkashlik / Nutq buzilishi", "en": "Confusion / Aphasia" },
+        { "value": "none", "uz": "Yoʻq", "en": "None" }
+      ],
+      "redFlag": {
+        "whenValueIn": ["vision_loss", "limb_weakness", "confusion"],
+        "level": "emergency"
+      },
+      "source": "SNOOP4 — Neurological Deficits"
+    },
+    {
+      "id": "valsalva_worsening",
+      "text": {
+        "uz": "Yoʻtalganda, engashganda yoki aksirganda ogʻriq kuchayadimi?",
+        "en": "Pain worsened by coughing, bending, or sneezing?"
+      },
+      "type": "boolean",
+      "redFlag": {
+        "whenTrue": true,
+        "level": "urgent"
+      },
+      "source": "SNOOP4 — Positional / Valsalva Aggravation"
+    }
+  ],
+  "suggestedActions": [
+    {
+      "when": {
+        "anyRedFlagAtLeast": "urgent"
+      },
+      "text": {
+        "uz": "Qon bosimi va haroratni oʻlchang, nevrologik koʻrik uchun vrachni ogohlantiring",
+        "en": "Measure BP and temperature, alert specialist for urgent neurological review"
+      }
+    }
+  ]
+}

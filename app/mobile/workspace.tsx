@@ -13,6 +13,12 @@ import {
 } from "@/lib/offline-queue";
 
 import { useLanguage } from "@/lib/i18n";
+import {
+  evaluateAnswers,
+  getProtocol,
+  type AnswerMap,
+} from "@/lib/symptom-protocols/engine";
+import { getAllProtocols } from "@/lib/symptom-protocols/index";
 
 type NetState =
   | "online"
@@ -46,6 +52,7 @@ export function MobileWorkspace() {
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState({ ...goldenDraft });
+  const [protocolAnswers, setProtocolAnswers] = useState<AnswerMap>({});
   const [labs, setLabs] = useState([
     { name: "Hemoglobin", value: "", unit: "g/dL" },
   ]);
@@ -56,6 +63,11 @@ export function MobileWorkspace() {
     valid: boolean;
   } | null>(null);
   const [rawFile, setRawFile] = useState<File | null>(null);
+
+  const activeProtocol = getProtocol(draft.complaint);
+  const protocolEval = activeProtocol
+    ? evaluateAnswers(activeProtocol, protocolAnswers, language)
+    : null;
 
   const steps = [
     t("step1Consent"),
@@ -125,7 +137,20 @@ export function MobileWorkspace() {
     }
 
     setSaving(true);
-    const encounterKey = `encounter:${data.patientCode}:${Date.now()}`;
+    const encounterKey = `encounter:${data.patientCode}:${crypto.randomUUID()}`;
+    const formattedProtocolAnswers = activeProtocol
+      ? {
+          protocolId: activeProtocol.id,
+          answers: protocolAnswers,
+          completeness: protocolEval?.completeness,
+          redFlagsTriggered: protocolEval?.redFlags.map((rf) => ({
+            questionId: rf.questionId,
+            level: rf.level,
+            source: rf.source,
+          })),
+        }
+      : undefined;
+
     try {
       await enqueueOfflineAction(
         "patient",
@@ -134,7 +159,7 @@ export function MobileWorkspace() {
       );
       await enqueueOfflineAction(
         "encounter",
-        { ...data, labs, file },
+        { ...data, labs, file, protocolAnswers: formattedProtocolAnswers },
         encounterKey,
       );
       if (file)
@@ -527,13 +552,36 @@ export function MobileWorkspace() {
 
               {step === 2 && (
                 <>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{t("symptomsAndHistory")}</h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{t("symptomsAndHistory")}</h3>
+                    <span className="text-xs text-slate-500 font-medium">Offlayn klinik protokollar mavjud</span>
+                  </div>
+
+                  {/* Quick complaint selector chips */}
+                  <div className="mb-4">
+                    <label className="text-xs font-semibold text-slate-700 block mb-2">{t("selectComplaint")}:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {getAllProtocols().map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${activeProtocol?.id === p.id ? "bg-emerald-700 text-white border-emerald-700 shadow-2xs" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"}`}
+                          onClick={() => {
+                            setDraft((curr) => ({ ...curr, complaint: p.label[language] }));
+                          }}
+                        >
+                          + {p.label[language]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="field mt-0">
                     <label htmlFor="complaint">{t("chiefComplaint")}</label>
                     <textarea
                       id="complaint"
                       name="complaint"
-                      rows={3}
+                      rows={2}
                       value={draft.complaint}
                       onChange={(event) =>
                         setDraft((current) => ({
@@ -544,12 +592,244 @@ export function MobileWorkspace() {
                       required
                     />
                   </div>
-                  <div className="field">
+
+                  {/* Adaptive Clinical Protocol Section */}
+                  {activeProtocol && protocolEval && (
+                    <div className="mt-5 p-5 bg-emerald-50/40 border border-emerald-200/80 rounded-xl space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200/60 pb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                            <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">{t("adaptiveProtocol")}:</span>
+                            <strong className="text-sm font-bold text-emerald-950">{activeProtocol.label[language]}</strong>
+                          </div>
+                          <span className="text-[11px] text-emerald-700 font-medium block mt-0.5">
+                            {t("protocolSource")}: {activeProtocol.source}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2.5 py-1 bg-white border border-emerald-300 text-emerald-900 rounded-full shadow-2xs">
+                            {t("completeness")}: {protocolEval.completeness.answered}/{protocolEval.completeness.total} ({protocolEval.completeness.percentage}%)
+                            {protocolEval.completeness.skipped > 0 && ` · ${protocolEval.completeness.skipped} ${t("skipped").toLowerCase()}`}
+                          </span>
+                        </div>
+                      </div>
+
+                      <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider m-0">{t("protocolQuestions")}</h4>
+
+                      <div className="space-y-4">
+                        {activeProtocol.questions.map((q) => {
+                          const answerState = protocolAnswers[q.id];
+                          const isSkipped = answerState?.status === "skipped";
+                          const isAnswered = answerState?.status === "answered";
+                          const isRedFlag = isAnswered && protocolEval.redFlags.some((rf) => rf.questionId === q.id);
+
+                          return (
+                            <div
+                              key={q.id}
+                              className={`p-4 rounded-xl border transition ${
+                                isRedFlag
+                                  ? "bg-red-50/90 border-red-300 text-red-950 shadow-2xs"
+                                  : isSkipped
+                                    ? "bg-slate-100/70 border-slate-300 text-slate-600"
+                                    : "bg-white border-slate-200"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-3 mb-2">
+                                <div>
+                                  <label className="text-xs font-bold text-slate-900 block leading-snug">
+                                    {q.text[language]}
+                                  </label>
+                                  <span className="text-[10px] text-slate-500 font-mono">
+                                    Manba: {q.source}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className={`px-2.5 py-1 text-[11px] font-semibold rounded transition cursor-pointer ${
+                                    isSkipped
+                                      ? "bg-slate-700 text-white"
+                                      : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+                                  }`}
+                                  onClick={() => {
+                                    setProtocolAnswers((prev) => ({
+                                      ...prev,
+                                      [q.id]: isSkipped
+                                        ? { status: "unanswered" }
+                                        : { status: "skipped" },
+                                    }));
+                                  }}
+                                >
+                                  {isSkipped ? `✓ ${t("skipped")}` : `↪ ${t("skipQuestion")}`}
+                                </button>
+                              </div>
+
+                              {isSkipped ? (
+                                <div className="text-xs font-semibold text-slate-500 italic py-1">
+                                  [{t("skipped")} — klinik tahlil uchun javob kiritilmadi]
+                                </div>
+                              ) : (
+                                <div className="mt-2">
+                                  {q.type === "boolean" && (
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        className={`px-4 py-1.5 text-xs font-bold rounded-lg border transition cursor-pointer ${
+                                          isAnswered && answerState.value === true
+                                            ? "bg-emerald-700 text-white border-emerald-700"
+                                            : "bg-white text-slate-800 border-slate-300 hover:bg-slate-50"
+                                        }`}
+                                        onClick={() => {
+                                          setProtocolAnswers((prev) => ({
+                                            ...prev,
+                                            [q.id]: { status: "answered", value: true },
+                                          }));
+                                        }}
+                                      >
+                                        Ha / Yes
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className={`px-4 py-1.5 text-xs font-bold rounded-lg border transition cursor-pointer ${
+                                          isAnswered && answerState.value === false
+                                            ? "bg-emerald-700 text-white border-emerald-700"
+                                            : "bg-white text-slate-800 border-slate-300 hover:bg-slate-50"
+                                        }`}
+                                        onClick={() => {
+                                          setProtocolAnswers((prev) => ({
+                                            ...prev,
+                                            [q.id]: { status: "answered", value: false },
+                                          }));
+                                        }}
+                                      >
+                                        Yo'q / No
+                                      </button>
+                                    </div>
+                                  )}
+
+                                  {q.type === "single" && q.options && (
+                                    <div className="flex flex-wrap gap-2">
+                                      {q.options.map((opt) => (
+                                        <button
+                                          key={opt.value}
+                                          type="button"
+                                          className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition cursor-pointer ${
+                                            isAnswered && answerState.value === opt.value
+                                              ? "bg-emerald-700 text-white border-emerald-700"
+                                              : "bg-white text-slate-800 border-slate-300 hover:bg-slate-50"
+                                          }`}
+                                          onClick={() => {
+                                            setProtocolAnswers((prev) => ({
+                                              ...prev,
+                                              [q.id]: { status: "answered", value: opt.value },
+                                            }));
+                                          }}
+                                        >
+                                          {opt[language]}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {q.type === "multi" && q.options && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                      {q.options.map((opt) => {
+                                        const currentVals = (isAnswered && Array.isArray(answerState.value)
+                                          ? answerState.value
+                                          : []) as string[];
+                                        const isSelected = currentVals.includes(opt.value);
+
+                                        return (
+                                          <label
+                                            key={opt.value}
+                                            className={`flex items-center gap-2.5 p-2 rounded-lg border text-xs font-semibold cursor-pointer transition ${
+                                              isSelected
+                                                ? "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold"
+                                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                                            }`}
+                                          >
+                                            <input
+                                              type="checkbox"
+                                              checked={isSelected}
+                                              onChange={(e) => {
+                                                let updated: string[];
+                                                if (e.target.checked) {
+                                                  updated = opt.value === "none" ? ["none"] : [...currentVals.filter((v) => v !== "none"), opt.value];
+                                                } else {
+                                                  updated = currentVals.filter((v) => v !== opt.value);
+                                                }
+                                                setProtocolAnswers((prev) => ({
+                                                  ...prev,
+                                                  [q.id]: {
+                                                    status: "answered",
+                                                    value: updated,
+                                                  },
+                                                }));
+                                              }}
+                                            />
+                                            <span>{opt[language]}</span>
+                                          </label>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+
+                                  {(q.type === "number" || q.type === "duration" || q.type === "text") && (
+                                    <div className="flex items-center gap-2 max-w-xs">
+                                      <input
+                                        type={q.type === "number" ? "number" : "text"}
+                                        value={isAnswered ? String(answerState.value) : ""}
+                                        placeholder={q.text[language]}
+                                        className="text-xs border border-slate-300 rounded-lg p-2 flex-1"
+                                        onChange={(e) => {
+                                          const rawVal = e.target.value;
+                                          const val = q.type === "number" ? Number(rawVal) : rawVal;
+                                          setProtocolAnswers((prev) => ({
+                                            ...prev,
+                                            [q.id]: { status: "answered", value: val },
+                                          }));
+                                        }}
+                                      />
+                                      {q.unit && <span className="unit-badge">{q.unit}</span>}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {isRedFlag && (
+                                <div className="mt-2.5 p-2 bg-red-100/80 border border-red-300 rounded-lg text-xs font-bold text-red-900 flex items-center gap-1.5">
+                                  <span>⚠️</span>
+                                  <span>{t("redFlagDetected")}: {q.source}</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Suggested Clinical Actions Banner */}
+                      {protocolEval.suggestedActions.length > 0 && (
+                        <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs text-amber-950 font-medium space-y-1">
+                          <strong className="block font-bold text-amber-900 uppercase tracking-wide">
+                            💡 {t("suggestedActions")}:
+                          </strong>
+                          <ul className="list-disc list-inside m-0 pl-1 space-y-0.5">
+                            {protocolEval.suggestedActions.map((action, idx) => (
+                              <li key={idx} className="font-semibold">{action}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="field mt-4">
                     <label htmlFor="history">{t("nurseNotes")}</label>
                     <textarea
                       id="history"
                       name="history"
-                      rows={3}
+                      rows={2}
                       value={draft.history}
                       onChange={(event) =>
                         setDraft((current) => ({

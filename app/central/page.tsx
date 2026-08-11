@@ -7,6 +7,7 @@ import {
   getClinicalAction,
   saveClinicalAction,
 } from "@/lib/clinical-store";
+import { evaluateAnswers, getProtocol, type AnswerMap } from "@/lib/symptom-protocols/engine";
 import { useLanguage } from "@/lib/i18n";
 import { printClinicalReport } from "@/lib/report-generator";
 import { downloadFhirJson } from "@/lib/fhir-mapping";
@@ -252,6 +253,105 @@ export default function CentralReviewPage() {
               <p className="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200/60 mb-4">
                 {active.complaint}
               </p>
+
+              {/* Protocol Follow-up Questions & Red Flags for Specialist */}
+              {(() => {
+                const protocol = active.protocolAnswers
+                  ? getProtocol(active.protocolAnswers.protocolId)
+                  : getProtocol(active.complaint);
+                if (!protocol) return null;
+
+                const answers = (active.protocolAnswers?.answers || {}) as AnswerMap;
+                const evalResult = evaluateAnswers(protocol, answers, language);
+
+                return (
+                  <div className="mb-4 p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5">
+                      <div>
+                        <span className="text-xs font-bold text-emerald-900 block">
+                          📋 {t("adaptiveProtocol")}: {protocol.label[language]}
+                        </span>
+                        <span className="text-[10px] text-emerald-700 font-mono">
+                          {t("protocolSource")}: {protocol.source}
+                        </span>
+                      </div>
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 bg-white border border-emerald-300 text-emerald-900 rounded-full">
+                        {t("completeness")}: {evalResult.completeness.answered}/{evalResult.completeness.total} ({evalResult.completeness.percentage}%)
+                        {evalResult.completeness.skipped > 0 && ` · ${evalResult.completeness.skipped} ${t("skipped").toLowerCase()}`}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {protocol.questions.map((q) => {
+                        const entry = answers[q.id];
+                        const isSkipped = entry?.status === "skipped";
+                        const isAnswered = entry?.status === "answered";
+                        const isRedFlag = isAnswered && evalResult.redFlags.some((rf) => rf.questionId === q.id);
+
+                        let formattedAnswer = "";
+                        if (isAnswered) {
+                          const val = entry.value;
+                          if (typeof val === "boolean") {
+                            formattedAnswer = val ? (language === "uz" ? "Ha" : "Yes") : (language === "uz" ? "Yo'q" : "No");
+                          } else if (Array.isArray(val)) {
+                            formattedAnswer = val
+                              .map((v) => q.options?.find((o) => o.value === v)?.[language] || v)
+                              .join(", ");
+                          } else if (q.options) {
+                            formattedAnswer = q.options.find((o) => o.value === String(val))?.[language] || String(val);
+                          } else {
+                            formattedAnswer = q.unit ? `${val} ${q.unit}` : String(val);
+                          }
+                        }
+
+                        return (
+                          <div
+                            key={q.id}
+                            className={`p-2.5 rounded-lg border text-xs transition ${
+                              isRedFlag
+                                ? "bg-red-50 border-red-300 text-red-950 font-medium"
+                                : isSkipped
+                                  ? "bg-slate-100 border-slate-200 text-slate-500"
+                                  : "bg-white border-slate-200 text-slate-800"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="font-semibold text-slate-900 leading-tight">{q.text[language]}</span>
+                              {isSkipped ? (
+                                <span className="px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded">
+                                  🛑 {t("skipped").toUpperCase()}
+                                </span>
+                              ) : isAnswered ? (
+                                <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${isRedFlag ? "bg-red-200 text-red-900" : "bg-emerald-100 text-emerald-900"}`}>
+                                  {formattedAnswer}
+                                </span>
+                              ) : (
+                                <span className="text-slate-400 italic text-[10px]">[Javob yo'q]</span>
+                              )}
+                            </div>
+                            {isRedFlag && (
+                              <small className="block mt-1 text-red-800 font-bold text-[10px]">
+                                ⚠️ XAVFLI BELGI / RED FLAG — {q.source}
+                              </small>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {evalResult.suggestedActions.length > 0 && (
+                      <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-950 font-medium space-y-0.5">
+                        <strong className="block font-bold text-amber-900 text-[11px]">
+                          💡 PROTOKOL TAVSIYASI:
+                        </strong>
+                        {evalResult.suggestedActions.map((act, idx) => (
+                          <div key={idx}>• {act}</div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">{t("step4Vitals")}</h3>
               <div className="grid grid-cols-2 gap-2.5 mb-4">
