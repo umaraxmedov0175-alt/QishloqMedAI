@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { findNearestHospital, REGIONAL_HOSPITALS } from "@/lib/regional-routing";
 import type { DispatchItem } from "@/lib/realtime-dispatcher";
+import { EMERGENCY_MARKER_SVG_HTML, NEAREST_HOSPITAL_SVG_HTML } from "@/app/ui/MedicalIcons";
 
 interface DispatcherMapProps {
   items: DispatchItem[];
@@ -92,21 +93,15 @@ export function DispatcherMap({
 
       const bounds = L.latLngBounds([]);
 
-      // 1. Plot Regional Hospitals Blue Markers
+      // 1. Plot Regional Hospitals SVG Markers
       REGIONAL_HOSPITALS.forEach((hosp) => {
         bounds.extend([hosp.lat, hosp.lng]);
         const hospIcon = L.divIcon({
           className: "custom-hosp-icon",
-          html: `
-            <div class="relative group cursor-pointer z-20">
-              <div class="w-7 h-7 rounded-full bg-blue-700 border-2 border-white shadow-lg text-white font-bold text-xs flex items-center justify-center">
-                🏥
-              </div>
-            </div>
-          `,
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-          popupAnchor: [0, -14],
+          html: NEAREST_HOSPITAL_SVG_HTML,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
+          popupAnchor: [0, -16],
         });
 
         const hospMarker = L.marker([hosp.lat, hosp.lng], { icon: hospIcon });
@@ -141,27 +136,22 @@ export function DispatcherMap({
                 ? "priority-pin"
                 : "routine-pin";
 
-        const pulseMarkup =
+        const pinHtml =
           item.triage === "emergency"
-            ? `<div class="absolute -inset-2 rounded-full bg-red-500/40 animate-ping pointer-events-none"></div>`
-            : "";
-
-        const pinHtml = `
-          <div class="relative group cursor-pointer ${isSelected ? "scale-125 z-50" : "z-10"}">
-            ${pulseMarkup}
-            <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-bold text-xs ${
-              item.triage === "emergency"
-                ? "bg-red-600 shadow-red-500/50"
-                : item.triage === "urgent"
-                  ? "bg-amber-600 shadow-amber-500/50"
-                  : item.triage === "priority"
-                    ? "bg-sky-600 shadow-sky-500/50"
-                    : "bg-emerald-600 shadow-emerald-500/50"
-            }">
-              <span>${item.triage === "emergency" ? "🚨" : item.triage === "urgent" ? "⚠️" : "🩺"}</span>
-            </div>
-          </div>
-        `;
+            ? EMERGENCY_MARKER_SVG_HTML
+            : `
+              <div class="relative group cursor-pointer ${isSelected ? "scale-125 z-50" : "z-10"}">
+                <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-bold text-xs ${
+                  item.triage === "urgent"
+                    ? "bg-amber-600 shadow-amber-500/50"
+                    : item.triage === "priority"
+                      ? "bg-sky-600 shadow-sky-500/50"
+                      : "bg-emerald-600 shadow-emerald-500/50"
+                }">
+                  <span>${item.triage === "urgent" ? "⚠️" : "🩺"}</span>
+                </div>
+              </div>
+            `;
 
         const customIcon = L.divIcon({
           className: `custom-div-icon ${colorClass}`,

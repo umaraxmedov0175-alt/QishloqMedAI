@@ -19,6 +19,7 @@ import {
   type AnswerMap,
 } from "@/lib/symptom-protocols/engine";
 import { getAllProtocols } from "@/lib/symptom-protocols/index";
+import { MobileLabBadgeIcon } from "@/app/ui/MedicalIcons";
 
 type NetState =
   | "online"
@@ -990,8 +991,9 @@ export function MobileWorkspace() {
                 <>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{t("step5Labs")}</h3>
-                    <span className="px-2 py-0.5 bg-blue-100 text-blue-900 text-[10px] font-bold rounded">
-                      🔬 Mobil Diagnostik Laboratoriya Tarmog'i (On-Board POC)
+                    <span className="px-2.5 py-1 bg-sky-50 text-sky-950 text-[10px] font-extrabold rounded-lg border border-sky-300 flex items-center gap-1.5 shadow-2xs">
+                      <MobileLabBadgeIcon className="w-5 h-5 shrink-0" />
+                      <span>Mobil Diagnostik Laboratoriya Tarmogʻi (On-Board POC)</span>
                     </span>
                   </div>
                   <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">{t("referenceNote")}</p>

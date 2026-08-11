@@ -4,6 +4,11 @@
 import { useEffect, useState } from "react";
 import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
+import {
+  DispatchLauncherIcon,
+  InnerChatIcon,
+  NearestHospitalIcon,
+} from "@/app/ui/MedicalIcons";
 import { canAccessPatientPortal } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
 import {
@@ -367,9 +372,10 @@ export default function IsolatedPatientPortalPage() {
 
             <a
               href="/chat"
-              className="py-3.5 px-6 border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition whitespace-nowrap"
+              className="py-3.5 px-6 border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition whitespace-nowrap flex items-center gap-2"
             >
-              {t("innerChatTab")} ↗
+              <InnerChatIcon className="w-5 h-5 shrink-0" />
+              <span>{t("innerChatTab")} ↗</span>
             </a>
           </div>
 
@@ -572,9 +578,10 @@ export default function IsolatedPatientPortalPage() {
                   <button
                     type="submit"
                     disabled={!isPatientAuthorized}
-                    className="px-8 py-3.5 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer"
+                    className="w-full md:w-auto py-3.5 px-8 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer flex items-center justify-center gap-2.5"
                   >
-                    {t("submitApplicationBtn")}
+                    <DispatchLauncherIcon className="w-7 h-7 shrink-0" />
+                    <span>{t("submitApplicationBtn")}</span>
                   </button>
                 </div>
               </form>
@@ -627,8 +634,9 @@ export default function IsolatedPatientPortalPage() {
 
                     {/* Timeline Log Notes */}
                     <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
-                      <b className="text-slate-800 block text-[11px] uppercase tracking-wider mb-1">
-                        ⏱️ Bajarilish xronologiyasi:
+                      <b className="text-slate-800 flex items-center gap-1.5 text-[11px] uppercase tracking-wider mb-1">
+                        <NearestHospitalIcon className="w-4 h-4 shrink-0" />
+                        <span>Bajarilish xronologiyasi va Hospital Yoʻnalishi:</span>
                       </b>
                       {app.historyNotes?.map((note, idx) => (
                         <div key={idx} className="text-slate-600 font-mono text-[11px]">

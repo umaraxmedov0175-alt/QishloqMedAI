@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { InnerChatIcon } from "@/app/ui/MedicalIcons";
 import {
   getClinicalAction,
   saveClinicalAction,
@@ -140,8 +141,9 @@ export default function CentralReviewPage() {
             <a className="px-3 py-1.5 text-white bg-white/10 rounded-md font-semibold border-b-2 border-emerald-400" href="/central">
               {t("specialistQueue")}
             </a>
-            <a className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300" href="/chat">
-              💬 Telekonsultatsiya & Chat
+            <a className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300 flex items-center gap-1.5" href="/chat">
+              <InnerChatIcon className="w-5 h-5 shrink-0" />
+              <span>Telekonsultatsiya & Chat</span>
             </a>
             <DemoRoleLink workspace="dispatcher" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
               {t("roleDispatcher")}
