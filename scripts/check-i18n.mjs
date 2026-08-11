@@ -13,13 +13,6 @@ const emptyInUz = uzKeys.filter((k) => !translations.uz[k] || translations.uz[k]
 const allowedIdentical = new Set([
   "appTitle",
   "metaTitle",
-  "step1Consent",
-  "step2Demographics",
-  "step3Symptoms",
-  "step4Vitals",
-  "step5Labs",
-  "step6Diagnostics",
-  "step7Review",
   "spO2",
   "systolicBp",
   "diastolicBp",

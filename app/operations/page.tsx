@@ -107,7 +107,7 @@ export default function OperationsPage() {
             className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5 shrink-0 shadow-2xs"
           >
             <span className="text-sm leading-none">🗺️</span>
-            <span className="whitespace-nowrap">Toliq GIS Xarita</span>
+            <span className="whitespace-nowrap">{t("fullGisMap")}</span>
           </a>
 
           <SunlightToggle />

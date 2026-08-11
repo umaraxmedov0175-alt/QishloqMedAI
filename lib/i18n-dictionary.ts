@@ -52,15 +52,17 @@ export const translations = {
     specialistView: "Markaziy vrach boʻlimi",
     mobileWorkspaceTitle: "Mobil klinika rejimi · Tomir-01",
     todayVisits: "Bugungi tashriflar",
+    fullGisMap: "Toʻliq GIS xaritasi",
+    loadDemoPatient: "Demo namuna bemorni yuklash",
 
     // Step names
-    step1Consent: "1. Bemor roziligi",
-    step2Demographics: "2. Bemor maʼlumotlari",
-    step3Symptoms: "3. Shikoyat va simptomlar",
-    step4Vitals: "4. Vital koʻrsatkichlar",
-    step5Labs: "5. Laboratoriya analizi",
-    step6Diagnostics: "6. Diagnostik tasvir",
-    step7Review: "7. Yakuniy koʻrik va saqlash",
+    step1Consent: "Bemor roziligi",
+    step2Demographics: "Bemor maʼlumotlari",
+    step3Symptoms: "Shikoyat va simptomlar",
+    step4Vitals: "Vital koʻrsatkichlar",
+    step5Labs: "Laboratoriya analizi",
+    step6Diagnostics: "Diagnostik tasvir",
+    step7Review: "Yakuniy koʻrik va saqlash",
 
     // Form labels & Validation Notice Messages
     patientCode: "Bemor kodi",
@@ -185,7 +187,7 @@ export const translations = {
     emergency: "Favqulodda (Kritik)",
     allPriorities: "Barcha darajalar",
     searchPlaceholder: "Kodni, ismni yoki hududni qidiring",
-    whyPrioritized: "Nima uchun ustuvor:",
+    whyPrioritized: "Nima uchun ustuvor",
     nurseEntered: "HAMSHIRA KIRITGAN MAʻLUMOTLAR",
     diagnosticEvidence: "DIAGNOSTIK DALILLAR",
 
@@ -379,15 +381,17 @@ export const translations = {
     specialistView: "Specialist Workspace",
     mobileWorkspaceTitle: "Mobile Clinic Mode · Tomir-01",
     todayVisits: "Today's Visits",
+    fullGisMap: "Full GIS Map",
+    loadDemoPatient: "Load Demo Patient Record",
 
     // Step names
-    step1Consent: "1. Patient Consent",
-    step2Demographics: "2. Patient Demographics",
-    step3Symptoms: "3. Complaints & Symptoms",
-    step4Vitals: "4. Vital Signs",
-    step5Labs: "5. Laboratory Tests",
-    step6Diagnostics: "6. Diagnostic Imagery",
-    step7Review: "7. Final Review & Submit",
+    step1Consent: "Patient Consent",
+    step2Demographics: "Patient Demographics",
+    step3Symptoms: "Complaints & Symptoms",
+    step4Vitals: "Vital Signs",
+    step5Labs: "Laboratory Tests",
+    step6Diagnostics: "Diagnostic Imagery",
+    step7Review: "Final Review & Submit",
 
     // Form labels & Validation Notice Messages
     patientCode: "Patient Code",
@@ -512,9 +516,9 @@ export const translations = {
     emergency: "Emergency",
     allPriorities: "All priorities",
     searchPlaceholder: "Search code, name, region",
-    whyPrioritized: "Why prioritized:",
+    whyPrioritized: "Why prioritized",
     nurseEntered: "NURSE ENTERED",
-    diagnosticEvidence: "DIAGNOSTIK DALILLAR",
+    diagnosticEvidence: "DIAGNOSTIC EVIDENCE",
 
     aiSummary: "AI Preliminary Assessment",
     aiSummaryNotice: "AI preliminary assessment — physician verification required",

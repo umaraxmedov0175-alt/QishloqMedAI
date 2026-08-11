@@ -433,7 +433,7 @@ export function MobileWorkspace() {
                   );
                 }}
               >
-                Demo namuna bemorni yuklash
+                {t("loadDemoPatient")}
               </button>
             </div>
 
@@ -453,7 +453,7 @@ export function MobileWorkspace() {
                       <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${i === step ? "bg-emerald-700 text-white border-emerald-700" : i < step ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-white text-slate-400 border-slate-300"}`}>
                         {i < step ? "✓" : i + 1}
                       </span>
-                      <span className="whitespace-nowrap">{i + 1}. {name}</span>
+                      <span className="whitespace-nowrap">{name}</span>
                     </button>
                     {i < steps.length - 1 && <span className="flex-1 h-[1px] bg-slate-200"></span>}
                   </li>

@@ -301,10 +301,13 @@ export function OutbreakRadarMap({
         </div>
 
         {/* Mode Toggle Pills */}
-        <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700">
+        <div className="flex items-center bg-slate-800 p-0.5 rounded-lg border border-slate-700" role="toolbar" aria-label="Map Display Layer Controls">
           <button
             type="button"
             onClick={() => handleToggle("dispatch")}
+            aria-label="Live Patient Dispatch Layer Toggle"
+            title="Toggle Live Patient Dispatch Layer"
+            tabIndex={0}
             className={`px-3 py-1.5 rounded-md font-bold text-xs transition flex items-center gap-1.5 ${
               activeMode === "dispatch"
                 ? "bg-blue-600 text-white shadow"
@@ -317,6 +320,9 @@ export function OutbreakRadarMap({
           <button
             type="button"
             onClick={() => handleToggle("radar")}
+            aria-label="Predictive Outbreak Radar Heatmap Toggle"
+            title="Toggle Predictive Outbreak Radar Heatmap"
+            tabIndex={0}
             className={`px-3 py-1.5 rounded-md font-bold text-xs transition flex items-center gap-1.5 ${
               activeMode === "radar"
                 ? "bg-red-600 text-white shadow"
@@ -329,7 +335,12 @@ export function OutbreakRadarMap({
       </div>
 
       {/* Map Container */}
-      <div ref={mapContainerRef} className="w-full h-full min-h-[440px] z-0" />
+      <div 
+        ref={mapContainerRef} 
+        className="w-full h-full min-h-[440px] z-0" 
+        role="region"
+        aria-label="Epidemiological Outbreak Radar GIS Map Canvas"
+      />
     </div>
   );
 }

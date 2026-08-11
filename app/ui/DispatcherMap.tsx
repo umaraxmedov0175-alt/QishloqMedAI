@@ -269,10 +269,19 @@ export function DispatcherMap({
 
   return (
     <div className="relative w-full h-full min-h-[450px] bg-slate-100 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
-      <div ref={mapContainerRef} className="w-full h-full min-h-[450px] z-0" />
+      <div 
+        ref={mapContainerRef} 
+        className="w-full h-full min-h-[450px] z-0" 
+        role="region"
+        aria-label={language === "uz" ? "Dispetcherlik interaktiv GIS xaritasi" : "Interactive Dispatcher GIS Map"}
+      />
       
       {/* Map Shape Glyphs Legend */}
-      <div className="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-xs p-2.5 rounded-lg shadow-md border border-slate-200 text-[11px] font-bold text-slate-800 space-y-1">
+      <div 
+        className="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-xs p-2.5 rounded-lg shadow-md border border-slate-200 text-[11px] font-bold text-slate-800 space-y-1"
+        role="complementary"
+        aria-label={language === "uz" ? "GIS xarita legendasi" : "GIS map legend"}
+      >
         <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1 font-mono">GIS XARITA LEGENDASI (SHAKL & RANG)</div>
         <div className="flex items-center gap-2"><span className="text-red-600">🚨 ⬛ 🔴</span> <span>Favqulodda (Emergency)</span></div>
         <div className="flex items-center gap-2"><span className="text-amber-600">⚠️ ◼️ 🟡</span> <span>Shoshilinch (Urgent)</span></div>

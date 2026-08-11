@@ -90,6 +90,9 @@ import { useLanguage } from "@/lib/i18n";
 export function ClinicDashboard() {
   const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
+  const enableDemoPrefill =
+    process.env.NEXT_PUBLIC_ENABLE_DEMO_PREFILL === "true" ||
+    process.env.NODE_ENV !== "production";
   const [cases, setCases] = useState(seedCases);
   const [selected, setSelected] = useState("1");
   const [modal, setModal] = useState(false);
@@ -293,7 +296,13 @@ export function ClinicDashboard() {
             <form onSubmit={signIn} className="demo-credentials-box">
               <div className="flex items-center justify-between text-xs mb-3">
                 <span className="font-bold text-emerald-900">{t("conventionalLogin")}</span>
-                <span className="text-emerald-700 font-mono text-[11px]">tomir@tomir.demo · demo2026</span>
+                {enableDemoPrefill ? (
+                  <span className="text-emerald-700 font-mono text-[11px]">tomir@tomir.demo · demo2026</span>
+                ) : (
+                  <span className="text-amber-800 font-mono text-[10px] bg-amber-100 px-2 py-0.5 rounded">
+                    {language === "uz" ? "SANOAT MUHITI · PREFILL OʻCHIRILGAN" : "PROD MODE · PREFILL DISABLED"}
+                  </span>
+                )}
               </div>
 
               <div className="field mt-0">
@@ -304,7 +313,7 @@ export function ClinicDashboard() {
                   type="email"
                   autoComplete="email"
                   required
-                  defaultValue="tomir@tomir.demo"
+                  defaultValue={enableDemoPrefill ? "tomir@tomir.demo" : ""}
                 />
               </div>
 
@@ -317,14 +326,14 @@ export function ClinicDashboard() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
-                    defaultValue="demo2026"
+                    defaultValue={enableDemoPrefill ? "demo2026" : ""}
                     className="pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-slate-800 border-0 bg-transparent text-sm cursor-pointer min-h-0"
-                    aria-label={showPassword ? "Parolni berkitish" : "Parolni ko'rsatish"}
+                    aria-label={showPassword ? (language === "uz" ? "Parolni berkitish" : "Hide password") : (language === "uz" ? "Parolni ko'rsatish" : "Show password")}
                   >
                     {showPassword ? "🙈" : "👁️"}
                   </button>
