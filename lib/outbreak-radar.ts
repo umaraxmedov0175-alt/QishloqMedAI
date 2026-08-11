@@ -203,11 +203,13 @@ export function analyzeOutbreakRadar(
   // If dynamic encounters exist, evaluate and update cluster counts / z-scores
   if (encountersInput && encountersInput.length > 0) {
     encountersInput.forEach((enc) => {
-      if (enc.lat && enc.lng) {
+      if (typeof enc.lat === "number" && typeof enc.lng === "number") {
+        const lat = enc.lat;
+        const lng = enc.lng;
         // Match to nearest cluster or form dynamic cluster
         const matched = clusters.find(
           (c) =>
-            Math.abs(c.centerLat - enc.lat) < 0.1 && Math.abs(c.centerLng - enc.lng) < 0.1
+            Math.abs(c.centerLat - lat) < 0.1 && Math.abs(c.centerLng - lng) < 0.1
         );
         if (matched) {
           matched.patientCount += 1;
