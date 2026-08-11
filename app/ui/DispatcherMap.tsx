@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { findNearestHospital, REGIONAL_HOSPITALS } from "@/lib/regional-routing";
 import type { DispatchItem } from "@/lib/realtime-dispatcher";
 
 interface DispatcherMapProps {
@@ -91,8 +92,46 @@ export function DispatcherMap({
 
       const bounds = L.latLngBounds([]);
 
+      // 1. Plot Regional Hospitals Blue Markers
+      REGIONAL_HOSPITALS.forEach((hosp) => {
+        bounds.extend([hosp.lat, hosp.lng]);
+        const hospIcon = L.divIcon({
+          className: "custom-hosp-icon",
+          html: `
+            <div class="relative group cursor-pointer z-20">
+              <div class="w-7 h-7 rounded-full bg-blue-700 border-2 border-white shadow-lg text-white font-bold text-xs flex items-center justify-center">
+                🏥
+              </div>
+            </div>
+          `,
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+          popupAnchor: [0, -14],
+        });
+
+        const hospMarker = L.marker([hosp.lat, hosp.lng], { icon: hospIcon });
+        const hospPopup = document.createElement("div");
+        hospPopup.className = "p-1 font-sans text-xs max-w-[260px]";
+        hospPopup.innerHTML = `
+          <b class="text-sm font-bold text-blue-900 block mb-0.5">🏥 ${hosp.name}</b>
+          <span class="text-[11px] text-slate-500 block mb-1 font-semibold">${hosp.district}, ${hosp.region}</span>
+          <div class="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-950 space-y-1">
+            <div><b>O'rinlar:</b> ${hosp.availableBeds}/${hosp.totalBeds} bo'sh (${hosp.icuBedsAvailable} ICU)</div>
+            <div><b>Navbatchi:</b> ${hosp.specialistsAvailable[0]}</div>
+            <div><b>Tel:</b> ${hosp.emergencyPhone}</div>
+          </div>
+        `;
+        hospMarker.bindPopup(hospPopup);
+        markersGroup.addLayer(hospMarker);
+      });
+
+      // 2. Plot Patient Emergency Incidents
       items.forEach((item) => {
         const isSelected = item.id === selectedId;
+        const nearest = item.nearestHospital
+          ? { hospital: { name: item.nearestHospital.name }, distanceKm: item.nearestHospital.distanceKm }
+          : findNearestHospital(item.lat, item.lng);
+
         const colorClass =
           item.triage === "emergency"
             ? "emergency-pin"
@@ -134,9 +173,9 @@ export function DispatcherMap({
 
         const marker = L.marker([item.lat, item.lng], { icon: customIcon });
 
-        // Popup Content with Vitals, Location, and Action Buttons
+        // Popup Content with Nearest Hospital Badge & Vitals
         const popupContent = document.createElement("div");
-        popupContent.className = "p-1 font-sans text-xs max-w-[280px]";
+        popupContent.className = "p-1 font-sans text-xs max-w-[290px]";
         popupContent.innerHTML = `
           <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
             <div>
@@ -152,6 +191,11 @@ export function DispatcherMap({
             }">
               ${item.triage === "emergency" ? "FAVQULODDA" : item.triage === "urgent" ? "SHOSHILINCH" : "REJALI"}
             </span>
+          </div>
+
+          <!-- NEAREST REGIONAL HOSPITAL BADGE -->
+          <div class="p-2 bg-blue-50 border border-blue-200 rounded-md text-[11px] text-blue-950 font-bold mb-2">
+            🏥 YAQIN REGIONAL SHIFOXONA: ${nearest.hospital.name} (${nearest.distanceKm} km)
           </div>
 
           <div class="space-y-1 mb-3 text-slate-700 bg-slate-50 p-2 rounded-md border border-slate-100">

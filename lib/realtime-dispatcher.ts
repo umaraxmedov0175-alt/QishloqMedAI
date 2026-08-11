@@ -1,3 +1,5 @@
+import { findNearestHospital, MOBILE_LAB_EQUIPMENT } from "./regional-routing.ts";
+
 export type TriageSeverity = "emergency" | "urgent" | "priority" | "routine";
 export type DispatchStatus =
   | "unassigned"
@@ -32,10 +34,26 @@ export interface DispatchItem {
   status: DispatchStatus;
   assignedVehicle?: string | null;
   assignedDoctor?: string | null;
+  nearestHospital?: {
+    id: string;
+    name: string;
+    distanceKm: number;
+    capacity: string;
+    emergencyPhone: string;
+  };
+  mobileLabVitals?: {
+    glucose?: number;
+    hemoglobin?: number;
+    hba1c?: number;
+    troponin?: string;
+  };
+  mobileLabEquipment?: string[];
   notes?: string;
   submittedAt: string;
   updatedAt: string;
 }
+
+const DEFAULT_MOBILE_LAB_BADGES = MOBILE_LAB_EQUIPMENT.map((e) => e.name);
 
 const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
   {
@@ -60,6 +78,20 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "emergency",
     status: "unassigned",
+    assignedVehicle: "Tomir-01 Mobil Diagnostik Laboratoriya Klinikasi",
+    nearestHospital: {
+      id: "hosp-urgut",
+      name: "Urgut Tuman Markaziy Shifoxonasi",
+      distanceKm: 4.2,
+      capacity: "34/180 bo'sh o'rin (4 ICU)",
+      emergencyPhone: "+99866-712-1102",
+    },
+    mobileLabVitals: {
+      glucose: 14.2,
+      hemoglobin: 102,
+      troponin: "ijobiy (positive)",
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
   },
@@ -85,6 +117,19 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "urgent",
     status: "reviewing",
+    assignedVehicle: "Tomir-02 Mobil Diagnostik Laboratoriya",
+    nearestHospital: {
+      id: "hosp-payariq",
+      name: "Payariq Tuman Tibbiyot Birlashmasi",
+      distanceKm: 5.8,
+      capacity: "28/140 bo'sh o'rin",
+      emergencyPhone: "+99866-425-2244",
+    },
+    mobileLabVitals: {
+      glucose: 6.1,
+      hemoglobin: 125,
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 23 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
   },
@@ -110,7 +155,15 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "priority",
     status: "dispatched",
-    assignedVehicle: "Tomir-01",
+    assignedVehicle: "Tomir-01 Mobil Diagnostik Laboratoriya Klinikasi",
+    nearestHospital: {
+      id: "hosp-samarkand-central",
+      name: "Samarqand Viloyat Shoshilinch Markazi",
+      distanceKm: 12.1,
+      capacity: "62/450 bo'sh o'rin (12 ICU)",
+      emergencyPhone: "+99866-234-5500",
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 41 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
   },
@@ -136,6 +189,18 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "priority",
     status: "unassigned",
+    nearestHospital: {
+      id: "hosp-baxmal",
+      name: "Baxmal Tuman Tibbiyot Birlashmasi",
+      distanceKm: 3.4,
+      capacity: "19/110 bo'sh o'rin",
+      emergencyPhone: "+99872-482-1155",
+    },
+    mobileLabVitals: {
+      hemoglobin: 78,
+      glucose: 5.4,
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
   },
@@ -161,6 +226,14 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     },
     triage: "routine",
     status: "resolved",
+    nearestHospital: {
+      id: "hosp-jomboy",
+      name: "Jomboy Tuman Tibbiyot Birlashmasi",
+      distanceKm: 2.1,
+      capacity: "22/120 bo'sh o'rin",
+      emergencyPhone: "+99866-471-1020",
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 120 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
   },
@@ -187,12 +260,20 @@ const INITIAL_DISPATCH_ITEMS: DispatchItem[] = [
     triage: "urgent",
     status: "teleconsult_scheduled",
     assignedDoctor: "Dr. Tomir",
+    nearestHospital: {
+      id: "hosp-zomin",
+      name: "Zomin Tuman Markaziy Kasalxonasi",
+      distanceKm: 4.8,
+      capacity: "31/160 bo'sh o'rin (5 ICU)",
+      emergencyPhone: "+99872-392-1400",
+    },
+    mobileLabEquipment: DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
     updatedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
   },
 ];
 
-const STORAGE_KEY = "tomir_dispatcher_items_v1";
+const STORAGE_KEY = "tomir_dispatcher_items_v2";
 const BROADCAST_CHANNEL_NAME = "tomir_dispatcher_channel";
 
 let memoryItems: DispatchItem[] = [...INITIAL_DISPATCH_ITEMS];
@@ -231,9 +312,22 @@ export function saveDispatchItems(items: DispatchItem[]): void {
 export function addDispatchItem(item: Omit<DispatchItem, "id" | "submittedAt" | "updatedAt">): DispatchItem {
   const current = getDispatchItems();
   const now = new Date().toISOString();
+
+  // Dynamically calculate nearest regional hospital using geospatial proximity engine
+  const nearestResult = findNearestHospital(item.lat, item.lng);
+
   const newItem: DispatchItem = {
     ...item,
     id: `disp-${Math.random().toString(36).slice(2, 9)}`,
+    nearestHospital: item.nearestHospital || {
+      id: nearestResult.hospital.id,
+      name: nearestResult.hospital.name,
+      distanceKm: nearestResult.distanceKm,
+      capacity: `${nearestResult.hospital.availableBeds}/${nearestResult.hospital.totalBeds} bo'sh o'rin (${nearestResult.hospital.icuBedsAvailable} ICU)`,
+      emergencyPhone: nearestResult.hospital.emergencyPhone,
+    },
+    assignedVehicle: item.assignedVehicle || "Tomir-01 Mobil Diagnostik Laboratoriya Klinikasi",
+    mobileLabEquipment: item.mobileLabEquipment || DEFAULT_MOBILE_LAB_BADGES,
     submittedAt: now,
     updatedAt: now,
   };

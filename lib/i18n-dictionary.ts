@@ -317,6 +317,16 @@ export const translations = {
     statusResolved: "Bajarildi",
     vitalsHistoryTitle: "Tibbiy Vital Ko'rsatkichlar va Diagnostika Tarixi",
     consultationNotesTitle: "Vrach-Mutaxassis Konsultatsiya Xulosalari",
+
+    // Regional Routing & Mobile Laboratory
+    nearestHospital: "Eng yaqin tuman/viloyat shifoxonasi",
+    hospitalDistance: "Masofa",
+    mobileLabFleet: "Mobil Diagnostik Laboratoriya Klinikasi",
+    onBoardEquipment: "Avtobusdagi diagnostik uskunalar",
+    pocBloodAnalysis: "Point-of-Care Qon Analizatori (Glyukoza, Lipid, HbA1c)",
+    troponinTest: "Troponin I Ekspress Testi",
+    hospitalCapacity: "Kasalxona o'rinlari",
+    assignedRegionalHospital: "Biriktirilgan regional shifoxona",
   },
   en: {
     // App header & branding
@@ -634,6 +644,16 @@ export const translations = {
     statusResolved: "Resolved",
     vitalsHistoryTitle: "Medical Vitals & Diagnostic History",
     consultationNotesTitle: "Clinician Consultation Notes",
+
+    // Regional Routing & Mobile Laboratory
+    nearestHospital: "Nearest Regional/District Hospital",
+    hospitalDistance: "Proximity Distance",
+    mobileLabFleet: "Mobile Diagnostic Laboratory Fleet",
+    onBoardEquipment: "On-Board Diagnostic Equipment",
+    pocBloodAnalysis: "Point-of-Care Blood Analyzer (Glucose, Lipids, HbA1c)",
+    troponinTest: "Troponin I Rapid Test",
+    hospitalCapacity: "Hospital Bed Capacity",
+    assignedRegionalHospital: "Assigned Regional Hospital",
   },
 } as const;
 

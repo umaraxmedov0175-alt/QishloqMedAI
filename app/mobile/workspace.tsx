@@ -925,7 +925,12 @@ export function MobileWorkspace() {
 
               {step === 4 && (
                 <>
-                  <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">{t("step5Labs")}</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{t("step5Labs")}</h3>
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-900 text-[10px] font-bold rounded">
+                      🔬 Mobil Diagnostik Laboratoriya Tarmog'i (On-Board POC)
+                    </span>
+                  </div>
                   <p className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded border border-amber-200 mb-4">{t("referenceNote")}</p>
                   {labs.map((lab, i) => (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-3" key={i}>

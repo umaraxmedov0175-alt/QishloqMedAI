@@ -214,14 +214,14 @@ export default function OperationsPage() {
                     .map((c, i) => (
                       <tr className="hover:bg-slate-50/60 transition cursor-pointer" key={c.code} onClick={() => setSelectedId(c.code)}>
                         <td className="p-3.5 font-bold text-slate-900">{c.code}</td>
-                        <td className="p-3.5 text-slate-700">
-                          {i % 2
-                            ? language === "uz"
-                              ? "Samarqand Viloyat Shifoxonasi"
-                              : "Samarqand Regional Hospital"
-                            : language === "uz"
-                              ? "Toshkent Markaziy Shifoxonasi"
-                              : "Tashkent Central Hospital"}
+                        <td className="p-3.5 text-slate-700 font-bold">
+                          {i === 0
+                            ? "Urgut Tuman Markaziy Kasalxonasi (4.2 km)"
+                            : i === 1
+                              ? "Payariq Tuman Tibbiyot Birlashmasi (5.8 km)"
+                              : i === 2
+                                ? "Samarqand Viloyat Shoshilinch Markazi (12.1 km)"
+                                : "Kegeyli Tuman Tibbiyot Birlashmasi (8.5 km)"}
                         </td>
                         <td className="p-3.5 text-slate-700">
                           {
