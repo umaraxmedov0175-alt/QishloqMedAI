@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { findNearestHospital, REGIONAL_HOSPITALS } from "@/lib/regional-routing";
 import type { DispatchItem } from "@/lib/realtime-dispatcher";
 import { EMERGENCY_MARKER_SVG_HTML, NEAREST_HOSPITAL_SVG_HTML } from "@/app/ui/MedicalIcons";
+import type L from "leaflet";
 
 interface DispatcherMapProps {
   items: DispatchItem[];
@@ -25,6 +26,7 @@ export function DispatcherMap({
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersGroupRef = useRef<L.LayerGroup | null>(null);
+  const leafletRef = useRef<typeof L | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
@@ -33,8 +35,10 @@ export function DispatcherMap({
     let isMounted = true;
 
     // Dynamically import Leaflet to prevent SSR window reference issues
-    import("leaflet").then((L) => {
+    import("leaflet").then((LModule) => {
       if (!isMounted || !mapContainerRef.current || mapInstanceRef.current) return;
+
+      leafletRef.current = LModule;
 
       // Make sure Leaflet CSS is dynamically included if not present
       if (!document.getElementById("leaflet-css")) {
@@ -46,14 +50,15 @@ export function DispatcherMap({
       }
 
       // Default center: Samarqand / Urgut region coordinates
-      const map = L.map(mapContainerRef.current, {
-        center: [39.6542, 67.0, 1],
+      const map = LModule.map(mapContainerRef.current, {
+        center: [39.6542, 67.0],
         zoom: 10,
         zoomControl: true,
+        preferCanvas: true, // High performance GPU canvas rendering for batch markers
       });
 
       // CartoDB Voyager crisp clean basemap tiles for medical dispatch clarity
-      L.tileLayer(
+      LModule.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
         {
           attribution:
@@ -63,7 +68,7 @@ export function DispatcherMap({
         }
       ).addTo(map);
 
-      const markersGroup = L.layerGroup().addTo(map);
+      const markersGroup = LModule.layerGroup().addTo(map);
       markersGroupRef.current = markersGroup;
       mapInstanceRef.current = map;
 
@@ -81,188 +86,185 @@ export function DispatcherMap({
 
   // Update map markers whenever items or selectedId changes
   useEffect(() => {
-    if (!mapLoaded || !mapInstanceRef.current || !markersGroupRef.current) return;
+    if (!mapLoaded || !mapInstanceRef.current || !markersGroupRef.current || !leafletRef.current) return;
 
-    import("leaflet").then((L) => {
-      if (!mapInstanceRef.current || !markersGroupRef.current) return;
+    const LModule = leafletRef.current;
+    const map = mapInstanceRef.current;
+    const markersGroup = markersGroupRef.current;
 
-      const map = mapInstanceRef.current;
-      const markersGroup = markersGroupRef.current;
+    markersGroup.clearLayers();
 
-      markersGroup.clearLayers();
+    const bounds = LModule.latLngBounds([]);
 
-      const bounds = L.latLngBounds([]);
-
-      // 1. Plot Regional Hospitals SVG Markers
-      REGIONAL_HOSPITALS.forEach((hosp) => {
-        bounds.extend([hosp.lat, hosp.lng]);
-        const hospIcon = L.divIcon({
-          className: "custom-hosp-icon",
-          html: NEAREST_HOSPITAL_SVG_HTML,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
-          popupAnchor: [0, -16],
-        });
-
-        const hospMarker = L.marker([hosp.lat, hosp.lng], { icon: hospIcon });
-        const hospPopup = document.createElement("div");
-        hospPopup.className = "p-1 font-sans text-xs max-w-[260px]";
-        hospPopup.innerHTML = `
-          <b class="text-sm font-bold text-blue-900 block mb-0.5">🏥 ${hosp.name}</b>
-          <span class="text-[11px] text-slate-500 block mb-1 font-semibold">${hosp.district}, ${hosp.region}</span>
-          <div class="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-950 space-y-1">
-            <div><b>O'rinlar:</b> ${hosp.availableBeds}/${hosp.totalBeds} bo'sh (${hosp.icuBedsAvailable} ICU)</div>
-            <div><b>Navbatchi:</b> ${hosp.specialistsAvailable[0]}</div>
-            <div><b>Tel:</b> ${hosp.emergencyPhone}</div>
-          </div>
-        `;
-        hospMarker.bindPopup(hospPopup);
-        markersGroup.addLayer(hospMarker);
+    // 1. Plot Regional Hospitals SVG Markers
+    REGIONAL_HOSPITALS.forEach((hosp) => {
+      bounds.extend([hosp.lat, hosp.lng]);
+      const hospIcon = LModule.divIcon({
+        className: "custom-hosp-icon",
+        html: NEAREST_HOSPITAL_SVG_HTML,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
       });
 
-      // 2. Plot Patient Emergency Incidents
-      items.forEach((item) => {
-        const isSelected = item.id === selectedId;
-        const nearest = item.nearestHospital
-          ? { hospital: { name: item.nearestHospital.name }, distanceKm: item.nearestHospital.distanceKm }
-          : findNearestHospital(item.lat, item.lng);
+      const hospMarker = LModule.marker([hosp.lat, hosp.lng], { icon: hospIcon });
+      const hospPopup = document.createElement("div");
+      hospPopup.className = "p-1 font-sans text-xs max-w-[260px]";
+      hospPopup.innerHTML = `
+        <b class="text-sm font-bold text-blue-900 block mb-0.5">🏥 ${hosp.name}</b>
+        <span class="text-[11px] text-slate-500 block mb-1 font-semibold">${hosp.district}, ${hosp.region}</span>
+        <div class="p-2 bg-blue-50 border border-blue-200 rounded text-[11px] text-blue-950 space-y-1">
+          <div><b>O'rinlar:</b> ${hosp.availableBeds}/${hosp.totalBeds} bo'sh (${hosp.icuBedsAvailable} ICU)</div>
+          <div><b>Navbatchi:</b> ${hosp.specialistsAvailable[0]}</div>
+          <div><b>Tel:</b> ${hosp.emergencyPhone}</div>
+        </div>
+      `;
+      hospMarker.bindPopup(hospPopup);
+      markersGroup.addLayer(hospMarker);
+    });
 
-        const colorClass =
-          item.triage === "emergency"
-            ? "emergency-pin"
-            : item.triage === "urgent"
-              ? "urgent-pin"
-              : item.triage === "priority"
-                ? "priority-pin"
-                : "routine-pin";
+    // 2. Plot Patient Emergency Incidents
+    items.forEach((item) => {
+      const isSelected = item.id === selectedId;
+      const nearest = item.nearestHospital
+        ? { hospital: { name: item.nearestHospital.name }, distanceKm: item.nearestHospital.distanceKm }
+        : findNearestHospital(item.lat, item.lng);
 
-        const pinHtml =
-          item.triage === "emergency"
-            ? EMERGENCY_MARKER_SVG_HTML
-            : `
-              <div class="relative group cursor-pointer ${isSelected ? "scale-125 z-50" : "z-10"}">
-                <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-bold text-xs ${
-                  item.triage === "urgent"
-                    ? "bg-amber-600 shadow-amber-500/50"
-                    : item.triage === "priority"
-                      ? "bg-sky-600 shadow-sky-500/50"
-                      : "bg-emerald-600 shadow-emerald-500/50"
-                }">
-                  <span>${item.triage === "urgent" ? "⚠️" : "🩺"}</span>
-                </div>
+      const colorClass =
+        item.triage === "emergency"
+          ? "emergency-pin"
+          : item.triage === "urgent"
+            ? "urgent-pin"
+            : item.triage === "priority"
+              ? "priority-pin"
+              : "routine-pin";
+
+      const pinHtml =
+        item.triage === "emergency"
+          ? EMERGENCY_MARKER_SVG_HTML
+          : `
+            <div class="relative group cursor-pointer ${isSelected ? "scale-125 z-50" : "z-10"}">
+              <div class="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md text-white font-bold text-xs ${
+                item.triage === "urgent"
+                  ? "bg-amber-600 shadow-amber-500/50"
+                  : item.triage === "priority"
+                    ? "bg-sky-600 shadow-sky-500/50"
+                    : "bg-emerald-600 shadow-emerald-500/50"
+              }">
+                <span>${item.triage === "urgent" ? "⚠️" : "🩺"}</span>
               </div>
-            `;
-
-        const customIcon = L.divIcon({
-          className: `custom-div-icon ${colorClass}`,
-          html: pinHtml,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
-          popupAnchor: [0, -18],
-        });
-
-        const marker = L.marker([item.lat, item.lng], { icon: customIcon });
-
-        // Popup Content with Nearest Hospital Badge & Vitals
-        const popupContent = document.createElement("div");
-        popupContent.className = "p-1 font-sans text-xs max-w-[290px]";
-        popupContent.innerHTML = `
-          <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
-            <div>
-              <b class="text-sm font-bold text-slate-900 block">${item.patientName}</b>
-              <span class="text-[11px] text-slate-500">${item.patientCode} · ${item.age} yosh (${item.sex})</span>
             </div>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-              item.triage === "emergency"
-                ? "bg-red-100 text-red-800 border border-red-300"
-                : item.triage === "urgent"
-                  ? "bg-amber-100 text-amber-800 border border-amber-300"
-                  : "bg-emerald-100 text-emerald-800 border border-emerald-300"
-            }">
-              ${item.triage === "emergency" ? "FAVQULODDA" : item.triage === "urgent" ? "SHOSHILINCH" : "REJALI"}
-            </span>
+          `;
+
+      const customIcon = LModule.divIcon({
+        className: `custom-div-icon ${colorClass}`,
+        html: pinHtml,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -18],
+      });
+
+      const marker = LModule.marker([item.lat, item.lng], { icon: customIcon });
+
+      // Popup Content with Nearest Hospital Badge & Vitals
+      const popupContent = document.createElement("div");
+      popupContent.className = "p-1 font-sans text-xs max-w-[290px]";
+      popupContent.innerHTML = `
+        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+          <div>
+            <b class="text-sm font-bold text-slate-900 block">${item.patientName}</b>
+            <span class="text-[11px] text-slate-500">${item.patientCode} · ${item.age} yosh (${item.sex})</span>
           </div>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+            item.triage === "emergency"
+              ? "bg-red-100 text-red-800 border border-red-300"
+              : item.triage === "urgent"
+                ? "bg-amber-100 text-amber-800 border border-amber-300"
+                : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+          }">
+            ${item.triage === "emergency" ? "FAVQULODDA" : item.triage === "urgent" ? "SHOSHILINCH" : "REJALI"}
+          </span>
+        </div>
 
-          <!-- NEAREST REGIONAL HOSPITAL BADGE -->
-          <div class="p-2 bg-blue-50 border border-blue-200 rounded-md text-[11px] text-blue-950 font-bold mb-2">
-            🏥 YAQIN REGIONAL SHIFOXONA: ${nearest.hospital.name} (${nearest.distanceKm} km)
+        <!-- NEAREST REGIONAL HOSPITAL BADGE -->
+        <div class="p-2 bg-blue-50 border border-blue-200 rounded-md text-[11px] text-blue-950 font-bold mb-2">
+          🏥 YAQIN REGIONAL SHIFOXONA: ${nearest.hospital.name} (${nearest.distanceKm} km)
+        </div>
+
+        <div class="space-y-1 mb-3 text-slate-700 bg-slate-50 p-2 rounded-md border border-slate-100">
+          <div class="flex justify-between">
+            <span>📍 Joylashuv:</span>
+            <b class="text-slate-900">${item.village}, ${item.district}</b>
           </div>
-
-          <div class="space-y-1 mb-3 text-slate-700 bg-slate-50 p-2 rounded-md border border-slate-100">
-            <div class="flex justify-between">
-              <span>📍 Joylashuv:</span>
-              <b class="text-slate-900">${item.village}, ${item.district}</b>
-            </div>
-            <div class="flex justify-between">
-              <span>🫁 Saturatsiya (SpO₂):</span>
-              <b class="${(item.vitals.spo2 ?? 96) < 90 ? "text-red-600 font-extrabold" : "text-slate-900"}">
-                ${item.vitals.spo2 ?? "--"}%
-              </b>
-            </div>
-            <div class="flex justify-between">
-              <span>💓 Pulse / BP:</span>
-              <b class="text-slate-900">${item.vitals.heartRate ?? "--"} bpm | ${item.vitals.systolicBp ?? "--"}/${item.vitals.diastolicBp ?? "--"}</b>
-            </div>
-            <div class="flex justify-between">
-              <span>📋 Shikoyat:</span>
-              <span class="text-slate-800 font-medium truncate max-w-[150px]">${item.chiefComplaint}</span>
-            </div>
+          <div class="flex justify-between">
+            <span>🫁 Saturatsiya (SpO₂):</span>
+            <b class="${(item.vitals.spo2 ?? 96) < 90 ? "text-red-600 font-extrabold" : "text-slate-900"}">
+              ${item.vitals.spo2 ?? "--"}%
+            </b>
           </div>
-
-          <div class="text-[10px] text-slate-400 mb-3 flex justify-between items-center">
-            <span>GPS: ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</span>
-            <span>${new Date(item.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          <div class="flex justify-between">
+            <span>💓 Pulse / BP:</span>
+            <b class="text-slate-900">${item.vitals.heartRate ?? "--"} bpm | ${item.vitals.systolicBp ?? "--"}/${item.vitals.diastolicBp ?? "--"}</b>
           </div>
-
-          <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-200">
-            <button id="btn-teleconsult-${item.id}" class="py-1.5 px-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded text-[11px] text-center transition cursor-pointer">
-              💻 ${language === "uz" ? "Telemaslahat" : "Teleconsult"}
-            </button>
-            <button id="btn-bus-${item.id}" class="py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded text-[11px] text-center transition cursor-pointer">
-              🚑 ${language === "uz" ? "Avtobus Biriktirish" : "Assign Bus"}
-            </button>
+          <div class="flex justify-between">
+            <span>📋 Shikoyat:</span>
+            <span class="text-slate-800 font-medium truncate max-w-[150px]">${item.chiefComplaint}</span>
           </div>
-        `;
+        </div>
 
-        marker.bindPopup(popupContent);
+        <div class="text-[10px] text-slate-400 mb-3 flex justify-between items-center">
+          <span>GPS: ${item.lat.toFixed(4)}, ${item.lng.toFixed(4)}</span>
+          <span>${new Date(item.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
 
-        marker.on("click", () => {
-          onSelect(item);
-        });
+        <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-slate-200">
+          <button id="btn-teleconsult-${item.id}" class="py-1.5 px-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded text-[11px] text-center transition cursor-pointer">
+            💻 ${language === "uz" ? "Telemaslahat" : "Teleconsult"}
+          </button>
+          <button id="btn-bus-${item.id}" class="py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded text-[11px] text-center transition cursor-pointer">
+            🚑 ${language === "uz" ? "Avtobus Biriktirish" : "Assign Bus"}
+          </button>
+        </div>
+      `;
 
-        marker.on("popupopen", () => {
-          onSelect(item);
+      marker.bindPopup(popupContent);
 
-          const teleBtn = document.getElementById(`btn-teleconsult-${item.id}`);
-          if (teleBtn) {
-            teleBtn.onclick = () => {
-              onScheduleTeleconsult(item.id, "Dr. Tomir (Markaziy Shifoxona)");
-              marker.closePopup();
-            };
-          }
+      marker.on("click", () => {
+        onSelect(item);
+      });
 
-          const busBtn = document.getElementById(`btn-bus-${item.id}`);
-          if (busBtn) {
-            busBtn.onclick = () => {
-              onAssignVehicle(item.id, "Tomir-01 Mobile Bus");
-              marker.closePopup();
-            };
-          }
-        });
+      marker.on("popupopen", () => {
+        onSelect(item);
 
-        marker.addTo(markersGroup);
-        bounds.extend([item.lat, item.lng]);
+        const teleBtn = document.getElementById(`btn-teleconsult-${item.id}`);
+        if (teleBtn) {
+          teleBtn.onclick = () => {
+            onScheduleTeleconsult(item.id, "Dr. Tomir (Markaziy Shifoxona)");
+            marker.closePopup();
+          };
+        }
 
-        if (isSelected && map) {
-          map.panTo([item.lat, item.lng], { animate: true, duration: 0.5 });
-          marker.openPopup();
+        const busBtn = document.getElementById(`btn-bus-${item.id}`);
+        if (busBtn) {
+          busBtn.onclick = () => {
+            onAssignVehicle(item.id, "Tomir-01 Mobile Bus");
+            marker.closePopup();
+          };
         }
       });
 
-      if (items.length > 0 && !selectedId && map) {
-        map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+      marker.addTo(markersGroup);
+      bounds.extend([item.lat, item.lng]);
+
+      if (isSelected) {
+        map.panTo([item.lat, item.lng], { animate: true, duration: 0.3 });
+        marker.openPopup();
       }
     });
+
+    if (items.length > 0 && !selectedId) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+    }
   }, [items, selectedId, mapLoaded, onSelect, onAssignVehicle, onScheduleTeleconsult, language]);
 
   return (

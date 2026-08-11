@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from "react";
-import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
+import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import {
   DispatchLauncherIcon,
@@ -212,10 +212,10 @@ export default function IsolatedPatientPortalPage() {
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Active Role Switcher */}
-          <div className="flex items-center gap-2 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-700/60 text-xs">
-            <span className="text-emerald-300 font-medium">Faol Rol:</span>
+          <div className="flex items-center gap-2 bg-emerald-950/60 px-3 py-1 rounded-lg border border-emerald-700/60 text-xs">
+            <span className="text-emerald-300 font-semibold">Rol:</span>
             <select
               value={activeRole}
               onChange={(e) => setActiveRole(e.target.value)}
@@ -228,12 +228,14 @@ export default function IsolatedPatientPortalPage() {
             </select>
           </div>
 
+          <SunlightToggle />
+
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium cursor-pointer"
+            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
           >
-            <option value="uz">{"O'zbekcha"}</option>
+            <option value="uz">{"Oʻzbekcha"}</option>
             <option value="en">English</option>
           </select>
         </div>
@@ -241,20 +243,20 @@ export default function IsolatedPatientPortalPage() {
 
       {/* Sub Navigation Bar */}
       <nav className="bg-white border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold shrink-0">
-        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold" href="/patient">
+        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold whitespace-nowrap" href="/patient">
           📱 Bemor Portali
         </a>
-        <DemoRoleLink workspace="mobile_nurse" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
+        <DemoRoleLink workspace="mobile_nurse" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
           {t("dashboard")}
         </DemoRoleLink>
-        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
+        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
           {t("specialistQueue")}
         </DemoRoleLink>
-        <DemoRoleLink workspace="dispatcher" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
+        <DemoRoleLink workspace="dispatcher" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
           {t("roleDispatcher")}
         </DemoRoleLink>
-        <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
-          💬 Telekonsultatsiya & Chat
+        <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap flex items-center gap-1.5 font-bold text-emerald-800">
+          <span>💬 Telemaslahat & Chat</span>
         </a>
       </nav>
 

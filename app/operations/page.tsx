@@ -65,32 +65,33 @@ export default function OperationsPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
-      <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs z-20 relative">
-        <div className="flex items-center gap-4">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
-            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>Tomir AI</span>
+      {/* Top Header Bar */}
+      <header className="px-4 md:px-6 bg-[#063C32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
+        <div className="flex items-center gap-3 shrink-0">
+          <a href="/" className="flex items-center gap-2 font-bold text-base md:text-lg text-white no-underline shrink-0">
+            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm font-black">+</span>
+            <span className="tracking-tight">Tomir AI</span>
           </a>
-          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
+          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden lg:inline-block">
             Dispetcherlik va Tibbiy logistika boshqaruvi
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center flex-wrap md:flex-nowrap gap-2 md:gap-3 shrink-0">
           <a
             href="/chat"
-            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5 shrink-0 shadow-2xs"
           >
-            <span>💬</span>
-            <span>Chat & Telekonsultatsiya</span>
+            <InnerChatIcon className="w-4 h-4 shrink-0" />
+            <span className="whitespace-nowrap">Chat & Telemaslahat</span>
           </a>
 
           <a
             href="/dispatcher"
-            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5 shrink-0 shadow-2xs"
           >
-            <span>🗺️</span>
-            <span>Toliq GIS Xarita Rejimi</span>
+            <span className="text-sm leading-none">🗺️</span>
+            <span className="whitespace-nowrap">Toliq GIS Xarita</span>
           </a>
 
           <SunlightToggle />
@@ -98,27 +99,23 @@ export default function OperationsPage() {
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
+            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
           >
             <option value="uz">{"Oʻzbekcha"}</option>
             <option value="en">English</option>
           </select>
 
-          <nav className="flex items-center gap-1 text-xs font-medium">
-            <a className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300" href="/patient">
+          <nav className="flex items-center gap-1 text-xs font-semibold shrink-0">
+            <a className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300 whitespace-nowrap" href="/patient">
               📱 Bemor Portali
             </a>
-            <a className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300 flex items-center gap-1" href="/chat">
-              <InnerChatIcon className="w-5 h-5 shrink-0" />
-              <span>Chat</span>
-            </a>
-            <DemoRoleLink workspace="mobile_nurse" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
+            <DemoRoleLink workspace="mobile_nurse" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
               {t("dashboard")}
             </DemoRoleLink>
-            <DemoRoleLink workspace="specialist" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
+            <DemoRoleLink workspace="specialist" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
               {t("specialistView")}
             </DemoRoleLink>
-            <a className="px-3 py-1.5 text-white bg-white/10 rounded-md font-semibold border-b-2 border-emerald-400" href="/operations">
+            <a className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs" href="/operations">
               {t("roleDispatcher")}
             </a>
           </nav>
