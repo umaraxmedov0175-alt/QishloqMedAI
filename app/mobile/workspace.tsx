@@ -20,6 +20,7 @@ import {
 } from "@/lib/symptom-protocols/engine";
 import { getAllProtocols } from "@/lib/symptom-protocols/index";
 import { MobileLabBadgeIcon } from "@/app/ui/MedicalIcons";
+import { CarePulse } from "@/app/ui/CarePulse";
 
 type NetState =
   | "online"
@@ -873,6 +874,21 @@ export function MobileWorkspace() {
                     <h3 className="text-xl font-serif font-bold text-slate-900 m-0">4. Vital ko'rsatkichlar</h3>
                     <span className="text-xs text-slate-500 font-medium">Barcha o'lchov birliklari ISO standartlariga mos</span>
                   </div>
+
+                  {/* Wow Moment 1: Care Pulse Live Animated ECG Waveform */}
+                  {(() => {
+                    const [sys, dia] = (draft.bp || "120/80").split("/").map((v) => Number(v.trim()));
+                    return (
+                      <CarePulse
+                        spo2={Number(draft.spo2) || 95}
+                        heartRate={Number(draft.pulse) || 75}
+                        systolicBp={sys || 120}
+                        diastolicBp={dia || 80}
+                        label={language === "uz" ? "Mobil Klinika Live Telemetriya Pulsi" : "Mobile Clinic Live Telemetry Pulse"}
+                        className="mb-4"
+                      />
+                    );
+                  })()}
 
                   {Number(draft.spo2) > 0 && Number(draft.spo2) < 90 && (
                     <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-900 font-semibold flex items-center gap-2">

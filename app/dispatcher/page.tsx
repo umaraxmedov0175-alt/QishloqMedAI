@@ -13,6 +13,7 @@ import {
   type TriageSeverity,
 } from "@/lib/realtime-dispatcher";
 import { useLanguage } from "@/lib/i18n";
+import { TomirLogo } from "@/app/ui/TomirLogo";
 
 export default function DispatcherWorkspacePage() {
   const { language, setLanguage, t } = useLanguage();
@@ -77,9 +78,8 @@ export default function DispatcherWorkspacePage() {
       {/* Header Bar */}
       <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs shrink-0 z-20">
         <div className="flex items-center gap-4">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
-            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>Tomir AI</span>
+          <a href="/" className="no-underline">
+            <TomirLogo variant="glass" size="sm" />
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             🗺️ Dispetcherlik Geolokatsion Markazi

@@ -11,6 +11,7 @@ import {
   validatePayloadChecksum,
   type DecodedZeroConnectivityPayload,
 } from "@/lib/zero-connectivity-payload";
+import { TomirLogo } from "@/app/ui/TomirLogo";
 
 export default function DispatcherRadarPage() {
   const [radarData, setRadarData] = useState(() => analyzeOutbreakRadar());
@@ -100,12 +101,10 @@ export default function DispatcherRadarPage() {
       {/* Top Header Workspace Nav */}
       <header className="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 font-extrabold text-xl shadow-inner">
-            ☣️
-          </div>
-          <div>
+          <TomirLogo variant="glass" size="md" />
+          <div className="border-l border-slate-700/60 pl-3">
             <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              TOMIR AI — Outbreak Radar & Zero-Connectivity Triage Engine
+              Outbreak Radar & Zero-Connectivity Triage Engine
             </h1>
             <p className="text-xs text-slate-400">
               Mintaqaviy epidemik spayklarni bashorat qilish, proaktiv dispanserizatsiya va oflayn SMS mesh sinxronizatsiyasi

@@ -546,3 +546,61 @@ h1, h2, h3, .serif-heading {
   .vitals-grid { grid-template-columns: 1fr; }
 }
 
+/* Tomir Cinematic Design System & Keyframes */
+:root {
+  --navy-deep: #0A1128;
+  --navy-slate: #0F172A;
+  --ivory-base: #FDFBF7;
+  --turquoise-clinical: #0EA5E9;
+  --emerald-clinical: #10B981;
+  --amber-alert: #F59E0B;
+  --red-critical: #EF4444;
+}
+
+.bg-navy-950 { background-color: var(--navy-deep); }
+.bg-navy-900 { background-color: var(--navy-slate); }
+.bg-ivory { background-color: var(--ivory-base); }
+
+/* Glassmorphism Tokens */
+.glass-navy {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Keyframe Animations */
+@keyframes carePulseGlow {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.04); }
+}
+
+@keyframes ecgDash {
+  from { stroke-dashoffset: 500; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes ecgBeam {
+  0% { left: -10%; }
+  100% { left: 110%; }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 18s linear infinite;
+}
+
+

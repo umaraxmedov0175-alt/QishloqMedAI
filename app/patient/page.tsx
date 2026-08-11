@@ -11,6 +11,8 @@ import {
 } from "@/app/ui/MedicalIcons";
 import { canAccessPatientPortal } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
+import { TomirLogo } from "@/app/ui/TomirLogo";
+import { CareTimeline } from "@/app/ui/CareTimeline";
 import {
   createPatientApplication,
   getPatientApplications,
@@ -203,9 +205,8 @@ export default function IsolatedPatientPortalPage() {
       {/* Top Header */}
       <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-4">
-          <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
-            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
-            <span>Tomir AI</span>
+          <a href="/" className="no-underline">
+            <TomirLogo variant="glass" size="sm" />
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             📱 {t("patientPortalTitle")}
@@ -318,6 +319,9 @@ export default function IsolatedPatientPortalPage() {
             </button>
           </div>
         )}
+
+        {/* Wow Moment 3: Interactive Patient Care Journey Timeline */}
+        <CareTimeline language={language} className="mb-5" />
 
         {/* Patient Portal Workspace Self-Service Tabs */}
         <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[580px]">

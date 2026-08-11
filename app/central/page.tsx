@@ -13,6 +13,8 @@ import { useLanguage } from "@/lib/i18n";
 import { printClinicalReport } from "@/lib/report-generator";
 import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
+import { TomirLogo } from "@/app/ui/TomirLogo";
+import { CarePulse } from "@/app/ui/CarePulse";
 
 export default function CentralReviewPage() {
   const { language, setLanguage, t } = useLanguage();
@@ -114,9 +116,8 @@ export default function CentralReviewPage() {
     <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
       <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-3 shrink-0">
-          <a href="/" className="flex items-center gap-2 font-bold text-base md:text-lg text-white no-underline shrink-0">
-            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm font-black">+</span>
-            <span className="tracking-tight">Tomir AI</span>
+          <a href="/" className="no-underline shrink-0">
+            <TomirLogo variant="glass" size="sm" />
           </a>
           <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden lg:inline-block">
             Toshkent Markaziy Tibbiy Koʻrik Markazi
@@ -263,6 +264,17 @@ export default function CentralReviewPage() {
               <p className="text-xs text-slate-500 mb-4 font-medium">
                 {active.age} {t("years")} · {active.sex} · {active.village}, {active.region}
               </p>
+
+              {/* Live Care Pulse Telemetry Waveform */}
+              <CarePulse
+                spo2={active.triage === "emergency" || active.triage === "urgent" ? 91 : 97}
+                heartRate={active.triage === "emergency" ? 112 : 76}
+                systolicBp={active.triage === "emergency" ? 168 : 122}
+                diastolicBp={active.triage === "emergency" ? 96 : 80}
+                isCriticalOverride={active.triage === "emergency"}
+                label={language === "uz" ? "Markaziy Telemetriya Analizi" : "Central Telemetry Waveform"}
+                className="mb-4"
+              />
 
               <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1.5">{t("chiefComplaint")}</h3>
               <p className="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200/60 mb-4">

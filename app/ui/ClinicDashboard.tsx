@@ -4,6 +4,11 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DemoRoleLink } from "./DemoRoleLink";
+import { TomirLogo } from "./TomirLogo";
+import { UzbekPatternSvg } from "./UzbekPatternSvg";
+import { CinematicUzbekistanMap } from "./CinematicUzbekistanMap";
+import { RoleWorldShift, RoleType } from "./RoleWorldShift";
+import { CareTimeline } from "./CareTimeline";
 
 type Triage = "routine" | "priority" | "urgent" | "emergency";
 type Case = {
@@ -202,52 +207,77 @@ export function ClinicDashboard() {
     }
     setAuthError(language === "uz" ? "Demo email yoki parol noto'g'ri" : "Invalid demo login credentials");
   }
+  const [activeDemoRole, setActiveDemoRole] = useState<RoleType>("mobile_nurse");
+
   if (!signedIn) {
     return (
-      <main className="auth-shell">
-        <section className="auth-story">
+      <main className="min-h-screen bg-navy-950 text-white flex flex-col relative overflow-hidden font-sans">
+        {/* Background Uzbek Islimi Geometry Ornament */}
+        <UzbekPatternSvg className="absolute inset-0 w-full h-full text-emerald-400 opacity-5" />
+
+        {/* Top Header Bar */}
+        <header className="relative z-20 px-6 py-4 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md flex items-center justify-between">
+          <TomirLogo variant="glass" size="md" />
+
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-white flex items-center justify-center font-bold text-lg">
-              +
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
+              className="px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg border border-slate-700 font-medium shadow-xs"
+            >
+              <option value="uz">{"O'zbekcha"}</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </header>
+
+        {/* Hero Grid Container */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 my-auto">
+          {/* Left Narrative Hero & Interactive Canvas Map */}
+          <section className="lg:col-span-7 flex flex-col justify-between space-y-6">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                {t("landingKicker")}
+              </span>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-extrabold text-white leading-tight mb-3">
+                {t("landingTitle")}
+              </h1>
+              <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl">
+                {t("landingSubtitle")}
+              </p>
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">Tomir AI</span>
-          </div>
-          <div className="my-auto py-8">
-            <span className="auth-kicker">{t("landingKicker")}</span>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-white leading-tight my-4">
-              {t("landingTitle")}
-            </h1>
-            <p className="text-emerald-100 text-sm md:text-base leading-relaxed max-w-lg mb-8">
-              {t("landingSubtitle")}
-            </p>
 
-            <div className="auth-flow-steps">
-              <div className="auth-flow-step">
-                <span className="step-dot"></span>
-                <span>1 · Mobil ko'rik</span>
-              </div>
-              <div className="auth-flow-step">
-                <span className="step-dot"></span>
-                <span>2 · Diagnostika sinxronlash</span>
-              </div>
-              <div className="auth-flow-step">
-                <span className="step-dot"></span>
-                <span>3 · AI ustuvorlik saralash</span>
-              </div>
-              <div className="auth-flow-step active">
-                <span className="step-dot"></span>
-                <span>4 · Vrach tasdiqlashi</span>
-              </div>
+            {/* Interactive 3D/Canvas Uzbekistan Map */}
+            <div className="w-full h-72 lg:h-80">
+              <CinematicUzbekistanMap language={language} />
             </div>
-          </div>
 
-          <div className="auth-note">
-            {t("aiNote")}
-          </div>
-        </section>
+            {/* Wow Moment 3: Care Timeline Story */}
+            <CareTimeline language={language} />
+          </section>
 
-        <section className="auth-panel">
-          <div className="auth-card">
+          {/* Right Role Shift & Interactive Login Panel */}
+          <section className="lg:col-span-5 flex flex-col space-y-6">
+            {/* Wow Moment 2: Role-Based World Shifts */}
+            <RoleWorldShift
+              currentRole={activeDemoRole}
+              onRoleChange={(r) => {
+                setActiveDemoRole(r);
+                if (r === "mobile_nurse") router.push("/mobile");
+                else if (r === "specialist") router.push("/central");
+                else if (r === "dispatcher") router.push("/dispatcher");
+                else if (r === "patient") router.push("/patient");
+              }}
+              language={language}
+            />
+
+            {/* Conventional Login Form Card */}
+            <div className="auth-card bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-md">
+              <div className="flex items-center justify-between mb-4">
+                <span className="synthetic">{t("syntheticDemoData")}</span>
+                <span className="text-[11px] text-slate-400 font-mono">Tomir Auth v2.4</span>
+              </div>
             <div className="flex items-center justify-between mb-6">
               <span className="synthetic">{t("syntheticDemoData")}</span>
               <select
@@ -354,7 +384,8 @@ export function ClinicDashboard() {
               </p>
             </form>
           </div>
-        </section>
+          </section>
+        </div>
       </main>
     );
   }
