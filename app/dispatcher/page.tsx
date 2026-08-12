@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role */
 import { useEffect, useState } from "react";
 import { RoleGuard } from "@/app/ui/RoleGuard";
 import { SidebarNav } from "@/app/ui/SidebarNav";
@@ -18,6 +18,7 @@ import { useLanguage } from "@/lib/i18n";
 
 export default function DispatcherWorkspacePage() {
   const { language } = useLanguage();
+  const [collapsed, setCollapsed] = useState(false);
   const [items, setItems] = useState<DispatchItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -76,9 +77,9 @@ export default function DispatcherWorkspacePage() {
 
   return (
     <RoleGuard requiredRole="dispatcher">
-      <div className="flex min-h-screen bg-slate-900 text-white font-sans">
-        <SidebarNav role="dispatcher" activePath="/dispatcher" />
-        <main className="flex-1 overflow-y-auto flex flex-col">
+      <div className="min-h-screen bg-slate-900 text-white font-sans">
+        <SidebarNav role="dispatcher" activePath="/dispatcher" onToggleCollapse={setCollapsed} />
+        <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto flex flex-col`}>
 
       {/* Main Workspace Body */}
       <div className="flex-1 max-w-[1720px] w-full mx-auto px-6 py-6 flex flex-col gap-5">

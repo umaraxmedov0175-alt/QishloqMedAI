@@ -24,9 +24,9 @@ export function MovableChatWidget() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // Chat State inside drawer
-  const [threads, setThreads] = useState<ChatThread[]>([]);
+  const [threads, setThreads] = useState<ChatThread[]>(() => getChatThreads());
   const [activeThreadId, setActiveThreadId] = useState<string>("thread-doc-nurse-01");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => getChatMessages("thread-doc-nurse-01"));
   const [inputMessage, setInputMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -42,10 +42,8 @@ export function MovableChatWidget() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Load chat data
+  // Subscribe to real-time chat updates
   useEffect(() => {
-    setThreads([...getChatThreads()]);
-    setMessages([...getChatMessages(activeThreadId)]);
     const unsubscribe = subscribeToChatUpdates(() => {
       setThreads([...getChatThreads()]);
       setMessages([...getChatMessages(activeThreadId)]);
@@ -176,7 +174,10 @@ export function MovableChatWidget() {
               <button
                 key={thread.id}
                 type="button"
-                onClick={() => setActiveThreadId(thread.id)}
+                onClick={() => {
+                  setActiveThreadId(thread.id);
+                  setMessages([...getChatMessages(thread.id)]);
+                }}
                 className={`py-2 px-3 border-b-2 transition whitespace-nowrap text-left text-[11px] ${
                   activeThreadId === thread.id
                     ? "border-emerald-500 text-emerald-300 font-bold bg-slate-900"

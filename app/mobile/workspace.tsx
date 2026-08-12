@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role */
 import { FormEvent, useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
@@ -48,6 +48,7 @@ const goldenDraft = {
 
 export function MobileWorkspace() {
   const { language, t } = useLanguage();
+  const [collapsed, setCollapsed] = useState(false);
   const [network, setNetwork] = useState<NetState>("offline");
   const [pending, setPending] = useState(0);
   const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
@@ -260,9 +261,9 @@ export function MobileWorkspace() {
 
   return (
     <RoleGuard requiredRole="nurse">
-      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-        <SidebarNav role="nurse" activePath="/mobile" />
-        <main className="flex-1 overflow-y-auto">
+      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="nurse" activePath="/mobile" onToggleCollapse={setCollapsed} />
+        <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto`}>
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">

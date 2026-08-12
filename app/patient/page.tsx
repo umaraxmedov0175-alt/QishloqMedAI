@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control, jsx-a11y/aria-role */
 import { useEffect, useState } from "react";
 import { RoleGuard } from "@/app/ui/RoleGuard";
 import { SidebarNav } from "@/app/ui/SidebarNav";
@@ -29,6 +29,7 @@ import {
 
 export default function IsolatedPatientPortalPage() {
   const { t } = useLanguage();
+  const [collapsed, setCollapsed] = useState(false);
 
   const activeRole = "patient";
   const [patientId] = useState<string>("QM-2027-0042");
@@ -201,13 +202,13 @@ export default function IsolatedPatientPortalPage() {
 
   return (
     <RoleGuard requiredRole="patient">
-      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-        <SidebarNav role="patient" activePath="/patient" />
-        <main className="flex-1 overflow-y-auto flex flex-col">
+      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="patient" activePath="/patient" onToggleCollapse={setCollapsed} />
+        <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto flex flex-col`}>
 
       {/* Privacy Redaction Warning Toast */}
       {emailPrivacyToast && (
-        <div className="bg-amber-500 text-slate-950 text-xs font-bold px-6 py-2.5 flex items-center justify-between shadow-md transition animate-bounce">
+        <div className="bg-amber-500 text-slate-950 text-xs font-bold px-6 py-2.5 flex items-center justify-between shadow-md transition duration-200">
           <div className="flex items-center gap-2 max-w-4xl mx-auto">
             <span>🔒</span>
             <span>{t("privacyPhoneRedactedToast")}</span>

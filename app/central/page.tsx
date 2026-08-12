@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
@@ -18,6 +18,7 @@ import { CarePulse } from "@/app/ui/CarePulse";
 
 export default function CentralReviewPage() {
   const { language, t } = useLanguage();
+  const [collapsed, setCollapsed] = useState(false);
   const [cases] = useState(DEMO_CASES);
   const [selected, setSelected] = useState("QM-2027-0042");
   const [query, setQuery] = useState("");
@@ -114,9 +115,9 @@ export default function CentralReviewPage() {
 
   return (
     <RoleGuard requiredRole="doctor">
-      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-        <SidebarNav role="doctor" activePath="/central" />
-        <main className="flex-1 overflow-y-auto">
+      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="doctor" activePath="/central" onToggleCollapse={setCollapsed} />
+        <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto`}>
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">

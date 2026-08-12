@@ -10,12 +10,19 @@ import type { Role } from "@/lib/authorization";
 interface SidebarNavProps {
   role: Role;
   activePath?: string;
+  onToggleCollapse?: (collapsed: boolean) => void;
 }
 
-export function SidebarNav({ role, activePath }: SidebarNavProps) {
+export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavProps) {
   const { language, setLanguage } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
+
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    onToggleCollapse?.(next);
+  };
 
   const handleLogout = async () => {
     try {
@@ -65,16 +72,16 @@ export function SidebarNav({ role, activePath }: SidebarNavProps) {
 
   return (
     <aside
-      className={`bg-slate-900 border-r border-slate-800 text-white flex flex-col justify-between transition-all duration-300 shrink-0 z-30 ${
+      className={`fixed top-0 left-0 h-screen bg-slate-900 border-r border-slate-800 text-white flex flex-col justify-between transition-all duration-300 z-40 overflow-hidden ${
         collapsed ? "w-16" : "w-64"
       }`}
     >
       {/* Top Brand Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+      <div className={`p-4 border-b border-slate-800 flex items-center ${collapsed ? "justify-center" : "justify-between"} transition-all duration-300`}>
         {!collapsed && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-hidden transition-all duration-200">
             <TomirLogo variant="glass" size="sm" />
-            <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">
+            <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 whitespace-nowrap">
               {roleLabel}
             </span>
           </div>
@@ -82,8 +89,8 @@ export function SidebarNav({ role, activePath }: SidebarNavProps) {
         {collapsed && <TomirLogo variant="glass" size="sm" />}
         <button
           type="button"
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition cursor-pointer border-0 bg-transparent text-xs"
+          onClick={toggleCollapsed}
+          className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition duration-150 cursor-pointer border-0 bg-transparent text-xs shrink-0"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? "⏩" : "⏪"}
@@ -91,32 +98,38 @@ export function SidebarNav({ role, activePath }: SidebarNavProps) {
       </div>
 
       {/* Middle Navigation Links */}
-      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const isActive = activePath === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
+                collapsed ? "justify-center px-0" : ""
+              } ${
                 isActive
                   ? "bg-emerald-700 text-white shadow-sm font-bold"
                   : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
               }`}
               title={collapsed ? item.label : undefined}
             >
-              <span className="text-base leading-none">{item.icon}</span>
-              {!collapsed && <span>{item.label}</span>}
+              <span className="text-base leading-none shrink-0">{item.icon}</span>
+              {!collapsed && (
+                <span className="transition-all duration-150 overflow-hidden whitespace-nowrap">
+                  {item.label}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
 
       {/* Bottom Profile & Utilities */}
-      <div className="p-3 border-t border-slate-800 space-y-2">
+      <div className="p-3 border-t border-slate-800 space-y-2 overflow-hidden">
         {/* Language Switcher */}
         {!collapsed && (
-          <div className="flex items-center justify-between px-2 text-xs">
+          <div className="flex items-center justify-between px-2 text-xs overflow-hidden whitespace-nowrap">
             <span className="text-slate-400 text-[11px] font-mono">Til / Lang</span>
             <select
               value={language}
@@ -130,13 +143,13 @@ export function SidebarNav({ role, activePath }: SidebarNavProps) {
         )}
 
         {/* User Card & Logout */}
-        <div className="flex items-center justify-between p-2 bg-slate-800/60 rounded-xl border border-slate-800 text-xs">
+        <div className={`flex items-center ${collapsed ? "justify-center p-1" : "justify-between p-2"} bg-slate-800/60 rounded-xl border border-slate-800 text-xs transition-all duration-150`}>
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="w-7 h-7 rounded-full bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
               {role[0].toUpperCase()}
             </div>
             {!collapsed && (
-              <div className="truncate">
+              <div className="truncate overflow-hidden whitespace-nowrap">
                 <b className="text-white block text-[11px] truncate">Tomir Demo User</b>
                 <span className="text-[10px] text-emerald-400 font-mono">Online</span>
               </div>
@@ -146,7 +159,7 @@ export function SidebarNav({ role, activePath }: SidebarNavProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="text-slate-400 hover:text-red-400 p-1 border-0 bg-transparent cursor-pointer text-xs transition"
+              className="text-slate-400 hover:text-red-400 p-1 border-0 bg-transparent cursor-pointer text-xs transition duration-150 shrink-0"
               title="Sign out"
             >
               🚪
