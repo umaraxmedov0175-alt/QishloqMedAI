@@ -40,11 +40,13 @@ export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavPro
       case "doctor":
         return [
           { href: "/central", label: language === "uz" ? "Shifokor Ko'rigi" : "Clinician Review", icon: "🩺" },
+          { href: "/anatomy", label: language === "uz" ? "3D Anatomiya Ishi" : "3D Anatomy Work", icon: "🧍" },
           { href: "/hospital/outbreak", label: language === "uz" ? "Hududiy Shifoxonalar" : "Regional Hospitals", icon: "🏥" },
         ];
       case "nurse":
         return [
           { href: "/mobile", label: language === "uz" ? "Mobil Klinika" : "Mobile Clinic", icon: "📋" },
+          { href: "/anatomy", label: language === "uz" ? "3D Anatomiya Ishi" : "3D Anatomy Work", icon: "🧍" },
           { href: "/offline", label: language === "uz" ? "Oflayn Navbat" : "Offline Queue", icon: "⚡" },
         ];
       case "dispatcher":
