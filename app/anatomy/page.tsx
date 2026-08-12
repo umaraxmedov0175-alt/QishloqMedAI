@@ -59,16 +59,6 @@ export default function Anatomy3DWorkspacePage() {
   const [temp, setTemp] = useState(37.2);
   const [glucose, setGlucose] = useState(6.8);
 
-  // Detect session role
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const cookies = document.cookie.split(";").map((c) => c.trim().split("="));
-      const rawCookie = cookies.find(([name]) => name === "qm_demo_role")?.[1];
-      const sessionRole = normalizeRole(rawCookie || sessionStorage.getItem("qm_demo_role"));
-      if (sessionRole) setRole(sessionRole);
-    }
-  }, []);
-
   // Load 3D Anatomy assessments & subscribe to real-time updates
   useEffect(() => {
     setAssessments(getAnatomyAssessments());
@@ -103,6 +93,8 @@ export default function Anatomy3DWorkspacePage() {
     setTaggedNodes((prev) => [...prev.filter((n) => n.region !== selectedRegion), newTag]);
     setCustomSymptom("");
     setNodeDescription("");
+    setNotice(`📍 3D Soha (${regionLabels[selectedRegion].uz}) muvaffaqiyatli biriktirildi!`);
+    setTimeout(() => setNotice(""), 3000);
   };
 
   // Nurse: Submit 3D Assessment to Doctor
@@ -126,12 +118,14 @@ export default function Anatomy3DWorkspacePage() {
         : "O'rtacha darajali klinik ko'rsatkichlar.",
     });
 
+    setActiveAssessmentId(created.id);
     setNotice(`✅ 3D Baholash (${created.id}) Hududiy Vrachga yuborildi!`);
     setTimeout(() => setNotice(""), 4000);
   };
 
   // Doctor: Approve Treatment Plan
   const handleApprovePlan = (id: string) => {
+    if (!id) return;
     updateAnatomyStatus(id, "approved", "Davolash rejasi vrach tomonidan tasdiqlandi.");
     setNotice(`✅ 3D Diagnostik Reja (${id}) muvaffaqiyatli TASDIQLANDI!`);
     setTimeout(() => setNotice(""), 4000);
@@ -139,8 +133,17 @@ export default function Anatomy3DWorkspacePage() {
 
   // Doctor: Request Additional Vitals
   const handleRequestVitals = (id: string) => {
+    if (!id) return;
     updateAnatomyStatus(id, "additional_info_requested", "Qayta qon bosimi va lab tahlillarini yuboring.");
     setNotice(`ℹ️ (${id}) bo'yicha qo'shimcha tahlillar so'raldi.`);
+    setTimeout(() => setNotice(""), 4000);
+  };
+
+  // Doctor: Schedule Urgent Teleconsult
+  const handleScheduleTeleconsult = (id: string) => {
+    if (!id) return;
+    updateAnatomyStatus(id, "teleconsult_scheduled", "Shoshilinch videomaslahat belgilandi.");
+    setNotice(`📞 (${id}) bo'yicha Shoshilinch Telekonsultatsiya belgilandi!`);
     setTimeout(() => setNotice(""), 4000);
   };
 
@@ -151,7 +154,7 @@ export default function Anatomy3DWorkspacePage() {
       <SidebarNav role={role} activePath="/anatomy" onToggleCollapse={setSidebarCollapsed} />
       <main className={`transition-[margin] duration-300 ${sidebarCollapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto flex flex-col`}>
         {/* Top Header */}
-        <header className="h-16 px-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between shadow-xs shrink-0">
+        <header className="h-16 px-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between shadow-xs shrink-0 flex-wrap gap-2">
           <div className="flex items-center gap-3">
             <span className="text-xl">🧍</span>
             <div>
@@ -164,24 +167,42 @@ export default function Anatomy3DWorkspacePage() {
             </div>
           </div>
 
-          {/* Role Switcher Indicator & Notifications */}
+          {/* Interactive Role Switcher & Notifications */}
           <div className="flex items-center gap-3">
-            {role === "doctor" && (
-              <span className="px-3 py-1 bg-red-500/20 text-red-300 text-xs font-mono font-bold rounded-lg border border-red-500/40">
+            {role === "doctor" && pendingCount > 0 && (
+              <span className="px-3 py-1 bg-red-500/20 text-red-300 text-xs font-mono font-bold rounded-lg border border-red-500/40 animate-pulse">
                 🔔 {pendingCount} Tasdiqlanmagan 3D Signal
               </span>
             )}
-            <div className="px-3 py-1 bg-slate-800 text-slate-300 text-xs font-mono rounded-lg border border-slate-700">
-              {role === "doctor" ? "🩺 Clinician Mode" : "📋 Mobile Nurse Mode"}
+
+            <div className="flex bg-slate-800 border border-slate-700 rounded-xl p-1 text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => setRole("nurse")}
+                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                  role === "nurse" ? "bg-emerald-600 text-white font-bold shadow-xs" : "text-slate-300 hover:text-white"
+                }`}
+              >
+                📋 Nurse Mode
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("doctor")}
+                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
+                  role === "doctor" ? "bg-emerald-600 text-white font-bold shadow-xs" : "text-slate-300 hover:text-white"
+                }`}
+              >
+                🩺 Doctor Review Mode
+              </button>
             </div>
           </div>
         </header>
 
-        {/* Global Toast Notice */}
+        {/* Global Toast Notice Banner */}
         {notice && (
           <div className="bg-emerald-600 text-white text-xs font-bold px-6 py-2.5 flex items-center justify-between shadow-lg transition animate-in fade-in">
             <span>{notice}</span>
-            <button type="button" onClick={() => setNotice("")} className="text-white font-bold cursor-pointer">✕</button>
+            <button type="button" onClick={() => setNotice("")} className="text-white font-bold cursor-pointer border-0 bg-transparent">✕</button>
           </div>
         )}
 
@@ -206,7 +227,7 @@ export default function Anatomy3DWorkspacePage() {
                   <h2 className="text-sm font-bold text-white flex items-center gap-2">
                     <span>📍</span> 3D Sohani Belgilash: <span className="text-emerald-400 font-mono uppercase">{selectedRegion}</span>
                   </h2>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-mono font-bold">
+                  <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono font-bold">
                     STEP 2 / 3D SIMPTOM TAGGER
                   </span>
                 </div>
@@ -263,14 +284,14 @@ export default function Anatomy3DWorkspacePage() {
                 <button
                   type="button"
                   onClick={handleAddNodeTag}
-                  className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold text-xs rounded-xl border border-slate-700 transition cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-emerald-300 font-bold text-xs rounded-xl border border-slate-700 transition cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                 >
                   <span>➕</span> Ushbu 3D Sohani Belgilash va Ro'yxatga Qo'shish
                 </button>
 
                 {/* Currently Tagged Nodes List */}
                 <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-300 block">Belgilangan 3D Sohalar Ro'yxati:</span>
+                  <span className="text-xs font-bold text-slate-300 block">Belgilangan 3D Sohalar Ro'yxati ({taggedNodes.length}):</span>
                   {taggedNodes.length === 0 ? (
                     <div className="text-xs text-slate-500 text-center py-4 bg-slate-950 rounded-xl border border-slate-800">
                       Hozircha hech qanday 3D soha belgilanmagan
@@ -359,7 +380,7 @@ export default function Anatomy3DWorkspacePage() {
                 <button
                   type="button"
                   onClick={handleDispatchToDoctor}
-                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2 border border-emerald-400/40 mt-2"
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg transition cursor-pointer flex items-center justify-center gap-2 border border-emerald-400/40 mt-2"
                 >
                   <span>🚀</span> [ Dispatch 3D Assessment to Regional Doctor ]
                 </button>
@@ -380,7 +401,7 @@ export default function Anatomy3DWorkspacePage() {
                       type="button"
                       onClick={() => setActiveAssessmentId(a.id)}
                       className={`w-full text-left p-3 rounded-xl border transition cursor-pointer text-xs ${
-                        activeAssessmentId === a.id
+                        activeAssessment?.id === a.id
                           ? "bg-slate-800 border-emerald-500 text-white font-bold"
                           : "bg-slate-950 border-slate-800 text-slate-300 hover:bg-slate-800/60"
                       }`}
@@ -419,16 +440,16 @@ export default function Anatomy3DWorkspacePage() {
               <div className="lg:col-span-4 flex flex-col gap-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
                 <div className="border-b border-slate-800 pb-3">
                   <span className="text-[10px] font-mono text-emerald-400 font-bold block">
-                    PATIENT ID: {activeAssessment?.patientId}
+                    PATIENT ID: {activeAssessment?.patientId || "QM-2027-0042"}
                   </span>
-                  <h2 className="text-lg font-bold text-white">{activeAssessment?.patientName}</h2>
+                  <h2 className="text-lg font-bold text-white">{activeAssessment?.patientName || "Jasur Bekmirzayev"}</h2>
                 </div>
 
                 {/* AI Risk Score Badge */}
                 <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
                   <div>
                     <span className="text-[10px] text-slate-400 font-mono block">AI KLINIK XAVF BALLI</span>
-                    <b className="text-red-400 text-base">{activeAssessment?.aiRiskScore} / 100</b>
+                    <b className="text-red-400 text-base">{activeAssessment?.aiRiskScore || 82} / 100</b>
                   </div>
                   <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded font-mono text-[10px] font-bold border border-red-500/30">
                     OKS / KRITIK SHUBHA
@@ -457,15 +478,15 @@ export default function Anatomy3DWorkspacePage() {
                 <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono grid grid-cols-3 gap-2 text-center">
                   <div>
                     <span className="text-[9px] text-slate-500 block">BP</span>
-                    <b className="text-white text-xs">{activeAssessment?.vitals.bp}</b>
+                    <b className="text-white text-xs">{activeAssessment?.vitals.bp || "140/90"}</b>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 block">PULS</span>
-                    <b className="text-white text-xs">{activeAssessment?.vitals.hr} bpm</b>
+                    <b className="text-white text-xs">{activeAssessment?.vitals.hr || 98} bpm</b>
                   </div>
                   <div>
                     <span className="text-[9px] text-slate-500 block">SPO2</span>
-                    <b className="text-emerald-400 text-xs">{activeAssessment?.vitals.spo2}%</b>
+                    <b className="text-emerald-400 text-xs">{activeAssessment?.vitals.spo2 || 94}%</b>
                   </div>
                 </div>
 
@@ -473,17 +494,24 @@ export default function Anatomy3DWorkspacePage() {
                 <div className="space-y-2 pt-2 border-t border-slate-800">
                   <button
                     type="button"
-                    onClick={() => handleApprovePlan(activeAssessment.id)}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer flex items-center justify-center gap-2 border border-emerald-400/30"
+                    onClick={() => activeAssessment && handleApprovePlan(activeAssessment.id)}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition cursor-pointer flex items-center justify-center gap-2 border border-emerald-400/30"
                   >
                     <span>✅</span> [ Approve Treatment Plan ]
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleRequestVitals(activeAssessment.id)}
+                    onClick={() => activeAssessment && handleRequestVitals(activeAssessment.id)}
                     className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-2 border border-slate-700"
                   >
                     <span>ℹ️</span> [ Request Additional Vitals/Lab ]
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => activeAssessment && handleScheduleTeleconsult(activeAssessment.id)}
+                    className="w-full py-2.5 bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 font-bold text-xs rounded-xl transition cursor-pointer flex items-center justify-center gap-2 border border-blue-500/40"
+                  >
+                    <span>📞</span> [ Schedule Urgent Teleconsult ]
                   </button>
                 </div>
               </div>

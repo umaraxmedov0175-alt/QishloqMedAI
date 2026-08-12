@@ -1,7 +1,7 @@
 "use client";
-/* eslint-disable react/no-unescaped-entities */
 
-import { useState } from "react";
+/* eslint-disable react/no-unescaped-entities */
+import { useEffect, useRef, useState } from "react";
 import type { AnatomicalRegion, AnatomyNodeTag } from "@/lib/anatomy-store";
 
 interface Anatomy3DCanvasProps {
@@ -18,7 +18,29 @@ export function Anatomy3DCanvas({
   interactive = true,
 }: Anatomy3DCanvasProps) {
   const [viewAngle, setViewAngle] = useState<"front" | "back" | "side">("front");
+  const [rotationY, setRotationY] = useState(0);
+  const [isAutoRotating, setIsAutoRotating] = useState(false);
   const [hoveredRegion, setHoveredRegion] = useState<AnatomicalRegion | null>(null);
+
+  const requestRef = useRef<number | null>(null);
+
+  // Smooth 60 FPS requestAnimationFrame Loop for 3D Auto-Rotation
+  useEffect(() => {
+    if (!isAutoRotating) {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      return;
+    }
+
+    const animate = () => {
+      setRotationY((prev) => (prev + 0.8) % 360);
+      requestRef.current = requestAnimationFrame(animate);
+    };
+
+    requestRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [isAutoRotating]);
 
   const regionLabels: Record<AnatomicalRegion, { uz: string; en: string }> = {
     head: { uz: "Bosh / Miya", en: "Head / Brain" },
@@ -39,11 +61,11 @@ export function Anatomy3DCanvas({
     if (!node) return null;
     switch (node.severity) {
       case "high":
-        return "text-red-500 fill-red-500/40 stroke-red-400 animate-pulse";
+        return "fill-red-500/50 stroke-red-400 animate-pulse stroke-2";
       case "moderate":
-        return "text-amber-500 fill-amber-500/40 stroke-amber-400";
+        return "fill-amber-500/50 stroke-amber-400 stroke-2";
       case "low":
-        return "text-emerald-500 fill-emerald-500/40 stroke-emerald-400";
+        return "fill-emerald-500/50 stroke-emerald-400 stroke-2";
     }
   };
 
@@ -55,191 +77,210 @@ export function Anatomy3DCanvas({
     onSelectRegion?.(region);
   };
 
+  // Compute effective Y rotation based on viewAngle or free rotation
+  const computedRotationY =
+    viewAngle === "back" ? 180 : viewAngle === "side" ? 90 : rotationY;
+
   return (
-    <div className="relative w-full h-[520px] bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col items-center justify-between overflow-hidden shadow-2xl select-none font-sans">
-      {/* Top 3D View Angle Controls */}
-      <div className="w-full flex items-center justify-between z-10">
+    <div className="relative w-full h-[540px] bg-slate-950 rounded-2xl border border-slate-800 p-4 flex flex-col items-center justify-between overflow-hidden shadow-2xl select-none font-sans">
+      {/* Top 3D View Angle & Auto-Rotate Controls */}
+      <div className="w-full flex items-center justify-between z-10 gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
           <span className="text-xs font-mono font-bold text-slate-300">
-            3D ANATOMY MODEL · {viewAngle.toUpperCase()} VIEW
+            3D ANATOMY MODEL · {Math.round(computedRotationY)}° Y-AXIS
           </span>
         </div>
-        <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px] font-semibold text-slate-300">
+
+        <div className="flex bg-slate-900 border border-slate-800 rounded-xl p-1 text-[11px] font-semibold text-slate-300 gap-1">
           <button
             type="button"
-            onClick={() => setViewAngle("front")}
+            onClick={() => {
+              setIsAutoRotating(false);
+              setViewAngle("front");
+              setRotationY(0);
+            }}
             className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
-              viewAngle === "front" ? "bg-emerald-600 text-white font-bold" : "hover:bg-slate-800"
+              viewAngle === "front" && !isAutoRotating
+                ? "bg-emerald-600 text-white font-bold shadow-xs"
+                : "hover:bg-slate-800"
             }`}
           >
             Oldi / Front
           </button>
           <button
             type="button"
-            onClick={() => setViewAngle("back")}
+            onClick={() => {
+              setIsAutoRotating(false);
+              setViewAngle("back");
+              setRotationY(180);
+            }}
             className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
-              viewAngle === "back" ? "bg-emerald-600 text-white font-bold" : "hover:bg-slate-800"
+              viewAngle === "back" && !isAutoRotating
+                ? "bg-emerald-600 text-white font-bold shadow-xs"
+                : "hover:bg-slate-800"
             }`}
           >
             Orqa / Back
           </button>
           <button
             type="button"
-            onClick={() => setViewAngle("side")}
+            onClick={() => {
+              setIsAutoRotating(false);
+              setViewAngle("side");
+              setRotationY(90);
+            }}
             className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
-              viewAngle === "side" ? "bg-emerald-600 text-white font-bold" : "hover:bg-slate-800"
+              viewAngle === "side" && !isAutoRotating
+                ? "bg-emerald-600 text-white font-bold shadow-xs"
+                : "hover:bg-slate-800"
             }`}
           >
             Yon / Side
           </button>
+          <button
+            type="button"
+            onClick={() => setIsAutoRotating((prev) => !prev)}
+            className={`px-2.5 py-1 rounded-lg transition cursor-pointer border ${
+              isAutoRotating
+                ? "bg-red-500/20 text-red-300 border-red-500/40 font-bold"
+                : "bg-slate-800 text-slate-300 border-slate-700 hover:text-white"
+            }`}
+          >
+            {isAutoRotating ? "⏹️ Stop 60FPS" : "🔄 360° Rotate"}
+          </button>
         </div>
       </div>
 
-      {/* Interactive 3D Human Anatomy Vector Canvas */}
-      <div className="relative w-full max-w-[280px] h-[400px] flex items-center justify-center">
+      {/* GPU-Accelerated 3D Interactive Human Model Mesh Container */}
+      <div
+        className="relative w-full max-w-[290px] h-[410px] flex items-center justify-center transition-transform duration-100 ease-linear transform-gpu"
+        style={{
+          transform: `perspective(800px) rotateY(${computedRotationY}deg)`,
+        }}
+      >
         <svg
           viewBox="0 0 200 400"
-          className="w-full h-full drop-shadow-[0_0_15px_rgba(16,185,129,0.15)] transition-all duration-300"
+          className="w-full h-full drop-shadow-[0_0_20px_rgba(16,185,129,0.2)]"
         >
-          <defs>
-            <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-            <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
+          {/* Head Mesh */}
+          <circle
+            cx="100"
+            cy="45"
+            r="22"
+            onMouseEnter={() => setHoveredRegion("head")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("head")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("head")
+                ? "fill-emerald-500/50 stroke-emerald-300 stroke-2"
+                : isHovered("head")
+                ? "fill-emerald-600/40 stroke-emerald-400 stroke-2"
+                : getSeverityGlowColor("head") || "fill-slate-900/90 stroke-slate-700"
+            }`}
+          />
 
-          {/* Base Human Silhouette Mesh */}
-          <g className="stroke-slate-700 stroke-1 fill-slate-900/80 transition-all duration-300">
-            {/* Head Mesh */}
-            <circle
-              cx="100"
-              cy="45"
-              r="22"
-              onMouseEnter={() => setHoveredRegion("head")}
-              onMouseLeave={() => setHoveredRegion(null)}
-              onClick={() => handleRegionClick("head")}
-              className={`cursor-pointer transition-all duration-200 ${
-                isSelected("head")
-                  ? "fill-emerald-500/40 stroke-emerald-400 stroke-2"
-                  : isHovered("head")
-                  ? "fill-slate-800 stroke-emerald-500"
-                  : getSeverityGlowColor("head") || "fill-slate-900"
-              }`}
-            />
+          {/* Spine Mesh */}
+          <rect
+            x="93"
+            y="72"
+            width="14"
+            height="115"
+            rx="7"
+            onMouseEnter={() => setHoveredRegion("spine")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("spine")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("spine")
+                ? "fill-emerald-500/50 stroke-emerald-300 stroke-2"
+                : isHovered("spine")
+                ? "fill-emerald-600/40 stroke-emerald-400 stroke-2"
+                : getSeverityGlowColor("spine") || "fill-slate-900/90 stroke-slate-700"
+            }`}
+          />
 
-            {/* Spine Node (Back View Only) */}
-            {viewAngle === "back" && (
-              <rect
-                x="94"
-                y="75"
-                width="12"
-                height="110"
-                rx="6"
-                onMouseEnter={() => setHoveredRegion("spine")}
-                onMouseLeave={() => setHoveredRegion(null)}
-                onClick={() => handleRegionClick("spine")}
-                className={`cursor-pointer transition-all duration-200 ${
-                  isSelected("spine")
-                    ? "fill-emerald-500/40 stroke-emerald-400 stroke-2"
-                    : isHovered("spine")
-                    ? "fill-slate-800 stroke-emerald-500"
-                    : getSeverityGlowColor("spine") || "fill-slate-900"
-                }`}
-              />
-            )}
+          {/* Chest Mesh */}
+          <path
+            d="M 68,72 Q 100,66 132,72 L 126,132 Q 100,138 74,132 Z"
+            onMouseEnter={() => setHoveredRegion("chest")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("chest")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("chest")
+                ? "fill-emerald-500/50 stroke-emerald-300 stroke-2"
+                : isHovered("chest")
+                ? "fill-emerald-600/40 stroke-emerald-400 stroke-2"
+                : getSeverityGlowColor("chest") || "fill-slate-900/90 stroke-slate-700"
+            }`}
+          />
 
-            {/* Chest Mesh */}
-            {viewAngle !== "back" && (
-              <path
-                d="M 70,72 Q 100,68 130,72 L 125,130 Q 100,135 75,130 Z"
-                onMouseEnter={() => setHoveredRegion("chest")}
-                onMouseLeave={() => setHoveredRegion(null)}
-                onClick={() => handleRegionClick("chest")}
-                className={`cursor-pointer transition-all duration-200 ${
-                  isSelected("chest")
-                    ? "fill-emerald-500/40 stroke-emerald-400 stroke-2"
-                    : isHovered("chest")
-                    ? "fill-slate-800 stroke-emerald-500"
-                    : getSeverityGlowColor("chest") || "fill-slate-900"
-                }`}
-              />
-            )}
+          {/* Abdomen Mesh */}
+          <path
+            d="M 74,134 Q 100,138 126,134 L 120,188 Q 100,195 80,188 Z"
+            onMouseEnter={() => setHoveredRegion("abdomen")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("abdomen")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("abdomen")
+                ? "fill-emerald-500/50 stroke-emerald-300 stroke-2"
+                : isHovered("abdomen")
+                ? "fill-emerald-600/40 stroke-emerald-400 stroke-2"
+                : getSeverityGlowColor("abdomen") || "fill-slate-900/90 stroke-slate-700"
+            }`}
+          />
 
-            {/* Abdomen Mesh */}
-            {viewAngle !== "back" && (
-              <path
-                d="M 75,132 Q 100,135 125,132 L 120,185 Q 100,192 80,185 Z"
-                onMouseEnter={() => setHoveredRegion("abdomen")}
-                onMouseLeave={() => setHoveredRegion(null)}
-                onClick={() => handleRegionClick("abdomen")}
-                className={`cursor-pointer transition-all duration-200 ${
-                  isSelected("abdomen")
-                    ? "fill-emerald-500/40 stroke-emerald-400 stroke-2"
-                    : isHovered("abdomen")
-                    ? "fill-slate-800 stroke-emerald-500"
-                    : getSeverityGlowColor("abdomen") || "fill-slate-900"
-                }`}
-              />
-            )}
+          {/* Left Arm Mesh */}
+          <path
+            d="M 132,74 Q 148,110 152,150 Q 156,180 158,200"
+            strokeWidth="16"
+            strokeLinecap="round"
+            onMouseEnter={() => setHoveredRegion("left_arm")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("left_arm")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("left_arm")
+                ? "stroke-emerald-400 fill-emerald-500/20"
+                : isHovered("left_arm")
+                ? "stroke-emerald-400 fill-emerald-600/30"
+                : getSeverityGlowColor("left_arm") || "stroke-slate-700 fill-slate-900/90"
+            }`}
+          />
 
-            {/* Left Arm Mesh */}
-            <path
-              d="M 132,74 Q 148,110 152,150 Q 156,180 158,200"
-              strokeWidth="14"
-              strokeLinecap="round"
-              onMouseEnter={() => setHoveredRegion("left_arm")}
-              onMouseLeave={() => setHoveredRegion(null)}
-              onClick={() => handleRegionClick("left_arm")}
-              className={`cursor-pointer transition-all duration-200 ${
-                isSelected("left_arm")
-                  ? "stroke-emerald-400 fill-none"
-                  : isHovered("left_arm")
-                  ? "stroke-emerald-500 fill-none"
-                  : getSeverityGlowColor("left_arm") || "stroke-slate-800 fill-none"
-              }`}
-            />
+          {/* Right Arm Mesh */}
+          <path
+            d="M 68,74 Q 52,110 48,150 Q 44,180 42,200"
+            strokeWidth="16"
+            strokeLinecap="round"
+            onMouseEnter={() => setHoveredRegion("right_arm")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("right_arm")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("right_arm")
+                ? "stroke-emerald-400 fill-emerald-500/20"
+                : isHovered("right_arm")
+                ? "stroke-emerald-400 fill-emerald-600/30"
+                : getSeverityGlowColor("right_arm") || "stroke-slate-700 fill-slate-900/90"
+            }`}
+          />
 
-            {/* Right Arm Mesh */}
-            <path
-              d="M 68,74 Q 52,110 48,150 Q 44,180 42,200"
-              strokeWidth="14"
-              strokeLinecap="round"
-              onMouseEnter={() => setHoveredRegion("right_arm")}
-              onMouseLeave={() => setHoveredRegion(null)}
-              onClick={() => handleRegionClick("right_arm")}
-              className={`cursor-pointer transition-all duration-200 ${
-                isSelected("right_arm")
-                  ? "stroke-emerald-400 fill-none"
-                  : isHovered("right_arm")
-                  ? "stroke-emerald-500 fill-none"
-                  : getSeverityGlowColor("right_arm") || "stroke-slate-800 fill-none"
-              }`}
-            />
-
-            {/* Legs Mesh */}
-            <g
-              onMouseEnter={() => setHoveredRegion("legs")}
-              onMouseLeave={() => setHoveredRegion(null)}
-              onClick={() => handleRegionClick("legs")}
-              className={`cursor-pointer transition-all duration-200 ${
-                isSelected("legs")
-                  ? "stroke-emerald-400"
-                  : isHovered("legs")
-                  ? "stroke-emerald-500"
-                  : getSeverityGlowColor("legs") || "stroke-slate-800"
-              }`}
-            >
-              <path d="M 85,190 Q 80,270 78,370" strokeWidth="18" strokeLinecap="round" fill="none" />
-              <path d="M 115,190 Q 120,270 122,370" strokeWidth="18" strokeLinecap="round" fill="none" />
-            </g>
+          {/* Legs Mesh */}
+          <g
+            onMouseEnter={() => setHoveredRegion("legs")}
+            onMouseLeave={() => setHoveredRegion(null)}
+            onClick={() => handleRegionClick("legs")}
+            className={`cursor-pointer transition-all duration-200 pointer-events-auto ${
+              isSelected("legs")
+                ? "stroke-emerald-400 fill-emerald-500/20"
+                : isHovered("legs")
+                ? "stroke-emerald-400 fill-emerald-600/30"
+                : getSeverityGlowColor("legs") || "stroke-slate-700 fill-slate-900/90"
+            }`}
+          >
+            <path d="M 85,190 Q 80,270 78,370" strokeWidth="20" strokeLinecap="round" />
+            <path d="M 115,190 Q 120,270 122,370" strokeWidth="20" strokeLinecap="round" />
           </g>
 
-          {/* Node Severity Glowing Indicators Overlay */}
+          {/* Tagged Severity Nodes Overlay */}
           {taggedNodes.map((node) => {
             let coords = { x: 100, y: 100 };
             if (node.region === "head") coords = { x: 100, y: 45 };
@@ -258,16 +299,16 @@ export function Anatomy3DCanvas({
                 : "fill-emerald-500 stroke-emerald-300";
 
             return (
-              <g key={node.region}>
-                <circle cx={coords.x} cy={coords.y} r="8" className={colorClass} opacity="0.8" />
-                <circle cx={coords.x} cy={coords.y} r="4" className="fill-white" />
+              <g key={node.region} className="pointer-events-none">
+                <circle cx={coords.x} cy={coords.y} r="10" className={colorClass} opacity="0.85" />
+                <circle cx={coords.x} cy={coords.y} r="5" className="fill-white" />
               </g>
             );
           })}
         </svg>
       </div>
 
-      {/* Bottom Region Tooltip Status */}
+      {/* Bottom Tooltip Status Bar */}
       <div className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-center text-xs">
         {hoveredRegion ? (
           <span className="text-emerald-300 font-bold font-mono">
