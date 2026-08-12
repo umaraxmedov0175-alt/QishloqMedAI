@@ -246,8 +246,8 @@ export default function Anatomy3DWorkspacePage() {
                   />
                 </div>
 
-                {/* Symptom Input & Severity Picker */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Symptom Input, Quick-Select Clinical Chips & Severity Rating Slider */}
+                <div className="space-y-3">
                   <div>
                     <label className="text-xs font-semibold text-slate-400 block mb-1">Anatomik Simptom / Og'riq Tavsifi:</label>
                     <input
@@ -258,17 +258,62 @@ export default function Anatomy3DWorkspacePage() {
                       placeholder="masalan: Qisuvchi o'tkir og'riq..."
                     />
                   </div>
+
+                  {/* Quick-Select Clinical Chips */}
                   <div>
-                    <label className="text-xs font-semibold text-slate-400 block mb-1">Xavflilik Darajasi (Severity):</label>
-                    <select
-                      value={selectedSeverity}
-                      onChange={(e) => setSelectedSeverity(e.target.value as SeverityLevel)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer"
-                    >
-                      <option value="high">🔴 Yuqori / High (Kritik)</option>
-                      <option value="moderate">🟡 O'rtacha / Moderate</option>
-                      <option value="low">🟢 Past / Low (Barqaror)</option>
-                    </select>
+                    <label className="text-[11px] font-semibold text-slate-400 block mb-1.5">Tezkor Klinik Tayyor Chiplar:</label>
+                    <div className="flex flex-wrap gap-1.5 text-xs">
+                      {[
+                        "Radiating pain (Nurlanuvchi og'riq)",
+                        "Tenderness (Paypaslaganda og'riq)",
+                        "Acute dyspnea (O'tkir nafas siqilishi)",
+                        "Severe pressure (Kuchli bosim)",
+                        "Local swelling (Mahalliy shish)",
+                        "Burning sensation (Achishish)",
+                      ].map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => setCustomSymptom(chip)}
+                          className="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-emerald-400 border border-slate-800 rounded-lg text-[11px] font-medium transition cursor-pointer"
+                        >
+                          + {chip}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-slate-400 block mb-1">Xavflilik Darajasi (Severity Tyer):</label>
+                      <select
+                        value={selectedSeverity}
+                        onChange={(e) => setSelectedSeverity(e.target.value as SeverityLevel)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white outline-none cursor-pointer"
+                      >
+                        <option value="high">🔴 Yuqori / High (Kritik / OKS)</option>
+                        <option value="moderate">🟡 O'rtacha / Moderate</option>
+                        <option value="low">🟢 Past / Low (Barqaror)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-slate-400 block mb-1">Og'riq Shkalasi (1 – 10 VAS Score):</label>
+                      <div className="flex items-center gap-3 bg-slate-950 border border-slate-800 p-2 rounded-xl">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          defaultValue="8"
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setSelectedSeverity(val >= 7 ? "high" : val >= 4 ? "moderate" : "low");
+                          }}
+                          className="w-full accent-emerald-500 cursor-pointer"
+                        />
+                        <span className="text-xs font-mono font-bold text-emerald-400 shrink-0">8 / 10</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
