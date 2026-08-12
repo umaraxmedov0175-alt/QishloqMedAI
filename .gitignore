@@ -42,3 +42,5 @@ dev-server.err.log
 /.wrangler/
 /outputs/
 /work/
+/scratch/
+/.codesight/

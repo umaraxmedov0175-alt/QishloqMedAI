@@ -3,8 +3,9 @@
 [![Build Status](https://img.shields.io/badge/build-passing-emerald.svg?style=for-the-badge&logo=vercel)](https://github.com/umaraxmedov0175-alt/QishloqMedAI)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict_5.x-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16.3_App_Router-black.svg?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![Cloudflare Edge](https://img.shields.io/badge/Cloudflare-Edge_Workers-orange.svg?style=for-the-badge&logo=cloudflare)](https://workers.cloudflare.com/)
-[![Tests](https://img.shields.io/badge/Tests-46_Suites_Passed-brightgreen.svg?style=for-the-badge)](https://github.com/umaraxmedov0175-alt/QishloqMedAI)
+[![Three.js](https://img.shields.io/badge/Three.js-3D_Anatomy-black.svg?style=for-the-badge&logo=three.js)](https://threejs.org/)
+[![i18n](https://img.shields.io/badge/i18n-UZ_%7C_EN_%7C_RU-purple.svg?style=for-the-badge)](#)
+[![Tests](https://img.shields.io/badge/Tests-58_Suites_Passed-brightgreen.svg?style=for-the-badge)](https://github.com/umaraxmedov0175-alt/QishloqMedAI)
 
 > **Tomir (Томир / Vena)** — *Enterprise-grade, offline-first clinical triage, diagnostic telemetry, and regional emergency response platform designed specifically for Uzbekistan's rural primary healthcare network (SVP / OVP).*
 
@@ -51,6 +52,13 @@ Rural healthcare delivery across the regions of Uzbekistan (Fergana Valley, Surk
 ### ⚡ 6. Zero-Connectivity SMS/Mesh Serialization Payload Engine
 - Encodes clinical vitals (SBP, DBP, Heart Rate, SpO2, Temp, Glucose, ECG rhythm code, CRC-16 checksum) into a compact **64-character payload** string ([`lib/zero-connectivity-payload.ts`](file:///c:/Users/Umar/QishloqMedAI/lib/zero-connectivity-payload.ts)).
 - Enables transmission over basic GSM SMS when cellular internet data is completely unviable.
+
+### 🧍 7. High-Definition 3D Interactive Body Symptom Picker
+- High-definition 3D WebGL human anatomy model ([`components/anatomy/BodySymptomPicker.tsx`](file:///c:/Users/Umar/QishloqMedAI/components/anatomy/BodySymptomPicker.tsx)) featuring 30 anatomical region selectors, emissive hit highlights, and front/back view camera rotation.
+- **Automatic 2D Vector Fallback**: Automatically activates a lightweight inline-SVG body map ([`components/anatomy/BodyMapSVG.tsx`](file:///c:/Users/Umar/QishloqMedAI/components/anatomy/BodyMapSVG.tsx)) on low-memory mobile hardware or 2G cellular connections.
+
+### 🌐 8. Triple-Locale Internationalization Engine (UZ | EN | RU)
+- Complete internationalization framework ([`lib/i18n-dictionary.ts`](file:///c:/Users/Umar/QishloqMedAI/lib/i18n-dictionary.ts)) providing zero-defect translation coverage in Uzbek (`uz`), English (`en`), and Russian (`ru`) across all 4 protected workstation roles.
 
 ---
 

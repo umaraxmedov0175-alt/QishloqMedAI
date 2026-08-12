@@ -2,6 +2,17 @@
 
 ## Fully Completed Features
 
+- **3D Interactive Body Symptom Picker & 2D Vector Fallback (`components/anatomy/BodySymptomPicker.tsx`)**:
+  - **High-Definition ZBrush 3D Human Anatomy Model**: Integrated compressed 1.13MB Draco-compressed GLB binary (`human-body-transformed.glb`) featuring ZBrush `Group16371` mesh nodes, OrbitControls camera rotation, front/back view toggle, emissive hit highlights, and 30 selectable body region chips.
+  - **Automatic 2D Vector Fallback (`components/anatomy/BodyMapSVG.tsx`)**: Hardware & connection speed detection hook (`useWebGLSupport.ts`) automatically switches to a lightweight inline-SVG vector map on 2G connections, low-memory devices, or WebGL context loss.
+  - **Accessible Keyboard Checklist (`components/anatomy/SelectedRegionsPanel.tsx`)**: Includes a WCAG 2.2 AA accessible collapsible checkbox list of all 30 anatomical regions.
+  - **Triage Intake API Validation (`/api/triage/intake`)**: API route validating `affectedRegions` against the `BodyRegionId` schema with Zod.
+
+- **Triple-Locale Internationalization Engine (`lib/i18n-dictionary.ts`)**:
+  - **3-Language Dictionary**: Populated 100% complete translation dictionaries across **Uzbek (`uz`)**, **English (`en`)**, and **Russian (`ru`)**.
+  - **Hardcoded Text Purge**: Purged 100% of hardcoded strings across Doctor, Nurse, Patient, and Dispatcher workstations.
+  - **3-Way Language Switcher UI (`app/ui/SidebarNav.tsx`)**: Sidebar navigation header featuring 3-way toggle (`UZ` / `EN` / `RU` — Oʻzbekcha / English / Русский) with cookie and localStorage state persistence.
+
 - **Predictive Regional Outbreak Radar & Zero-Connectivity SMS/Mesh Triage Engine (Signature Flagship Feature)**:
   - **Epidemiological AI Anomaly Radar (`lib/outbreak-radar.ts`)**: Real-time spatial clustering and statistical **z-score anomaly calculation** ($Z = \frac{X - \mu}{\sigma}$) aggregating mobile laboratory rapid blood panels (hyperglycemia spikes, positive troponin I, hemoglobin drops) and vital sign surges across rural districts (*Urgut*, *Payariq*, *Zomin*, *Baxmal*, *Kegeyli*).
   - **Zero-Connectivity SMS & P2P Mesh Serialization Engine (`lib/zero-connectivity-payload.ts`)**: Encodes vitals (SBP/DBP, SpO2, HR, Temp), mobile lab test markers, GPS coordinates, and AI triage ratings into an encrypted Base64 string under 60 characters (far below the 140-char SMS limit) with CRC-16 checksum validation for zero cellular coverage dead-zones.
