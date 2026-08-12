@@ -535,7 +535,7 @@ export function createFieldInterventionTask(
 /**
  * In-memory state of outbreak clusters for interactive specialist verification
  */
-let ACTIVE_CLUSTERS: OutbreakCluster[] = [...SEED_OUTBREAK_CLUSTERS];
+const ACTIVE_CLUSTERS: OutbreakCluster[] = [...SEED_OUTBREAK_CLUSTERS];
 
 /**
  * Specialist Human-in-the-Loop verification action handler

@@ -476,9 +476,17 @@ export function Anatomy3DCanvas({
       {/* 3D WebGL Canvas Mount Container */}
       <div
         ref={mountRef}
+        role="button"
+        tabIndex={0}
+        aria-label="3D Anatomical Interactive Canvas"
         onPointerMove={handlePointerMove}
         onClick={handleClick}
-        className="relative w-full h-[430px] cursor-grab active:cursor-grabbing flex items-center justify-center"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleClick();
+          }
+        }}
+        className="relative w-full h-[430px] cursor-grab active:cursor-grabbing flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
       >
         {isLoadingModel && (
           <div className="absolute z-20 flex flex-col items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-800 shadow-xl space-y-2">
