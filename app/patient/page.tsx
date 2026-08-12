@@ -2,8 +2,9 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from "react";
-import { SunlightToggle } from "@/app/ui/DemoRoleLink";
 import { RoleGuard } from "@/app/ui/RoleGuard";
+import { SidebarNav } from "@/app/ui/SidebarNav";
+import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import {
   DispatchLauncherIcon,
@@ -12,7 +13,6 @@ import {
 } from "@/app/ui/MedicalIcons";
 import { canAccessPatientPortal } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
-import { TomirLogo } from "@/app/ui/TomirLogo";
 import {
   createPatientApplication,
   getPatientApplications,
@@ -28,7 +28,7 @@ import {
 } from "@/lib/patient-portal";
 
 export default function IsolatedPatientPortalPage() {
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const activeRole = "patient";
   const [patientId] = useState<string>("QM-2027-0042");
@@ -201,41 +201,9 @@ export default function IsolatedPatientPortalPage() {
 
   return (
     <RoleGuard requiredRole="patient">
-      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
-      {/* Top Header */}
-      <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
-        <div className="flex items-center gap-4">
-          <a href="/" className="no-underline">
-            <TomirLogo variant="glass" size="sm" />
-          </a>
-          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
-            📱 {t("patientPortalTitle")}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-3 py-1.5 bg-emerald-950/70 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none cursor-pointer"
-          >
-            <option value="uz">{"Oʻzbekcha"}</option>
-            <option value="en">English</option>
-          </select>
-
-          <SunlightToggle />
-        </div>
-      </header>
-
-      {/* Sub Navigation Bar */}
-      <nav className="bg-white border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold shrink-0">
-        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold whitespace-nowrap" href="/patient">
-          📱 Bemor Portali
-        </a>
-        <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap flex items-center gap-1.5 font-bold text-emerald-800">
-          <span>💬 Telemaslahat & Chat</span>
-        </a>
-      </nav>
+      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="patient" activePath="/patient" />
+        <main className="flex-1 overflow-y-auto flex flex-col">
 
       {/* Privacy Redaction Warning Toast */}
       {emailPrivacyToast && (
@@ -699,6 +667,8 @@ export default function IsolatedPatientPortalPage() {
         imageTitle={imageTitle}
       />
     </main>
+        <MovableChatWidget />
+      </div>
     </RoleGuard>
   );
 }

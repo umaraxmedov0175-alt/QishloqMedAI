@@ -2,8 +2,9 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { FormEvent, useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { SunlightToggle } from "@/app/ui/DemoRoleLink";
 import { RoleGuard } from "@/app/ui/RoleGuard";
+import { SidebarNav } from "@/app/ui/SidebarNav";
+import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
 import {
   enqueueOfflineAction,
   listQueueItems,
@@ -46,7 +47,7 @@ const goldenDraft = {
 };
 
 export function MobileWorkspace() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const [network, setNetwork] = useState<NetState>("offline");
   const [pending, setPending] = useState(0);
   const [queue, setQueue] = useState<OfflineQueueItem[]>([]);
@@ -259,59 +260,9 @@ export function MobileWorkspace() {
 
   return (
     <RoleGuard requiredRole="nurse">
-      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-      <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
-        <div className="flex items-center gap-4 shrink-0">
-          <a className="flex items-center gap-2 font-bold text-base md:text-lg text-white no-underline shrink-0" href="/">
-            <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm font-black">+</span>
-            <span className="tracking-tight">Tomir AI</span>
-          </a>
-        </div>
-
-        <div className="flex items-center flex-wrap md:flex-nowrap gap-2 md:gap-3 shrink-0">
-          <div className={`status-pill ${network === "offline" || network === "error" ? "offline" : "online"} shrink-0`}>
-            <span className="w-2 h-2 rounded-full bg-current"></span>
-            <span>
-              {network === "offline"
-                ? "🟡 Oflayn — Lokal saqlanmoqda"
-                : network === "synchronizing"
-                  ? "🔄 Sinxronlashtirilmoqda..."
-                  : "🟢 Onlayn — Server bog'langan"}
-            </span>
-          </div>
-
-          <button
-            className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-full border border-white/20 transition cursor-pointer shrink-0"
-            onClick={() => setShowQueue(!showQueue)}
-          >
-            {t("pendingSyncPill")}: {pending}
-          </button>
-
-          <SunlightToggle />
-
-          <select
-            aria-label="Language"
-            value={language}
-            onChange={(event) => setLanguage(event.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
-          >
-            <option value="uz">{"Oʻzbekcha"}</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </header>
-
-      <nav className="bg-white border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold">
-        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold whitespace-nowrap" href="/mobile">
-          {t("dashboard")}
-        </a>
-        <a href="#patients" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">{t("patients")}</a>
-        <button onClick={() => setShowQueue(true)} className="py-3 px-4 text-slate-500 hover:text-slate-900 cursor-pointer whitespace-nowrap">{t("pendingSyncPill")}</button>
-        <a href="#responses" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">{t("responses")}</a>
-        <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition font-bold text-emerald-800 flex items-center gap-1.5 whitespace-nowrap">
-          <span>💬 Chat & Telemaslahat</span>
-        </a>
-      </nav>
+      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="nurse" activePath="/mobile" />
+        <main className="flex-1 overflow-y-auto">
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -1284,6 +1235,8 @@ export function MobileWorkspace() {
         </section>
       </section>
     </main>
+        <MovableChatWidget />
+      </div>
     </RoleGuard>
   );
 }

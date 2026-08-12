@@ -3,6 +3,8 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { RoleGuard } from "@/app/ui/RoleGuard";
+import { SidebarNav } from "@/app/ui/SidebarNav";
+import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
 import { DispatcherMap } from "@/app/ui/DispatcherMap";
 import {
   getDispatchItems,
@@ -13,10 +15,9 @@ import {
   type TriageSeverity,
 } from "@/lib/realtime-dispatcher";
 import { useLanguage } from "@/lib/i18n";
-import { TomirLogo } from "@/app/ui/TomirLogo";
 
 export default function DispatcherWorkspacePage() {
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const [items, setItems] = useState<DispatchItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -75,51 +76,9 @@ export default function DispatcherWorkspacePage() {
 
   return (
     <RoleGuard requiredRole="dispatcher">
-      <main className="min-h-screen bg-slate-900 text-white flex flex-col font-sans">
-      {/* Header Bar */}
-      <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs shrink-0 z-20">
-        <div className="flex items-center gap-4">
-          <a href="/" className="no-underline">
-            <TomirLogo variant="glass" size="sm" />
-          </a>
-          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
-            🗺️ Dispetcherlik Geolokatsion Markazi
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <a
-            href="/dispatcher/radar"
-            className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-100 text-xs font-semibold rounded-lg border border-red-400/30 transition flex items-center gap-1.5"
-          >
-            <span>☣️</span>
-            <span>Outbreak Radar</span>
-          </a>
-
-          <a
-            href="/hospital/outbreak"
-            className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-100 text-xs font-semibold rounded-lg border border-blue-400/30 transition flex items-center gap-1.5"
-          >
-            <span>🏥</span>
-            <span>Hududiy Shifoxonalar</span>
-          </a>
-
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
-          >
-            <option value="uz">{"O'zbekcha"}</option>
-            <option value="en">English</option>
-          </select>
-
-          <nav className="flex items-center gap-1 text-xs font-medium">
-            <span className="px-3 py-1.5 text-white bg-white/10 rounded-md font-semibold border-b-2 border-emerald-400">
-              🏢 Dispetcher Ish Maydoni
-            </span>
-          </nav>
-        </div>
-      </header>
+      <div className="flex min-h-screen bg-slate-900 text-white font-sans">
+        <SidebarNav role="dispatcher" activePath="/dispatcher" />
+        <main className="flex-1 overflow-y-auto flex flex-col">
 
       {/* Main Workspace Body */}
       <div className="flex-1 max-w-[1720px] w-full mx-auto px-6 py-6 flex flex-col gap-5">
@@ -381,6 +340,8 @@ export default function DispatcherWorkspacePage() {
         </div>
       </div>
     </main>
+        <MovableChatWidget />
+      </div>
     </RoleGuard>
   );
 }

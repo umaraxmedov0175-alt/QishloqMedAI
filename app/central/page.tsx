@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
-import { InnerChatIcon } from "@/app/ui/MedicalIcons";
+import { SidebarNav } from "@/app/ui/SidebarNav";
+import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
 import {
   getClinicalAction,
   saveClinicalAction,
@@ -13,11 +14,10 @@ import { useLanguage } from "@/lib/i18n";
 import { printClinicalReport } from "@/lib/report-generator";
 import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
-import { TomirLogo } from "@/app/ui/TomirLogo";
 import { CarePulse } from "@/app/ui/CarePulse";
 
 export default function CentralReviewPage() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const [cases] = useState(DEMO_CASES);
   const [selected, setSelected] = useState("QM-2027-0042");
   const [query, setQuery] = useState("");
@@ -114,42 +114,9 @@ export default function CentralReviewPage() {
 
   return (
     <RoleGuard requiredRole="doctor">
-      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
-      <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
-        <div className="flex items-center gap-3 shrink-0">
-          <a href="/" className="no-underline shrink-0">
-            <TomirLogo variant="glass" size="sm" />
-          </a>
-          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden lg:inline-block">
-            Toshkent Markaziy Tibbiy Koʻrik Markazi
-          </span>
-        </div>
-
-        <div className="flex items-center flex-wrap md:flex-nowrap gap-2 md:gap-3 shrink-0">
-          <a
-            href="/chat"
-            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5 shrink-0 shadow-2xs"
-          >
-            <InnerChatIcon className="w-4 h-4 shrink-0" />
-            <span className="whitespace-nowrap">Telemaslahat & Chat</span>
-          </a>
-
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
-          >
-            <option value="uz">{"Oʻzbekcha"}</option>
-            <option value="en">English</option>
-          </select>
-
-          <nav className="flex items-center gap-1 text-xs font-semibold shrink-0">
-            <span className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs">
-              🛡️ {t("specialistQueue")}
-            </span>
-          </nav>
-        </div>
-      </header>
+      <div className="flex min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+        <SidebarNav role="doctor" activePath="/central" />
+        <main className="flex-1 overflow-y-auto">
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -541,6 +508,8 @@ export default function CentralReviewPage() {
         imageTitle={`${active.code} - Diagnostik Rentgen Tasviri`}
       />
     </main>
+        <MovableChatWidget />
+      </div>
     </RoleGuard>
   );
 }
