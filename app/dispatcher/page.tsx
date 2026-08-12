@@ -84,7 +84,7 @@ export default function DispatcherWorkspacePage() {
       {/* Main Workspace Body */}
       <div className="flex-1 max-w-[1720px] w-full mx-auto px-6 py-6 flex flex-col gap-5">
         {/* Top Control Bar & Metrics */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-800/60 backdrop-blur p-4 rounded-xl border border-white/[0.08] shadow-2xs">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <span className="px-2.5 py-0.5 bg-red-100 text-red-800 text-[10px] font-extrabold rounded-full uppercase tracking-wider">
@@ -92,39 +92,39 @@ export default function DispatcherWorkspacePage() {
               </span>
               <span className="text-xs text-slate-500 font-medium">Samarqand va Jizzax Viloyatlari Triage Tizimi</span>
             </div>
-            <h1 className="text-2xl font-serif font-bold text-slate-900">Dispetcherlik Geolokatsion Xaritasi va Triaj Boshqaruvi</h1>
+            <h1 className="text-2xl font-sans font-bold text-white">Dispetcherlik Geolokatsion Xaritasi va Triaj Boshqaruvi</h1>
           </div>
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-            <div className="bg-red-50 border border-red-200 px-3 py-2 rounded-lg text-center">
-              <b className="text-lg font-bold text-red-900 block leading-none">{emergencyCount}</b>
-              <span className="text-[10px] font-bold text-red-700 uppercase">Favqulodda (Kritik)</span>
+            <div className="bg-red-500/10 border border-red-500/25 px-3 py-2 rounded-lg text-center">
+              <b className="text-lg font-bold text-red-300 block leading-none">{emergencyCount}</b>
+              <span className="text-[10px] font-bold text-red-400 uppercase">Favqulodda (Kritik)</span>
             </div>
-            <div className="bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg text-center">
-              <b className="text-lg font-bold text-amber-900 block leading-none">{urgentCount}</b>
-              <span className="text-[10px] font-bold text-amber-700 uppercase">Shoshilinch</span>
+            <div className="bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg text-center">
+              <b className="text-lg font-bold text-amber-300 block leading-none">{urgentCount}</b>
+              <span className="text-[10px] font-bold text-amber-400 uppercase">Shoshilinch</span>
             </div>
-            <div className="bg-sky-50 border border-sky-200 px-3 py-2 rounded-lg text-center">
-              <b className="text-lg font-bold text-sky-900 block leading-none">{unassignedCount}</b>
-              <span className="text-[10px] font-bold text-sky-700 uppercase">Biriktirilmagan</span>
+            <div className="bg-sky-500/10 border border-sky-500/20 px-3 py-2 rounded-lg text-center">
+              <b className="text-lg font-bold text-sky-300 block leading-none">{unassignedCount}</b>
+              <span className="text-[10px] font-bold text-sky-400 uppercase">Biriktirilmagan</span>
             </div>
-            <div className="bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg text-center">
-              <b className="text-lg font-bold text-emerald-900 block leading-none">{dispatchedCount}</b>
-              <span className="text-[10px] font-bold text-emerald-700 uppercase">Yo'lga Chiqqan</span>
+            <div className="bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg text-center">
+              <b className="text-lg font-bold text-emerald-300 block leading-none">{dispatchedCount}</b>
+              <span className="text-[10px] font-bold text-emerald-400 uppercase">Yo'lga Chiqqan</span>
             </div>
           </div>
         </div>
 
         {notice && (
-          <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-semibold rounded-lg shadow-xs flex items-center justify-between">
+          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-lg shadow-xs flex items-center justify-between">
             <span>{notice}</span>
             <button onClick={() => setNotice("")} className="text-emerald-800 font-bold hover:underline">✕</button>
           </div>
         )}
 
         {/* Filter Action Bar */}
-        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-slate-800/60 backdrop-blur p-4 rounded-xl border border-white/[0.08] shadow-2xs flex flex-wrap items-center justify-between gap-4">
           {/* Triage Severity Filter Pills */}
           <div className="flex items-center gap-1.5 text-xs">
             <span className="text-slate-500 font-bold mr-1">Daraja:</span>

@@ -202,7 +202,7 @@ export default function IsolatedPatientPortalPage() {
 
   return (
     <RoleGuard requiredRole="patient">
-      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+      <div className="min-h-screen bg-[#0F172A] text-white">
         <SidebarNav role="patient" activePath="/patient" onToggleCollapse={setCollapsed} />
         <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto flex flex-col`}>
 
@@ -221,39 +221,39 @@ export default function IsolatedPatientPortalPage() {
       <section className="max-w-[1400px] mx-auto px-4 py-6 flex-1 w-full space-y-6">
         
         {/* Header Hero Banner */}
-        <div className="bg-[#063c32] text-white rounded-2xl p-6 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-slate-800/80 to-sky-900/30 backdrop-blur text-white rounded-2xl p-6 shadow-md border border-white/[0.08] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-[11px] font-extrabold rounded-full uppercase tracking-wider">
+            <span className="px-3 py-1 bg-sky-500/15 text-sky-300 text-[11px] font-extrabold rounded-full uppercase tracking-wider">
               SHAXSIY TIBBIY VA ALOQA REJIM
             </span>
-            <h1 className="text-2xl font-serif font-bold text-white mt-2 mb-1">
+            <h1 className="text-2xl font-sans font-bold text-white mt-2 mb-1">
               Assalomu alaykum, {patientName}! ({patientId})
             </h1>
-            <p className="text-xs text-emerald-200/80 max-w-2xl m-0">
+            <p className="text-xs text-slate-400 max-w-2xl m-0">
               {t("patientPortalSubtitle")} · Samarqand viloyati, Urgut tumani, G'us qishlog'i
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-emerald-950/60 p-3 rounded-xl border border-emerald-700/60 text-xs">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="flex items-center gap-3 bg-slate-900/60 p-3 rounded-xl border border-white/[0.08] text-xs">
+            <span className="w-3 h-3 rounded-full bg-sky-400 animate-pulse"></span>
             <div>
               <b className="text-white block">Biriktirilgan shifokor: Dr. Tomir</b>
-              <span className="text-emerald-300 text-[11px]">Mobil klinika: Tomir-01</span>
+              <span className="text-sky-300 text-[11px]">Mobil klinika: Tomir-01</span>
             </div>
           </div>
         </div>
 
         {/* Patient Portal Workspace Self-Service Tabs */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[580px]">
+        <div className="bg-slate-800/60 backdrop-blur border border-white/[0.08] rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[580px]">
           
           {/* Sub-tab Navigation Buttons */}
-          <div className="flex border-b border-slate-200 bg-slate-50/60 overflow-x-auto text-xs font-bold">
+          <div className="flex border-b border-white/[0.06] bg-slate-900/60 overflow-x-auto text-xs font-bold">
             <button
               type="button"
               className={`py-3.5 px-6 cursor-pointer border-b-2 transition whitespace-nowrap ${
                 activeTab === "email_dispatcher"
-                  ? "border-emerald-700 text-emerald-900 bg-white font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
+                  ? "border-sky-500 text-sky-300 bg-slate-800/60 font-extrabold"
+                  : "border-transparent text-slate-500 hover:text-white"
               }`}
               onClick={() => setActiveTab("email_dispatcher")}
             >
@@ -264,8 +264,8 @@ export default function IsolatedPatientPortalPage() {
               type="button"
               className={`py-3.5 px-6 cursor-pointer border-b-2 transition whitespace-nowrap ${
                 activeTab === "intake_forms"
-                  ? "border-emerald-700 text-emerald-900 bg-white font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
+                  ? "border-sky-500 text-sky-300 bg-slate-800/60 font-extrabold"
+                  : "border-transparent text-slate-500 hover:text-white"
               }`}
               onClick={() => setActiveTab("intake_forms")}
             >
@@ -276,8 +276,8 @@ export default function IsolatedPatientPortalPage() {
               type="button"
               className={`py-3.5 px-6 cursor-pointer border-b-2 transition whitespace-nowrap ${
                 activeTab === "request_tracker"
-                  ? "border-emerald-700 text-emerald-900 bg-white font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
+                  ? "border-sky-500 text-sky-300 bg-slate-800/60 font-extrabold"
+                  : "border-transparent text-slate-500 hover:text-white"
               }`}
               onClick={() => setActiveTab("request_tracker")}
             >
@@ -288,8 +288,8 @@ export default function IsolatedPatientPortalPage() {
               type="button"
               className={`py-3.5 px-6 cursor-pointer border-b-2 transition whitespace-nowrap ${
                 activeTab === "vitals_history"
-                  ? "border-emerald-700 text-emerald-900 bg-white font-extrabold"
-                  : "border-transparent text-slate-500 hover:text-slate-900"
+                  ? "border-sky-500 text-sky-300 bg-slate-800/60 font-extrabold"
+                  : "border-transparent text-slate-500 hover:text-white"
               }`}
               onClick={() => setActiveTab("vitals_history")}
             >
@@ -298,7 +298,7 @@ export default function IsolatedPatientPortalPage() {
 
             <a
               href="/chat"
-              className="py-3.5 px-6 border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition whitespace-nowrap flex items-center gap-2"
+              className="py-3.5 px-6 border-b-2 border-transparent text-slate-500 hover:text-white transition whitespace-nowrap flex items-center gap-2"
             >
               <InnerChatIcon className="w-5 h-5 shrink-0" />
               <span>{t("innerChatTab")} ↗</span>
@@ -310,8 +310,8 @@ export default function IsolatedPatientPortalPage() {
             <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Email Form (Left 7 Cols) */}
               <div className="lg:col-span-7 space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <div className="border-b border-white/[0.06] pb-3">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
                     <span>📨 {t("composeEmailTitle")}</span>
                   </h3>
                   <p className="text-xs text-slate-500 m-0">
@@ -320,18 +320,18 @@ export default function IsolatedPatientPortalPage() {
                 </div>
 
                 {emailNotice && (
-                  <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-950 font-semibold text-xs rounded-xl">
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-semibold text-xs rounded-xl">
                     {emailNotice}
                   </div>
                 )}
 
                 <form onSubmit={handleSendEmail} className="space-y-4 text-xs">
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">{t("recipientLabel")}</label>
+                    <label className="font-bold text-slate-300 block mb-1">{t("recipientLabel")}</label>
                     <select
                       value={emailRecipient}
                       onChange={(e) => setEmailRecipient(e.target.value as RecipientRole)}
-                      className="w-full text-xs border border-slate-300 rounded-xl p-3 outline-none focus:border-emerald-600 bg-white"
+                      className="w-full text-xs border border-white/[0.08] rounded-xl p-3 outline-none focus:border-sky-500 bg-slate-900/60 text-white"
                     >
                       <option value="doctor">👨‍⚕️ Dr. Tomir (Markaziy Kardiolog Shifokor)</option>
                       <option value="nurse">👩‍⚕️ Malika Hamshira (Tomir-01 Mobil klinika)</option>
@@ -340,19 +340,19 @@ export default function IsolatedPatientPortalPage() {
                   </div>
 
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">{t("subjectLabel")}</label>
+                    <label className="font-bold text-slate-300 block mb-1">{t("subjectLabel")}</label>
                     <input
                       type="text"
                       value={emailSubject}
                       onChange={(e) => setEmailSubject(e.target.value)}
                       placeholder="Xat mazmuni va mavzusini qisqa kiriting..."
-                      className="w-full text-xs border border-slate-300 rounded-xl p-3 outline-none focus:border-emerald-600"
+                      className="w-full text-xs border border-white/[0.08] rounded-xl p-3 outline-none focus:border-sky-500 bg-slate-900/60 text-white placeholder:text-slate-500"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="font-bold text-slate-800 block mb-1">{t("emailBodyLabel")}</label>
+                    <label className="font-bold text-slate-300 block mb-1">{t("emailBodyLabel")}</label>
                     <textarea
                       rows={5}
                       value={emailBody}

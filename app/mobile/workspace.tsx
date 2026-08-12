@@ -261,20 +261,20 @@ export function MobileWorkspace() {
 
   return (
     <RoleGuard requiredRole="nurse">
-      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+      <div className="min-h-screen bg-[#0F172A] text-white">
         <SidebarNav role="nurse" activePath="/mobile" onToggleCollapse={setCollapsed} />
         <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto`}>
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div>
-            <span className="text-[11px] font-bold text-emerald-800 tracking-wider uppercase">MOBIL KLINIKA REJIMI · TOMIR-01</span>
-            <h1 className="text-3xl font-serif font-bold text-slate-900 mt-1 mb-1">Urgut tumani · G'us qishlog'i</h1>
-            <p className="text-slate-500 text-xs">{t("todayVisits")} · 10 avgust 2026</p>
+            <span className="text-[11px] font-bold text-sky-400 tracking-wider uppercase">MOBIL KLINIKA REJIMI · TOMIR-01</span>
+            <h1 className="text-3xl font-sans font-bold text-white mt-1 mb-1">Urgut tumani · G'us qishlog'i</h1>
+            <p className="text-slate-400 text-xs">{t("todayVisits")} · 10 avgust 2026</p>
           </div>
           <div className="flex items-center gap-2">
             <button
-              className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer"
+              className="px-4 py-2 bg-slate-800/60 border border-white/[0.08] hover:border-white/20 text-slate-200 text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer"
               onClick={() =>
                 setNetwork(network === "offline" ? "online" : "offline")
               }
@@ -284,7 +284,7 @@ export function MobileWorkspace() {
                 : t("simulateOffline")}
             </button>
             <button
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold rounded-lg shadow-2xs transition cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold rounded-lg shadow-2xs shadow-sky-600/20 transition cursor-pointer disabled:opacity-50"
               onClick={sync}
               disabled={!pending || network === "offline"}
             >
@@ -301,25 +301,25 @@ export function MobileWorkspace() {
             ["3", t("waitingForSpecialist")],
             ["1", t("urgentResponse")],
           ].map(([n, l]) => (
-            <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs" key={l}>
-              <b className="text-2xl font-bold text-slate-900 block leading-tight">{n}</b>
-              <span className="text-[11px] text-slate-500 font-medium">{l}</span>
+            <div className="bg-slate-800/60 backdrop-blur border border-white/[0.08] rounded-xl p-4 shadow-2xs" key={l}>
+              <b className="text-2xl font-bold text-white block leading-tight">{n}</b>
+              <span className="text-[11px] text-slate-400 font-medium">{l}</span>
             </div>
           ))}
         </div>
 
         {notice && (
-          <div className="mb-4 p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-medium rounded-lg" role="status">
+          <div className="mb-4 p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium rounded-lg" role="status">
             ✓ {notice}
           </div>
         )}
 
         {showQueue && (
-          <section className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs mb-6">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <section className="bg-slate-800/60 backdrop-blur border border-white/[0.08] rounded-xl p-5 shadow-2xs mb-6">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06] mb-4">
               <div>
-                <h2 className="text-base font-bold text-slate-900">{t("offlineSyncQueue")}</h2>
-                <p className="text-xs text-slate-500">{t("localRecordsRemain")}</p>
+                <h2 className="text-base font-bold text-white">{t("offlineSyncQueue")}</h2>
+                <p className="text-xs text-slate-400">{t("localRecordsRemain")}</p>
               </div>
               <div className="flex gap-2">
                 <button
@@ -367,15 +367,15 @@ export function MobileWorkspace() {
         )}
 
         <section className="space-y-6">
-          <form className="bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs" onSubmit={submit}>
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <form className="bg-slate-800/60 backdrop-blur border border-white/[0.08] rounded-xl overflow-hidden shadow-2xs" onSubmit={submit}>
+            <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
               <div>
                 <span className="synthetic mb-1">{t("syntheticDemoData")}</span>
-                <h2 className="text-xl font-serif font-bold text-slate-900">{t("newPatientEncounter")}</h2>
+                <h2 className="text-xl font-sans font-bold text-white">{t("newPatientEncounter")}</h2>
               </div>
               <button
                 type="button"
-                className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold rounded-lg transition cursor-pointer"
+                className="px-3.5 py-1.5 bg-slate-700/60 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-white/10 transition cursor-pointer"
                 onClick={() => {
                   setDraft({ ...goldenDraft });
                   setStep(3);
@@ -391,7 +391,7 @@ export function MobileWorkspace() {
             </div>
 
             {/* Stepper horizontal line */}
-            <div className="px-5 py-4 border-b border-slate-100 overflow-x-auto bg-slate-50/40">
+            <div className="px-5 py-4 border-b border-white/[0.06] overflow-x-auto bg-slate-900/40">
               <ol className="flex items-center gap-4 min-w-[700px]">
                 {steps.map((name, i) => (
                   <li
@@ -401,14 +401,14 @@ export function MobileWorkspace() {
                     <button
                       type="button"
                       onClick={() => setStep(i)}
-                      className={`flex items-center gap-2 text-xs font-semibold cursor-pointer border-0 bg-transparent ${i === step ? "text-emerald-800 font-bold" : i < step ? "text-emerald-700" : "text-slate-400"}`}
+                      className={`flex items-center gap-2 text-xs font-semibold cursor-pointer border-0 bg-transparent ${i === step ? "text-sky-300 font-bold" : i < step ? "text-emerald-400" : "text-slate-500"}`}
                     >
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${i === step ? "bg-emerald-700 text-white border-emerald-700" : i < step ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-white text-slate-400 border-slate-300"}`}>
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${i === step ? "bg-sky-600 text-white border-sky-500 shadow-md shadow-sky-600/20" : i < step ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-slate-800 text-slate-500 border-white/10"}`}>
                         {i < step ? "✓" : i + 1}
                       </span>
                       <span className="whitespace-nowrap">{name}</span>
                     </button>
-                    {i < steps.length - 1 && <span className="flex-1 h-[1px] bg-slate-200"></span>}
+                    {i < steps.length - 1 && <span className="flex-1 h-[1px] bg-white/[0.08]"></span>}
                   </li>
                 ))}
               </ol>
