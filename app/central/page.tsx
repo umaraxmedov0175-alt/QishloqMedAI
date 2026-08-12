@@ -2,7 +2,6 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { SunlightToggle } from "@/app/ui/DemoRoleLink";
 import { RoleGuard } from "@/app/ui/RoleGuard";
 import { InnerChatIcon } from "@/app/ui/MedicalIcons";
 import {
@@ -134,8 +133,6 @@ export default function CentralReviewPage() {
             <InnerChatIcon className="w-4 h-4 shrink-0" />
             <span className="whitespace-nowrap">Telemaslahat & Chat</span>
           </a>
-
-          <SunlightToggle />
 
           <select
             value={language}
