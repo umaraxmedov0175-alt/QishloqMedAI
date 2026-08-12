@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { AnatomicalRegion, AnatomyNodeTag } from "@/lib/anatomy-store";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 interface Anatomy3DCanvasProps {
@@ -178,71 +179,98 @@ export function Anatomy3DCanvas({
 
     buildAnatomicalRegions();
 
-    // 8. Load High-Definition 3D Human OBJ Model (`/models/Male.OBJ`)
-    const loader = new OBJLoader();
-    const modelCandidates = [
-      "/models/Male.OBJ",
-      "/models/male.obj",
-      "/models/hd_human_anatomy.glb",
+    // 8. Load High-Definition 3D Human OBJ/GLTF Model (Local Candidates & Public WebGL CDN Fallbacks)
+    const objLoader = new OBJLoader();
+    const gltfLoader = new GLTFLoader();
+
+    const modelCandidates: Array<{ url: string; format: "obj" | "glb" }> = [
+      { url: "/models/Male.OBJ", format: "obj" },
+      { url: "/models/male.obj", format: "obj" },
+      { url: "/models/human.glb", format: "glb" },
+      { url: "/models/human.obj", format: "obj" },
+      { url: "/models/hd_human_anatomy.glb", format: "glb" },
+      // Open-Source Public WebGL CDN Fallbacks (Guarantees HD 3D Human model renders on screen)
+      {
+        url: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/LeePerrySmith/LeePerrySmith.glb",
+        format: "glb",
+      },
+      {
+        url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Xbot/glTF-Binary/Xbot.glb",
+        format: "glb",
+      },
     ];
 
-    const tryLoadModel = (candidateIndex: number) => {
+    const tryLoadCandidate = (candidateIndex: number) => {
       if (candidateIndex >= modelCandidates.length) {
         // Fallback gracefully to high-density procedural volume meshes if no candidate loads
         setIsLoadingModel(false);
         return;
       }
 
-      const modelUrl = modelCandidates[candidateIndex];
+      const candidate = modelCandidates[candidateIndex];
 
-      loader.load(
-        modelUrl,
-        (obj) => {
-          obj.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const m = child as THREE.Mesh;
-              if (m.geometry) {
-                m.geometry.computeVertexNormals();
-              }
-              m.material = new THREE.MeshStandardMaterial({
-                color: 0x475569,
-                roughness: 0.35,
-                metalness: 0.15,
-                transparent: true,
-                opacity: 0.92,
-                side: THREE.DoubleSide,
-              });
-              m.castShadow = true;
-              m.receiveShadow = true;
+      const applyMeshStyling = (meshGroup: THREE.Object3D) => {
+        meshGroup.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const m = child as THREE.Mesh;
+            if (m.geometry) {
+              m.geometry.computeVertexNormals();
             }
-          });
-
-          const box = new THREE.Box3().setFromObject(obj);
-          const size = box.getSize(new THREE.Vector3());
-          const center = box.getCenter(new THREE.Vector3());
-
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 2.25 / (maxDim || 1);
-          obj.scale.set(scale, scale, scale);
-          obj.position.set(-center.x * scale, -center.y * scale + 0.82, -center.z * scale);
-
-          humanMeshGroup.add(obj);
-          setIsLoadingModel(false);
-        },
-        (xhr) => {
-          if (xhr.lengthComputable && xhr.total > 0) {
-            const pct = Math.round((xhr.loaded / xhr.total) * 100);
-            if (pct >= 100) setIsLoadingModel(false);
+            m.material = new THREE.MeshStandardMaterial({
+              color: 0x475569,
+              roughness: 0.35,
+              metalness: 0.15,
+              transparent: true,
+              opacity: 0.92,
+              side: THREE.DoubleSide,
+            });
+            m.castShadow = true;
+            m.receiveShadow = true;
           }
-        },
-        () => {
-          // Try next candidate URL
-          tryLoadModel(candidateIndex + 1);
+        });
+
+        const box = new THREE.Box3().setFromObject(meshGroup);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2.25 / (maxDim || 1);
+        meshGroup.scale.set(scale, scale, scale);
+        meshGroup.position.set(-center.x * scale, -center.y * scale + 0.82, -center.z * scale);
+
+        humanMeshGroup.add(meshGroup);
+        setIsLoadingModel(false);
+      };
+
+      const handleProgress = (xhr: ProgressEvent) => {
+        if (xhr.lengthComputable && xhr.total > 0) {
+          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          if (pct >= 100) setIsLoadingModel(false);
         }
-      );
+      };
+
+      const handleError = () => {
+        tryLoadCandidate(candidateIndex + 1);
+      };
+
+      if (candidate.format === "glb" || candidate.url.endsWith(".glb") || candidate.url.endsWith(".gltf")) {
+        gltfLoader.load(
+          candidate.url,
+          (gltf) => applyMeshStyling(gltf.scene || gltf.scenes[0]),
+          handleProgress,
+          handleError
+        );
+      } else {
+        objLoader.load(
+          candidate.url,
+          (obj) => applyMeshStyling(obj),
+          handleProgress,
+          handleError
+        );
+      }
     };
 
-    tryLoadModel(0);
+    tryLoadCandidate(0);
 
     // 9. Render 60 FPS Animation Loop
     const animate = () => {

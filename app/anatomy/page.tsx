@@ -19,11 +19,12 @@ import {
 import { normalizeRole, type Role } from "@/lib/authorization";
 import { useLanguage } from "@/lib/i18n";
 
-export default function Anatomy3DWorkspacePage() {
+export default function Anatomy3DWorkspacePage({ initialRole }: { initialRole?: Role } = {}) {
   const { language } = useLanguage();
 
   // Lazy state initialization
   const [role, setRole] = useState<Role>(() => {
+    if (initialRole) return initialRole;
     if (typeof window !== "undefined") {
       const cookies = document.cookie.split(";").map((c) => c.trim().split("="));
       const rawCookie = cookies.find(([name]) => name === "qm_demo_role")?.[1];
