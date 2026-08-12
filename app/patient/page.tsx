@@ -2,7 +2,8 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from "react";
-import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import {
   DispatchLauncherIcon,
@@ -199,7 +200,8 @@ export default function IsolatedPatientPortalPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
+    <RoleGuard requiredRole="patient">
+      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
       {/* Top Header */}
       <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-4">
@@ -230,15 +232,6 @@ export default function IsolatedPatientPortalPage() {
         <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold whitespace-nowrap" href="/patient">
           📱 Bemor Portali
         </a>
-        <DemoRoleLink workspace="mobile_nurse" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
-          {t("dashboard")}
-        </DemoRoleLink>
-        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
-          {t("specialistQueue")}
-        </DemoRoleLink>
-        <DemoRoleLink workspace="dispatcher" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap">
-          {t("roleDispatcher")}
-        </DemoRoleLink>
         <a href="/chat" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition whitespace-nowrap flex items-center gap-1.5 font-bold text-emerald-800">
           <span>💬 Telemaslahat & Chat</span>
         </a>
@@ -706,5 +699,6 @@ export default function IsolatedPatientPortalPage() {
         imageTitle={imageTitle}
       />
     </main>
+    </RoleGuard>
   );
 }

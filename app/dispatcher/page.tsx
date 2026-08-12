@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
-import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { DispatcherMap } from "@/app/ui/DispatcherMap";
 import {
   getDispatchItems,
@@ -74,7 +74,8 @@ export default function DispatcherWorkspacePage() {
   const districts = Array.from(new Set(items.map((i) => i.district)));
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col">
+    <RoleGuard requiredRole="dispatcher">
+      <main className="min-h-screen bg-slate-900 text-white flex flex-col font-sans">
       {/* Header Bar */}
       <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs shrink-0 z-20">
         <div className="flex items-center gap-4">
@@ -103,14 +104,6 @@ export default function DispatcherWorkspacePage() {
             <span>Hududiy Shifoxonalar</span>
           </a>
 
-          <a
-            href="/patient/report"
-            className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-xs font-semibold rounded-lg border border-emerald-400/30 transition flex items-center gap-1.5"
-          >
-            <span>📱</span>
-            <span>Bemor Murojaat Portali</span>
-          </a>
-
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
@@ -121,15 +114,9 @@ export default function DispatcherWorkspacePage() {
           </select>
 
           <nav className="flex items-center gap-1 text-xs font-medium">
-            <DemoRoleLink workspace="mobile_nurse" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
-              {t("dashboard")}
-            </DemoRoleLink>
-            <DemoRoleLink workspace="specialist" className="px-3 py-1.5 text-emerald-200 hover:text-white rounded-md transition">
-              {t("specialistView")}
-            </DemoRoleLink>
-            <a className="px-3 py-1.5 text-white bg-white/10 rounded-md font-semibold border-b-2 border-emerald-400" href="/operations">
-              {t("roleDispatcher")}
-            </a>
+            <span className="px-3 py-1.5 text-white bg-white/10 rounded-md font-semibold border-b-2 border-emerald-400">
+              🏢 Dispetcher Ish Maydoni
+            </span>
           </nav>
         </div>
       </header>
@@ -394,5 +381,6 @@ export default function DispatcherWorkspacePage() {
         </div>
       </div>
     </main>
+    </RoleGuard>
   );
 }

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import {
   enqueueOfflineAction,
   listQueueItems,
@@ -257,7 +258,8 @@ export function MobileWorkspace() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+    <RoleGuard requiredRole="nurse">
+      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
       <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-4 shrink-0">
           <a className="flex items-center gap-2 font-bold text-base md:text-lg text-white no-underline shrink-0" href="/">
@@ -1282,5 +1284,6 @@ export function MobileWorkspace() {
         </section>
       </section>
     </main>
+    </RoleGuard>
   );
 }

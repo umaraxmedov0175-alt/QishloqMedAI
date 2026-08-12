@@ -3,6 +3,7 @@
 /* eslint-disable react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import { useState } from "react";
 import Link from "next/link";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { OutbreakRadarMap } from "@/app/ui/OutbreakRadarMap";
 import { analyzeOutbreakRadar } from "@/lib/outbreak-radar";
 import {
@@ -97,7 +98,8 @@ export default function DispatcherRadarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-6 space-y-6">
+    <RoleGuard requiredRole="dispatcher">
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-6 space-y-6">
       {/* Top Header Workspace Nav */}
       <header className="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl">
         <div className="flex items-center gap-3">
@@ -125,18 +127,6 @@ export default function DispatcherRadarPage() {
             className="px-3 py-2 rounded-lg bg-blue-900/60 hover:bg-blue-800/80 text-blue-200 border border-blue-700/60 transition flex items-center gap-1.5"
           >
             🏥 Hududiy Shifoxonalar Radari
-          </Link>
-          <Link
-            href="/operations"
-            className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5"
-          >
-            📊 Logistika Paneli
-          </Link>
-          <Link
-            href="/central"
-            className="px-3 py-2 rounded-lg bg-emerald-900/60 hover:bg-emerald-800/80 text-emerald-200 border border-emerald-700/60 transition flex items-center gap-1.5"
-          >
-            🩺 Vrach Workstation
           </Link>
         </div>
       </header>
@@ -372,6 +362,7 @@ export default function DispatcherRadarPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </RoleGuard>
   );
 }

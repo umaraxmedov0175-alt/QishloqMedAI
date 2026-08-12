@@ -2,7 +2,8 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { InnerChatIcon } from "@/app/ui/MedicalIcons";
 import {
   getClinicalAction,
@@ -113,7 +114,8 @@ export default function CentralReviewPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
+    <RoleGuard requiredRole="doctor">
+      <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
       <header className="px-4 md:px-6 bg-[#063c32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-3 shrink-0">
           <a href="/" className="no-underline shrink-0">
@@ -145,15 +147,9 @@ export default function CentralReviewPage() {
           </select>
 
           <nav className="flex items-center gap-1 text-xs font-semibold shrink-0">
-            <DemoRoleLink workspace="mobile_nurse" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
-              {t("dashboard")}
-            </DemoRoleLink>
-            <a className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs" href="/central">
-              {t("specialistQueue")}
-            </a>
-            <DemoRoleLink workspace="dispatcher" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
-              {t("roleDispatcher")}
-            </DemoRoleLink>
+            <span className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs">
+              🛡️ {t("specialistQueue")}
+            </span>
           </nav>
         </div>
       </header>
@@ -548,5 +544,6 @@ export default function CentralReviewPage() {
         imageTitle={`${active.code} - Diagnostik Rentgen Tasviri`}
       />
     </main>
+    </RoleGuard>
   );
 }

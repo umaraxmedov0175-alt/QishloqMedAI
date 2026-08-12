@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from "react";
-import { DemoRoleLink } from "@/app/ui/DemoRoleLink";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import { PatientRecordSidebar } from "@/app/ui/PatientRecordSidebar";
 import { VideoTeleconsultModal } from "@/app/ui/VideoTeleconsultModal";
@@ -202,18 +201,9 @@ export default function InnerChatPage() {
 
       {/* Sub Navigation Bar */}
       <nav className="bg-white border-b border-slate-200 px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold shrink-0">
-        <DemoRoleLink workspace="mobile_nurse" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
-          {t("dashboard")}
-        </DemoRoleLink>
-        <DemoRoleLink workspace="specialist" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
-          {t("specialistQueue")}
-        </DemoRoleLink>
-        <DemoRoleLink workspace="dispatcher" className="py-3 px-4 text-slate-500 hover:text-slate-900 transition">
-          {t("roleDispatcher")}
-        </DemoRoleLink>
-        <a className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold" href="/chat">
+        <span className="py-3 px-4 text-emerald-800 border-b-2 border-emerald-700 font-bold">
           💬 Telekonsultatsiya & Chat
-        </a>
+        </span>
       </nav>
 
       {/* Privacy Redaction Warning Toast */}

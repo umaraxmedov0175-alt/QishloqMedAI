@@ -53,18 +53,6 @@ export default function HospitalOutbreakPage() {
           >
             ☣️ Outbreak Radar
           </Link>
-          <Link
-            href="/dispatcher"
-            className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5"
-          >
-            📡 Live Dispatcher
-          </Link>
-          <Link
-            href="/central"
-            className="px-3 py-2 rounded-lg bg-emerald-900/60 hover:bg-emerald-800/80 text-emerald-200 border border-emerald-700/60 transition flex items-center gap-1.5"
-          >
-            🩺 Vrach Workstation
-          </Link>
         </div>
       </header>
 

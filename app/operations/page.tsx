@@ -3,7 +3,8 @@
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
-import { DemoRoleLink, SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { SunlightToggle } from "@/app/ui/DemoRoleLink";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { DispatcherMap } from "@/app/ui/DispatcherMap";
 import {
   InnerChatIcon,
@@ -64,7 +65,8 @@ export default function OperationsPage() {
   const emergencyItemsCount = dispatchItems.filter((i) => i.triage === "emergency").length;
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
+    <RoleGuard requiredRole="dispatcher">
+      <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
       {/* Top Header Bar */}
       <header className="px-4 md:px-6 bg-[#063C32] text-white flex flex-wrap md:flex-nowrap items-center justify-between shadow-sm z-20 relative py-2.5 md:h-16 gap-3">
         <div className="flex items-center gap-3 shrink-0">
@@ -122,18 +124,9 @@ export default function OperationsPage() {
           </select>
 
           <nav className="flex items-center gap-1 text-xs font-semibold shrink-0">
-            <a className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition font-bold text-emerald-300 whitespace-nowrap" href="/patient">
-              📱 Bemor Portali
-            </a>
-            <DemoRoleLink workspace="mobile_nurse" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
-              {t("dashboard")}
-            </DemoRoleLink>
-            <DemoRoleLink workspace="specialist" className="px-2.5 py-1.5 text-emerald-200 hover:text-white rounded-md transition whitespace-nowrap">
-              {t("specialistView")}
-            </DemoRoleLink>
-            <a className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs" href="/operations">
-              {t("roleDispatcher")}
-            </a>
+            <span className="px-3 py-1.5 text-white bg-white/15 rounded-md font-bold border-b-2 border-emerald-400 whitespace-nowrap shadow-2xs">
+              🏢 {t("roleDispatcher")}
+            </span>
           </nav>
         </div>
       </header>
@@ -146,13 +139,6 @@ export default function OperationsPage() {
             <p className="text-slate-500 text-xs">{t("dispatcherSubtitle")}</p>
           </div>
           <div className="flex items-center gap-3">
-            <a
-              href="/patient/report"
-              className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center gap-2"
-            >
-              <span>📱</span>
-              <span>Bemor Murojaat Portali</span>
-            </a>
             <span className="synthetic">{t("syntheticDemoData")}</span>
           </div>
         </div>
@@ -350,5 +336,6 @@ export default function OperationsPage() {
         </div>
       </section>
     </main>
+    </RoleGuard>
   );
 }
