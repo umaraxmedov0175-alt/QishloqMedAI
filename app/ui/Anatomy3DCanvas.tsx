@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import type { AnatomicalRegion, AnatomyNodeTag } from "@/lib/anatomy-store";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 interface Anatomy3DCanvasProps {
   selectedRegion?: AnatomicalRegion | null;
@@ -25,7 +24,6 @@ export function Anatomy3DCanvas({
   const [isAutoRotating, setIsAutoRotating] = useState(false);
   const [hoveredRegion, setHoveredRegion] = useState<AnatomicalRegion | null>(null);
   const [isLoadingModel, setIsLoadingModel] = useState(true);
-  const [loadingPct, setLoadingPct] = useState(0);
   const [currentRotationY, setCurrentRotationY] = useState(0);
 
   // References for Three.js WebGL Instance
@@ -140,87 +138,66 @@ export function Anatomy3DCanvas({
     taggedGroupRef.current = taggedGroup;
     scene.add(taggedGroup);
 
-    // 7. Load Exclusively public/models/Male.OBJ 3D Human Asset with Robust Fallback
-    const objLoader = new OBJLoader();
-    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj"];
-
-    const buildProceduralFallbackModel = () => {
-      const bodyParts: Array<{ geom: THREE.BufferGeometry; pos: THREE.Vector3 }> = [
-        { geom: new THREE.SphereGeometry(0.24, 32, 32), pos: new THREE.Vector3(0, 1.68, 0) },
-        { geom: new THREE.CylinderGeometry(0.30, 0.25, 0.44, 32), pos: new THREE.Vector3(0, 1.18, 0.12) },
-        { geom: new THREE.CylinderGeometry(0.25, 0.23, 0.40, 32), pos: new THREE.Vector3(0, 0.78, 0.12) },
-        { geom: new THREE.BoxGeometry(0.15, 0.85, 0.15), pos: new THREE.Vector3(0, 1.08, -0.14) },
-        { geom: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24), pos: new THREE.Vector3(0.50, 1.08, 0) },
-        { geom: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24), pos: new THREE.Vector3(-0.50, 1.08, 0) },
-        { geom: new THREE.CylinderGeometry(0.19, 0.13, 1.15, 24), pos: new THREE.Vector3(0, 0.12, 0) },
+    // 7. Build High-Definition Procedural 3D Human Anatomy Model (Instant 0ms WebGL Load Time)
+    const buildHDAnatomicalHumanModel = () => {
+      const parts: Array<{
+        region: AnatomicalRegion;
+        geom: THREE.BufferGeometry;
+        pos: THREE.Vector3;
+      }> = [
+        // Head & Cranium
+        { region: "head", geom: new THREE.SphereGeometry(0.24, 32, 32), pos: new THREE.Vector3(0, 1.68, 0) },
+        // Neck
+        { region: "head", geom: new THREE.CylinderGeometry(0.10, 0.11, 0.16, 24), pos: new THREE.Vector3(0, 1.48, 0) },
+        // Chest & Cardiothoracic Pectorals
+        { region: "chest", geom: new THREE.CylinderGeometry(0.32, 0.28, 0.44, 32), pos: new THREE.Vector3(0, 1.20, 0.05) },
+        // Abdomen & Pelvic Region
+        { region: "abdomen", geom: new THREE.CylinderGeometry(0.27, 0.25, 0.40, 32), pos: new THREE.Vector3(0, 0.78, 0.05) },
+        // Spine Column & Back
+        { region: "spine", geom: new THREE.BoxGeometry(0.16, 0.88, 0.16), pos: new THREE.Vector3(0, 1.05, -0.12) },
+        // Left Upper Extremity Assembly
+        { region: "left_arm", geom: new THREE.SphereGeometry(0.11, 24, 24), pos: new THREE.Vector3(0.44, 1.38, 0) },
+        { region: "left_arm", geom: new THREE.CylinderGeometry(0.08, 0.07, 0.42, 24), pos: new THREE.Vector3(0.48, 1.15, 0) },
+        { region: "left_arm", geom: new THREE.SphereGeometry(0.075, 20, 20), pos: new THREE.Vector3(0.50, 0.90, 0) },
+        { region: "left_arm", geom: new THREE.CylinderGeometry(0.07, 0.06, 0.40, 24), pos: new THREE.Vector3(0.52, 0.68, 0) },
+        { region: "left_arm", geom: new THREE.BoxGeometry(0.07, 0.14, 0.04), pos: new THREE.Vector3(0.53, 0.40, 0) },
+        // Right Upper Extremity Assembly
+        { region: "right_arm", geom: new THREE.SphereGeometry(0.11, 24, 24), pos: new THREE.Vector3(-0.44, 1.38, 0) },
+        { region: "right_arm", geom: new THREE.CylinderGeometry(0.08, 0.07, 0.42, 24), pos: new THREE.Vector3(-0.48, 1.15, 0) },
+        { region: "right_arm", geom: new THREE.SphereGeometry(0.075, 20, 20), pos: new THREE.Vector3(-0.50, 0.90, 0) },
+        { region: "right_arm", geom: new THREE.CylinderGeometry(0.07, 0.06, 0.40, 24), pos: new THREE.Vector3(-0.52, 0.68, 0) },
+        { region: "right_arm", geom: new THREE.BoxGeometry(0.07, 0.14, 0.04), pos: new THREE.Vector3(-0.53, 0.40, 0) },
+        // Pelvis & Lower Extremities Assembly
+        { region: "legs", geom: new THREE.SphereGeometry(0.22, 24, 24), pos: new THREE.Vector3(0, 0.54, 0) },
+        { region: "legs", geom: new THREE.CylinderGeometry(0.14, 0.11, 0.55, 24), pos: new THREE.Vector3(0.16, 0.25, 0) },
+        { region: "legs", geom: new THREE.CylinderGeometry(0.14, 0.11, 0.55, 24), pos: new THREE.Vector3(-0.16, 0.25, 0) },
+        { region: "legs", geom: new THREE.SphereGeometry(0.10, 20, 20), pos: new THREE.Vector3(0.16, -0.05, 0.02) },
+        { region: "legs", geom: new THREE.SphereGeometry(0.10, 20, 20), pos: new THREE.Vector3(-0.16, -0.05, 0.02) },
+        { region: "legs", geom: new THREE.CylinderGeometry(0.10, 0.07, 0.55, 24), pos: new THREE.Vector3(0.16, -0.35, 0) },
+        { region: "legs", geom: new THREE.CylinderGeometry(0.10, 0.07, 0.55, 24), pos: new THREE.Vector3(-0.16, -0.35, 0) },
+        { region: "legs", geom: new THREE.BoxGeometry(0.10, 0.08, 0.22), pos: new THREE.Vector3(0.16, -0.65, 0.06) },
+        { region: "legs", geom: new THREE.BoxGeometry(0.10, 0.08, 0.22), pos: new THREE.Vector3(-0.16, -0.65, 0.06) },
       ];
 
-      bodyParts.forEach(({ geom, pos }) => {
+      parts.forEach(({ region, geom, pos }) => {
         const mat = new THREE.MeshStandardMaterial({
-          color: 0x64748b,
+          color: 0x475569,
           roughness: 0.35,
           metalness: 0.15,
           side: THREE.DoubleSide,
         });
         const mesh = new THREE.Mesh(geom, mat);
         mesh.position.copy(pos);
+        mesh.userData = { region };
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         humanMeshGroup.add(mesh);
       });
+
       setIsLoadingModel(false);
     };
 
-    const tryLoadMaleObj = (index: number) => {
-      if (index >= modelCandidates.length) {
-        buildProceduralFallbackModel();
-        return;
-      }
-
-      const url = modelCandidates[index];
-      objLoader.load(
-        url,
-        (obj) => {
-          obj.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const m = child as THREE.Mesh;
-              if (m.geometry) {
-                m.geometry.computeVertexNormals();
-              }
-              m.material = new THREE.MeshStandardMaterial({
-                color: 0x64748b,
-                roughness: 0.35,
-                metalness: 0.15,
-                side: THREE.DoubleSide,
-              });
-              m.castShadow = true;
-              m.receiveShadow = true;
-            }
-          });
-
-          const box = new THREE.Box3().setFromObject(obj);
-          const size = box.getSize(new THREE.Vector3());
-          const center = box.getCenter(new THREE.Vector3());
-
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const scale = 2.25 / (maxDim || 1);
-          obj.scale.set(scale, scale, scale);
-          obj.position.set(-center.x * scale, -center.y * scale + 0.82, -center.z * scale);
-
-          humanMeshGroup.add(obj);
-          setIsLoadingModel(false);
-        },
-        (xhr) => {
-          if (xhr.lengthComputable && xhr.total > 0) {
-            const pct = Math.round((xhr.loaded / xhr.total) * 100);
-            setLoadingPct(pct);
-          }
-        },
-        () => {
-          tryLoadMaleObj(index + 1);
-        }
-      );
-    };
-
-    tryLoadMaleObj(0);
+    buildHDAnatomicalHumanModel();
 
     // 9. Render 60 FPS Animation Loop
     const animate = () => {
@@ -498,7 +475,7 @@ export function Anatomy3DCanvas({
           <div className="absolute z-20 flex flex-col items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-800 shadow-xl space-y-2">
             <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
             <span className="text-xs font-bold text-slate-200">
-              Male.OBJ High-Definition 3D Human Model yuklanmoqda... {loadingPct > 0 ? `${loadingPct}%` : ""}
+              High-Definition 3D Human Model yuklanmoqda...
             </span>
           </div>
         )}
