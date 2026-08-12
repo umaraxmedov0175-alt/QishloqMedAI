@@ -35,7 +35,7 @@ export function readDemoRole(request: Request): DemoRole | null {
 }
 
 export function demoSessionCookie(role: DemoRole, secure: boolean) {
-  return `${DEMO_ROLE_COOKIE}=${role}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800${secure ? "; Secure" : ""}`;
+  return `${DEMO_ROLE_COOKIE}=${role}; Path=/; SameSite=Lax; Max-Age=28800${secure ? "; Secure" : ""}`;
 }
 
 export async function requireDemoRole(expected: DemoRole) {

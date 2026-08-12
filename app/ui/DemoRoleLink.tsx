@@ -43,6 +43,12 @@ export function DemoRoleLink({
         body: JSON.stringify({ role: workspace }),
       });
       if (response.ok) {
+        try {
+          sessionStorage.setItem("qm_demo_role", workspace);
+          document.cookie = `qm_demo_role=${workspace}; Path=/; SameSite=Lax; Max-Age=28800`;
+        } catch {
+          void 0;
+        }
         router.push(destinations[workspace]);
       } else {
         setIsPending(false);

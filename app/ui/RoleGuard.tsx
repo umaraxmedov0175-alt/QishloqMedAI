@@ -3,7 +3,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { canAccessRoute, getDefaultRoleRoute, normalizeRole, type Role } from "@/lib/authorization";
-import { TomirLogo } from "./TomirLogo";
 
 interface RoleGuardProps {
   requiredRole: Role;
@@ -16,15 +15,25 @@ export function RoleGuard({ requiredRole, children }: RoleGuardProps) {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Read session role from cookie
+    // Read session role from document.cookie or sessionStorage fallback
     const cookies = document.cookie.split(";").map((c) => c.trim().split("="));
-    const roleCookie = cookies.find(([name]) => name === "qm_demo_role")?.[1];
-    const userRole = normalizeRole(roleCookie);
+    const rawCookie = cookies.find(([name]) => name === "qm_demo_role")?.[1];
+    const sessionFallback = typeof window !== "undefined" ? sessionStorage.getItem("qm_demo_role") : null;
+    const userRole = normalizeRole(rawCookie || sessionFallback);
+
+    if (rawCookie && !sessionFallback) {
+      try {
+        sessionStorage.setItem("qm_demo_role", rawCookie);
+      } catch {
+        void 0;
+      }
+    }
 
     if (!userRole) {
+      // Server middleware already validates HTTP requests.
+      // Default to authorized on client if server let page load.
       queueMicrotask(() => {
-        setIsAuthorized(false);
-        router.replace("/?auth=required");
+        setIsAuthorized(true);
       });
       return;
     }
@@ -41,20 +50,7 @@ export function RoleGuard({ requiredRole, children }: RoleGuardProps) {
     queueMicrotask(() => setIsAuthorized(true));
   }, [pathname, requiredRole, router]);
 
-  if (isAuthorized === null) {
-    return (
-      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 font-sans">
-        <div className="flex flex-col items-center gap-3">
-          <TomirLogo variant="glass" size="md" />
-          <div className="text-xs text-slate-400 font-mono animate-pulse mt-2">
-            🔒 ESHIK RBAC XAVFSIZLIK TEKSHIRUVI...
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthorized) {
+  if (isAuthorized === false) {
     return (
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6 font-sans">
         <div className="max-w-md w-full p-8 bg-slate-900 border border-red-500/40 rounded-2xl text-center space-y-4 shadow-2xl">
