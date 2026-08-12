@@ -7,7 +7,10 @@ import {
   validatePayloadChecksum,
 } from "../lib/zero-connectivity-payload.ts";
 
-import { analyzeOutbreakRadar } from "../lib/outbreak-radar.ts";
+import {
+  analyzeOutbreakRadar,
+  verifyOutbreakCluster,
+} from "../lib/outbreak-radar.ts";
 
 test("encodeZeroConnectivityPayload encodes vitals & lab results into string under 65 characters", () => {
   const sampleVitals = {
@@ -89,7 +92,7 @@ test("validatePayloadChecksum detects corrupted/tampered SMS payloads", () => {
   assert.equal(validatePayloadChecksum(corruptedPayload), false);
 });
 
-test("analyzeOutbreakRadar calculates statistical z-scores and spatial density clusters", () => {
+test("analyzeOutbreakRadar calculates statistical z-scores, attack rates, and severity tiers", () => {
   const result = analyzeOutbreakRadar();
 
   assert.ok(result.clusters.length >= 4);
@@ -101,6 +104,31 @@ test("analyzeOutbreakRadar calculates statistical z-scores and spatial density c
   assert.equal(urgutCluster.riskLevel, "critical");
   assert.ok(urgutCluster.zScore >= 3.0);
   assert.ok(urgutCluster.primaryMarker === "troponin_cardiac");
+  assert.ok(urgutCluster.severityTier.includes("Tier 3"));
+  assert.ok(urgutCluster.attackRate.attackRatio > 5.0);
+  assert.ok(urgutCluster.districtPolygon.length >= 4);
+});
+
+test("human-in-the-loop specialist verification updates status and generates mobile lab field tasking", () => {
+  const verifyResult = verifyOutbreakCluster(
+    "cluster-kegeyli-04",
+    "confirmed",
+    "Dr. Alisher Qodirov",
+    "Suv kontaminatsiyasi tasdiqlandi. Tezkor safarbarlik va xonadonlar skriningi topologiyasi berildi."
+  );
+
+  assert.ok(verifyResult.cluster);
+  assert.equal(verifyResult.cluster.verificationStatus, "confirmed");
+  assert.equal(verifyResult.cluster.verifiedBy, "Dr. Alisher Qodirov");
+  assert.ok(verifyResult.task);
+  assert.equal(verifyResult.task.targetDistrict, "Kegeyli");
+  assert.ok(verifyResult.task.kitChecklist.length >= 3);
+  assert.ok(verifyResult.task.prioritizedHouseholds.length >= 2);
+
+  const refreshedRadar = analyzeOutbreakRadar();
+  const kegeyliCluster = refreshedRadar.clusters.find((c) => c.id === "cluster-kegeyli-04");
+  assert.equal(kegeyliCluster?.verificationStatus, "confirmed");
+  assert.ok(refreshedRadar.summary.confirmedOutbreaks >= 1);
 });
 
 test("Outbreak radar routes preventive dispatches to nearest regional hospital authority", () => {

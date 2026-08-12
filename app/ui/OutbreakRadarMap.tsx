@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { findNearestHospital, REGIONAL_HOSPITALS } from "@/lib/regional-routing";
 import type { DispatchItem } from "@/lib/realtime-dispatcher";
-import type { OutbreakCluster, PreventiveDispatchRecommendation } from "@/lib/outbreak-radar";
+import type { OutbreakCluster, PreventiveDispatchRecommendation, TimeframeFilter } from "@/lib/outbreak-radar";
 import { EMERGENCY_MARKER_SVG_HTML, NEAREST_HOSPITAL_SVG_HTML } from "@/app/ui/MedicalIcons";
 import type L from "leaflet";
 
@@ -13,10 +13,12 @@ interface OutbreakRadarMapProps {
   preventiveDispatches?: PreventiveDispatchRecommendation[];
   selectedId?: string | null;
   mode?: "dispatch" | "radar";
+  timeframe?: TimeframeFilter;
   onSelectDispatch?: (item: DispatchItem) => void;
   onSelectCluster?: (cluster: OutbreakCluster) => void;
   onTriggerPreventiveDispatch?: (clusterId: string) => void;
   onModeToggle?: (newMode: "dispatch" | "radar") => void;
+  onTimeframeChange?: (timeframe: TimeframeFilter) => void;
   language?: "uz" | "en";
 }
 
@@ -25,10 +27,12 @@ export function OutbreakRadarMap({
   clusters = [],
   selectedId = null,
   mode = "radar",
+  timeframe = "30d",
   onSelectDispatch,
   onSelectCluster,
   onTriggerPreventiveDispatch,
   onModeToggle,
+  onTimeframeChange,
 }: OutbreakRadarMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -36,6 +40,7 @@ export function OutbreakRadarMap({
   const leafletRef = useRef<typeof L | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [activeMode, setActiveMode] = useState<"dispatch" | "radar">(mode);
+  const [activeTimeframe, setActiveTimeframe] = useState<TimeframeFilter>(timeframe);
 
   useEffect(() => {
     if (!mapContainerRef.current || mapInstanceRef.current) return;
@@ -126,22 +131,36 @@ export function OutbreakRadarMap({
     });
 
     if (activeMode === "radar") {
-      // 2. Render Epidemiological Outbreak Anomaly Clusters
+      // 2. Render Epidemiological Outbreak Anomaly Clusters & Boundary Polygons
       clusters.forEach((cluster) => {
         const isSelected = cluster.id === selectedId;
-        const color =
-          cluster.riskLevel === "critical"
+        const isConfirmed = cluster.verificationStatus === "confirmed";
+        const isDismissed = cluster.verificationStatus === "false_positive";
+
+        const color = isDismissed
+          ? "#10b981"
+          : isConfirmed || cluster.riskLevel === "critical"
             ? "#dc2626"
-            : cluster.riskLevel === "elevated"
-              ? "#d97706"
-              : "#ca8a04";
+            : "#d97706";
+
+        // Village Boundary Vector Polygon
+        if (cluster.districtPolygon && cluster.districtPolygon.length > 0) {
+          const villagePoly = LModule.polygon(cluster.districtPolygon, {
+            color,
+            fillColor: color,
+            fillOpacity: isSelected ? 0.35 : 0.20,
+            weight: isSelected ? 3 : 2,
+            dashArray: isConfirmed ? undefined : "5, 5",
+          });
+          markersGroup.addLayer(villagePoly);
+        }
 
         // Spatial density circle
         const circle = LModule.circle([cluster.centerLat, cluster.centerLng], {
           color,
           fillColor: color,
           fillOpacity: isSelected ? 0.45 : 0.25,
-          radius: cluster.radiusKm * 1000, // meters
+          radius: cluster.radiusKm * 1000,
           weight: isSelected ? 3 : 2,
           dashArray: cluster.riskLevel === "critical" ? "6, 4" : undefined,
         });
@@ -162,7 +181,13 @@ export function OutbreakRadarMap({
         );
         markersGroup.addLayer(vectorLine);
 
-        // Center Pulsing Anomaly Icon
+        // Center Anomaly Icon
+        const statusIconBadge = isConfirmed
+          ? "✅"
+          : isDismissed
+            ? "🛡️"
+            : "☣️";
+
         const anomalyIcon = LModule.divIcon({
           className: "custom-anomaly-icon",
           html: `
@@ -173,11 +198,13 @@ export function OutbreakRadarMap({
                   : "bg-amber-500 animate-pulse opacity-60"
               }"></div>
               <div class="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-white text-white font-extrabold text-[11px] shadow-lg ${
-                cluster.riskLevel === "critical"
-                  ? "bg-red-700 shadow-red-500/60"
-                  : "bg-amber-600 shadow-amber-500/60"
+                isDismissed
+                  ? "bg-emerald-700 shadow-emerald-500/60"
+                  : isConfirmed
+                    ? "bg-red-800 shadow-red-500/80 ring-2 ring-red-400"
+                    : "bg-amber-600 shadow-amber-500/60"
               }">
-                ☣️
+                ${statusIconBadge}
               </div>
             </div>
           `,
@@ -188,33 +215,48 @@ export function OutbreakRadarMap({
 
         const marker = LModule.marker([cluster.centerLat, cluster.centerLng], { icon: anomalyIcon });
         const popupDiv = document.createElement("div");
-        popupDiv.className = "p-1 font-sans text-xs max-w-[280px]";
+        popupDiv.className = "p-1 font-sans text-xs max-w-[300px]";
+        
+        const verificationBadgeClass = isConfirmed
+          ? "bg-emerald-700 text-white"
+          : isDismissed
+            ? "bg-slate-700 text-slate-300"
+            : "bg-amber-600 text-white animate-pulse";
+
+        const verificationBadgeText = isConfirmed
+          ? "✅ TASDIQLANGAN EPIDEMIK KLASTER"
+          : isDismissed
+            ? "🛡️ RAD ETILGAN (FALSE POSITIVE)"
+            : "⏳ SHIFOKOR KO'RIGINI KUTMOQDA";
+
         popupDiv.innerHTML = `
-          <div class="flex items-center justify-between gap-2 mb-1 border-b pb-1">
-            <b class="text-sm font-bold text-red-900">☣️ Cluster: ${cluster.district}</b>
-            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase text-white ${
-              cluster.riskLevel === "critical" ? "bg-red-600" : "bg-amber-600"
-            }">Z-Score ${cluster.zScore}</span>
+          <div class="flex items-center justify-between gap-2 mb-1.5 border-b pb-1">
+            <b class="text-sm font-bold text-slate-900">${cluster.district} · ${cluster.villageName}</b>
+            <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ${verificationBadgeClass}">
+              ${verificationBadgeText}
+            </span>
           </div>
-          <div class="text-[11px] text-slate-700 font-semibold mb-1">${cluster.villageName} · ${cluster.patientCount} ta Bemorda Anomaliya</div>
+          
+          <div class="text-[11px] text-slate-700 font-semibold mb-1">
+            <b>Tyer:</b> <span class="text-red-700 font-bold">${cluster.severityTier}</span>
+          </div>
+
           <div class="p-2 bg-slate-900 text-slate-100 rounded text-[11px] space-y-1 mb-2">
-            <div><b class="text-amber-400">Marker:</b> ${cluster.primaryMarkerLabel}</div>
-            <div><b class="text-sky-300">Vektor Yo'nalishi:</b> ${cluster.expansionVector.directionLabel} (${cluster.expansionVector.magnitudeKm} km)</div>
+            <div><b class="text-amber-400">Attack Rate:</b> ${cluster.attackRate.formattedSummary}</div>
+            <div><b class="text-sky-300">Biomarker Driver:</b> ${cluster.biomarkerDriver}</div>
+            <div><b class="text-slate-400">Vektor:</b> ${cluster.expansionVector.directionLabel} (${cluster.expansionVector.magnitudeKm} km)</div>
           </div>
-          <div class="space-y-1 text-[10px] text-slate-600 mb-2">
-            ${cluster.labAlertSummary.map((alert) => `<div>• ${alert}</div>`).join("")}
-          </div>
+
           <button id="dispatch-btn-${cluster.id}" class="w-full py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-xs shadow transition flex items-center justify-center gap-1.5">
-            🚑 Proaktiv Mobil Lab Safarbar Etish
+            ${isConfirmed ? "🚑 Mobil Lab Tasking Marshrutini Ko'rish" : "🩺 Mutaxassis Verifikatsiyasini Ochish"}
           </button>
         `;
 
         popupDiv.addEventListener("click", (e) => {
           const target = e.target as HTMLElement;
           if (target && (target.id === `dispatch-btn-${cluster.id}` || target.closest(`#dispatch-btn-${cluster.id}`))) {
-            if (onTriggerPreventiveDispatch) {
-              onTriggerPreventiveDispatch(cluster.id);
-            }
+            if (onSelectCluster) onSelectCluster(cluster);
+            if (onTriggerPreventiveDispatch) onTriggerPreventiveDispatch(cluster.id);
           }
         });
 
@@ -288,16 +330,21 @@ export function OutbreakRadarMap({
     if (onModeToggle) onModeToggle(newMode);
   };
 
+  const handleTimeframeChange = (tf: TimeframeFilter) => {
+    setActiveTimeframe(tf);
+    if (onTimeframeChange) onTimeframeChange(tf);
+  };
+
   return (
-    <div className="relative w-full h-full min-h-[440px] rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
+    <div className="relative w-full h-full min-h-[460px] rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shadow-2xl">
       {/* Mode Control Bar Header */}
       <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-900/90 backdrop-blur-md rounded-lg border border-slate-700 shadow-lg text-xs">
         <div className="flex items-center gap-2 font-semibold text-slate-200">
           <span className="flex items-center gap-1 text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <b>TOMIR AI RADAR:</b>
+            <b>EPIDEMIC SURVEILLANCE GIS:</b>
           </span>
-          <span className="hidden sm:inline text-slate-400">Epidemik anomaliya va proaktiv marshrutlash</span>
+          <span className="hidden sm:inline text-slate-400">Shifokor Verifikatsiyasi & Vector Poligonlar</span>
         </div>
 
         {/* Mode Toggle Pills */}
@@ -306,8 +353,6 @@ export function OutbreakRadarMap({
             type="button"
             onClick={() => handleToggle("dispatch")}
             aria-label="Live Patient Dispatch Layer Toggle"
-            title="Toggle Live Patient Dispatch Layer"
-            tabIndex={0}
             className={`px-3 py-1.5 rounded-md font-bold text-xs transition flex items-center gap-1.5 ${
               activeMode === "dispatch"
                 ? "bg-blue-600 text-white shadow"
@@ -321,8 +366,6 @@ export function OutbreakRadarMap({
             type="button"
             onClick={() => handleToggle("radar")}
             aria-label="Predictive Outbreak Radar Heatmap Toggle"
-            title="Toggle Predictive Outbreak Radar Heatmap"
-            tabIndex={0}
             className={`px-3 py-1.5 rounded-md font-bold text-xs transition flex items-center gap-1.5 ${
               activeMode === "radar"
                 ? "bg-red-600 text-white shadow"
@@ -337,10 +380,59 @@ export function OutbreakRadarMap({
       {/* Map Container */}
       <div 
         ref={mapContainerRef} 
-        className="w-full h-full min-h-[440px] z-0" 
+        className="w-full h-full min-h-[460px] z-0" 
         role="region"
         aria-label="Epidemiological Outbreak Radar GIS Map Canvas"
       />
+
+      {/* Temporal Timeline Slider Control Bar (Bottom Floating Layer) */}
+      {activeMode === "radar" && (
+        <div className="absolute bottom-3 left-3 right-3 z-[1000] p-2.5 bg-slate-900/95 backdrop-blur-md rounded-xl border border-slate-700 shadow-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-slate-300 font-bold">
+            <span>⏱️ Vaqtinchalik Slayder:</span>
+            <span className="text-emerald-400 font-mono text-[11px]">
+              {activeTimeframe === "24h" ? "Past 24 Hours (Oxirgi 24 Soat)" : activeTimeframe === "7d" ? "Past 7 Days (Oxirgi 1 Hafta)" : "Past 30 Days (Oxirgi 1 Oygacha)"}
+            </span>
+          </div>
+
+          <div className="flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1 font-semibold">
+            <button
+              type="button"
+              onClick={() => handleTimeframeChange("24h")}
+              className={`px-3 py-1 rounded transition text-xs ${
+                activeTimeframe === "24h"
+                  ? "bg-emerald-600 text-white font-bold shadow"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Past 24h
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTimeframeChange("7d")}
+              className={`px-3 py-1 rounded transition text-xs ${
+                activeTimeframe === "7d"
+                  ? "bg-emerald-600 text-white font-bold shadow"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Past 7 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTimeframeChange("30d")}
+              className={`px-3 py-1 rounded transition text-xs ${
+                activeTimeframe === "30d"
+                  ? "bg-emerald-600 text-white font-bold shadow"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Past 30 Days
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

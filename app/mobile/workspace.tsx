@@ -23,6 +23,7 @@ import {
 import { getAllProtocols } from "@/lib/symptom-protocols/index";
 import { MobileLabBadgeIcon } from "@/app/ui/MedicalIcons";
 import { CarePulse } from "@/app/ui/CarePulse";
+import { analyzeOutbreakRadar } from "@/lib/outbreak-radar";
 
 type NetState =
   | "online"
@@ -313,6 +314,65 @@ export function MobileWorkspace() {
             ✓ {notice}
           </div>
         )}
+
+        {/* Community Nurse Field Alerts & Outbreak Intervention Section */}
+        {(() => {
+          const radar = analyzeOutbreakRadar();
+          const confirmedTasks = radar.clusters
+            .filter((c) => c.fieldInterventionTask)
+            .map((c) => c.fieldInterventionTask!);
+          
+          if (confirmedTasks.length === 0) return null;
+          
+          return (
+            <div className="mb-6 p-5 bg-emerald-950 text-white rounded-xl border border-emerald-700 shadow-md space-y-3">
+              <div className="flex items-center justify-between border-b border-emerald-800 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🚑</span>
+                  <b className="text-sm font-bold">FAOL EPIDEMIK FIELD INTERVENTION TASKING (MUTAXASSIS TASDIQLAGAN)</b>
+                </div>
+                <span className="px-2.5 py-0.5 rounded bg-emerald-700 text-white font-mono text-[10px] uppercase font-bold">
+                  {confirmedTasks.length} ta TOPSHIRIQ
+                </span>
+              </div>
+
+              {confirmedTasks.map((t) => (
+                <div key={t.taskId} className="p-3.5 bg-slate-900 rounded-lg border border-emerald-800/80 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <b className="text-emerald-400 font-bold">{t.targetDistrict} · {t.targetVillage} (Task: {t.taskId})</b>
+                    <span className="text-slate-400 text-[11px] font-mono">Bosh Vrach: {t.issuedBy} ({t.issuedAt})</span>
+                  </div>
+
+                  {/* Diagnostic Kit Checklist */}
+                  <div className="p-2.5 bg-slate-950 rounded border border-slate-800 space-y-1">
+                    <span className="text-[11px] font-bold text-amber-300 block">🧰 Mobil Diagnostik Kit Tayyorgarligi:</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px]">
+                      {t.kitChecklist.map((k) => (
+                        <label key={k.id} className="flex items-center gap-2 text-slate-200">
+                          <input type="checkbox" defaultChecked={k.checked} className="accent-emerald-500 rounded" />
+                          <span>{k.item} ({k.quantity})</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Prioritized Household Screening Tasks */}
+                  <div className="text-[11px]">
+                    <span className="font-bold text-sky-300 block mb-1">🏠 Birinchi Galdagi Skrining Xonadonlari:</span>
+                    <div className="space-y-1">
+                      {t.prioritizedHouseholds.map((hh) => (
+                        <div key={hh.id} className="flex items-center justify-between p-1.5 bg-slate-950 rounded text-slate-300">
+                          <span>📍 <b>{hh.address}</b> ({hh.headOfHousehold}) — {hh.patientCount} nafar bemor</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-900 text-emerald-200 font-semibold">{hh.riskFactor}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         {showQueue && (
           <section className="bg-white border border-slate-200/80 rounded-xl p-5 shadow-2xs mb-6">
