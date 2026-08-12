@@ -16,7 +16,7 @@ import { useLanguage } from "@/lib/i18n";
 import { TomirLogo } from "@/app/ui/TomirLogo";
 
 export default function DispatcherWorkspacePage() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage } = useLanguage();
   const [items, setItems] = useState<DispatchItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
