@@ -50,10 +50,20 @@ export function canAccessRoute(rawRole: string | null | undefined, pathname: str
   if (pathname.startsWith("/api") || pathname.startsWith("/chat") || pathname === "/" || pathname.startsWith("/_next") || pathname === "/favicon.ico") return true;
 
   if (role === "doctor") {
-    return pathname.startsWith("/central") || pathname.startsWith("/hospital") || pathname.startsWith("/doctor");
+    return (
+      pathname.startsWith("/central") ||
+      pathname.startsWith("/hospital") ||
+      pathname.startsWith("/doctor") ||
+      pathname.startsWith("/anatomy")
+    );
   }
   if (role === "nurse") {
-    return pathname.startsWith("/mobile") || pathname.startsWith("/offline") || pathname.startsWith("/nurse");
+    return (
+      pathname.startsWith("/mobile") ||
+      pathname.startsWith("/offline") ||
+      pathname.startsWith("/nurse") ||
+      pathname.startsWith("/anatomy")
+    );
   }
   if (role === "dispatcher") {
     return pathname.startsWith("/dispatcher") || pathname.startsWith("/hospital") || pathname.startsWith("/dispatch");

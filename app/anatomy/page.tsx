@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role, react-hooks/set-state-in-effect, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from "react";
+import { RoleGuard } from "@/app/ui/RoleGuard";
 import { SidebarNav } from "@/app/ui/SidebarNav";
 import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
 import { Anatomy3DCanvas } from "@/app/ui/Anatomy3DCanvas";
@@ -150,7 +151,8 @@ export default function Anatomy3DWorkspacePage() {
   const pendingCount = assessments.filter((a) => a.status === "pending").length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans">
+    <RoleGuard requiredRole={role}>
+      <div className="min-h-screen bg-slate-950 text-white font-sans">
       <SidebarNav role={role} activePath="/anatomy" onToggleCollapse={setSidebarCollapsed} />
       <main className={`transition-[margin] duration-300 ${sidebarCollapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto flex flex-col`}>
         {/* Top Header */}
@@ -521,5 +523,6 @@ export default function Anatomy3DWorkspacePage() {
       </main>
       <MovableChatWidget />
     </div>
+    </RoleGuard>
   );
 }

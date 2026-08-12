@@ -21,6 +21,11 @@ export function middleware(request: NextRequest) {
   const roleCookie = request.cookies.get(DEMO_ROLE_COOKIE)?.value;
 
   // Route alias mappings
+  if (pathname === "/doctor/anatomy" || pathname === "/nurse/anatomy") {
+    const targetUrl = request.nextUrl.clone();
+    targetUrl.pathname = "/anatomy";
+    return NextResponse.redirect(targetUrl);
+  }
   if (pathname.startsWith("/doctor")) {
     const targetUrl = request.nextUrl.clone();
     targetUrl.pathname = pathname.replace(/^\/doctor/, "/central");
