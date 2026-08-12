@@ -31,6 +31,8 @@ import {
   subscribeToAnatomyUpdates,
   type AnatomyAssessment,
 } from "@/lib/anatomy-store";
+import { BodySymptomPicker } from "@/components/anatomy/BodySymptomPicker";
+import { type BodyRegionId } from "@/lib/anatomy/regions";
 
 type NetState =
   | "online"
@@ -77,6 +79,7 @@ export function MobileWorkspace() {
   } | null>(null);
   const [rawFile, setRawFile] = useState<File | null>(null);
   const [liveAssessments, setLiveAssessments] = useState<AnatomyAssessment[]>(() => getAnatomyAssessments());
+  const [selectedRegions, setSelectedRegions] = useState<BodyRegionId[]>(["chest_left"]);
 
   useEffect(() => {
     setLiveAssessments(getAnatomyAssessments());
@@ -635,7 +638,17 @@ export function MobileWorkspace() {
                 <>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{t("symptomsAndHistory")}</h3>
-                    <span className="text-xs text-slate-500 font-medium">Offlayn klinik protokollar mavjud</span>
+                    <span className="text-xs text-slate-500 font-medium">3D Anatomiya va Vektor Xarita ulandik</span>
+                  </div>
+
+                  {/* 3D Interactive Body Symptom Picker & 2D Vector Fallback */}
+                  <div className="mb-5">
+                    <BodySymptomPicker
+                      value={selectedRegions}
+                      onChange={setSelectedRegions}
+                      locale={language}
+                      maxSelections={5}
+                    />
                   </div>
 
                   {/* Quick complaint selector chips */}
