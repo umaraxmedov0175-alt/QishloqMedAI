@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { RoleGuard } from "@/app/ui/RoleGuard";
 import { SidebarNav } from "@/app/ui/SidebarNav";
 import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
+import { MedAIAssistantDrawer } from "@/app/ui/MedAIAssistantDrawer";
 import { Anatomy3DCanvas } from "@/app/ui/Anatomy3DCanvas";
 import {
   createAnatomyAssessment,
@@ -568,6 +569,7 @@ export default function Anatomy3DWorkspacePage({ initialRole }: { initialRole?: 
         </div>
       </main>
       <MovableChatWidget />
+      <MedAIAssistantDrawer currentRole={role} />
     </div>
     </RoleGuard>
   );

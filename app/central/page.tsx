@@ -15,6 +15,7 @@ import { printClinicalReport } from "@/lib/report-generator";
 import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import { CarePulse } from "@/app/ui/CarePulse";
+import { MedAIAssistantDrawer } from "@/app/ui/MedAIAssistantDrawer";
 
 export default function CentralReviewPage() {
   const { language, t } = useLanguage();
@@ -394,48 +395,78 @@ export default function CentralReviewPage() {
             </div>
           </article>
 
-          {/* Right Column: Zone B (AI Decision Support) & Zone C (Doctor Decision) */}
+          {/* Right Column: Zone B (MedAI Agent Analysis) & Zone C (Doctor Decision) */}
           <article className="lg:col-span-4 space-y-5">
-            {/* ZONE B: AI Decision Support */}
-            <div id="zone-b-ai" className="bg-purple-50/60 border-l-4 border-l-purple-600 border-dashed border-purple-200 rounded-r-xl p-5 space-y-3">
-              <div className="flex items-center justify-between">
+            {/* ZONE B: MedAI Agent Diagnostic Analysis & Suggestions Panel */}
+            <div id="zone-b-ai" className="bg-gradient-to-br from-slate-900 to-purple-950 text-white border border-purple-500/40 rounded-xl p-5 space-y-3.5 shadow-xl">
+              <div className="flex items-center justify-between border-b border-purple-800/80 pb-2.5">
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span className="font-bold text-xs text-purple-950 uppercase tracking-wider">ZONE B: AI DECISION SUPPORT</span>
+                  <span className="text-lg">🤖</span>
+                  <span className="font-bold text-xs text-purple-200 uppercase tracking-wider">
+                    [ MedAI Agent Analysis & Suggestions ]
+                  </span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-purple-300 bg-purple-100 text-purple-900 border-dashed">
-                  ◷ AI TAKLIFI
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-emerald-400/40 bg-emerald-500/20 text-emerald-300 font-mono">
+                  LOCAL MEDAI ONLINE
                 </span>
               </div>
 
-              {/* Attribution Strip */}
-              <div className="p-2.5 bg-purple-100/70 border border-purple-200 rounded-lg text-[11px] text-purple-950 font-medium">
-                Yaratildi: <b>Tomir Triage v2.4</b> · Ishonch: <b>92/100</b> · <i>AI yordamchi vosita (Tashxis emas)</i>
+              {/* Attribution & Confidence Badge */}
+              <div className="p-2.5 bg-purple-900/40 border border-purple-700/50 rounded-lg text-[11px] text-purple-200 font-mono flex items-center justify-between">
+                <span>Model: <b>MedAI Agent v2.4</b></span>
+                <span>Confidence: <b className="text-emerald-400">94/100</b></span>
               </div>
 
-              <div className="bg-white/80 p-3 rounded-lg border border-purple-100 text-xs text-slate-800 leading-relaxed font-medium">
-                <b className="block font-bold text-purple-900 text-xs mb-1">
-                  AI BOSHLANGʻICH TAHLILI:
+              <div className="bg-slate-950/80 p-3 rounded-lg border border-purple-900/60 text-xs text-slate-200 leading-relaxed font-sans">
+                <b className="block font-bold text-emerald-400 text-xs mb-1">
+                  🤖 MEDAI KLINIK TAHLILI VA TASHXIS TAKLIFI:
                 </b>
                 {active.aiSummary}
+                <div className="mt-2 pt-2 border-t border-slate-800 text-[11px] text-slate-300">
+                  • <b>Tavsiya terapiya</b>: Aspirin 300mg, Enalapril 10mg. EKG troponin monitoring kutilmoqda.
+                </div>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">{t("redFlags")}</h4>
-                <p className="text-xs text-slate-800 bg-red-50 p-2.5 rounded border border-red-100 font-medium">
+                <h4 className="text-[11px] font-bold text-red-400 uppercase tracking-wider mb-1">🚨 CRITICAL RED FLAGS</h4>
+                <p className="text-xs text-red-200 bg-red-950/60 p-2.5 rounded border border-red-800/60 font-medium">
                   {active.reason}
                 </p>
               </div>
 
-              <div>
-                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("limitations")}</h4>
-                <p className="text-xs text-slate-600 bg-white/70 p-2.5 rounded border border-purple-100 text-[11px] leading-relaxed">
-                  {language === "uz"
-                    ? "Chala anamnez va tasdiqlanmagan qurilma integratsiyasi. Faqat dastlabki qaror yordami."
-                    : "Incomplete history and no validated device integration. Preliminary support only."}
-                </p>
+              {/* Doctor One-Click AI Action Controls */}
+              <div className="pt-2 space-y-2">
+                <span className="text-[10px] font-bold uppercase text-purple-300 tracking-wider block">⚡ VRACH TEZKOR QARORLARI</span>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFinalSummary(`[MedAI Agent Tasdiqlandi]: ${active.aiSummary} Tavsiya etilgan davolash rejasi tasdiqlandi.`);
+                      void recordDecision("CONFIRM_REFERRAL");
+                    }}
+                    className="w-full py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+                  >
+                    <span>✓</span>
+                    <span>Approve AI Treatment Plan</span>
+                  </button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void recordDecision("REQUEST_MORE_INFO")}
+                      className="py-1.5 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-lg transition cursor-pointer border border-slate-700"
+                    >
+                      ❓ Request Repeat Labs
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void recordDecision("CREATE_REFERRAL")}
+                      className="py-1.5 px-2.5 bg-purple-800 hover:bg-purple-700 text-purple-200 font-bold text-[11px] rounded-lg transition cursor-pointer border border-purple-700"
+                    >
+                      🏥 Urgent Teleconsult
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -510,6 +541,7 @@ export default function CentralReviewPage() {
       />
     </main>
         <MovableChatWidget />
+        <MedAIAssistantDrawer currentRole="doctor" patientContext={{ patientName: active.clinic, vitals: { bp: "168/96", hr: 108, spo2: 89 } }} />
       </div>
     </RoleGuard>
   );

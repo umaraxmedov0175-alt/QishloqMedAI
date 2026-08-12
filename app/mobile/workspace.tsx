@@ -5,6 +5,7 @@ import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
 import { SidebarNav } from "@/app/ui/SidebarNav";
 import { MovableChatWidget } from "@/app/ui/MovableChatWidget";
+import { MedAIAssistantDrawer } from "@/app/ui/MedAIAssistantDrawer";
 import {
   enqueueOfflineAction,
   listQueueItems,
@@ -1297,6 +1298,7 @@ export function MobileWorkspace() {
       </section>
     </main>
         <MovableChatWidget />
+        <MedAIAssistantDrawer currentRole="nurse" />
       </div>
     </RoleGuard>
   );
