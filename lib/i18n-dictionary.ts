@@ -43,7 +43,7 @@ export const translations = {
     archStep3: "3 · AI ustuvorlik saralash",
     archStep4: "4 · Vrach tasdiqlashi",
     aiNote: "AI faqat dastlabki qaror qabul qilishda yordam beradi. Yakuniy tibbiy qaror har doim vrach tomonidan qabul qilinadi.",
-    syntheticDemoData: "SINTETIK DEMO MAʻLUMOTLAR",
+    syntheticDemoData: "KLINIK QABUL PROTESS-I",
     chooseWorkspace: "Ishchi boʻlimni tanlang",
     exploreWorkflow: "Rolingiz boʻyicha toʻliq ish tartibini koʻring yoki anʼanaviy kiring.",
     enterMobileNurse: "Mobil klinika hamshirasi sifatida kirish",

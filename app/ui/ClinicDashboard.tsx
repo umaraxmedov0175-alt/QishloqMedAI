@@ -427,7 +427,7 @@ export function ClinicDashboard() {
           <h1>Klinik ish maydoni</h1>
           <div className="status">
             <i className="dot" />
-            <span>Demo rejimi · sinxronlangan</span>
+            <span>Tizim Faol · Sinxronlangan</span>
           </div>
         </header>
         <div className="content">

@@ -172,9 +172,9 @@ export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavPro
                 onChange={(e) => setLanguage(e.target.value as "uz" | "en" | "ru")}
                 className="bg-slate-800 text-slate-200 text-xs px-2 py-1 rounded border border-slate-700 font-medium outline-none cursor-pointer"
               >
-                <option value="uz">Oʻzbekcha</option>
-                <option value="en">English</option>
-                <option value="ru">Русский</option>
+                <option value="uz">🇺🇿 Oʻzbekcha</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="ru">🇷🇺 Русский</option>
               </select>
             </div>
 
@@ -185,15 +185,15 @@ export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavPro
                   {role[0].toUpperCase()}
                 </div>
                 <div className="truncate">
-                  <b className="text-white block text-[11px] truncate">Tomir Demo User</b>
-                  <span className="text-[10px] text-emerald-400 font-mono">Online</span>
+                  <b className="text-white block text-[11px] truncate">QishloqMed User</b>
+                  <span className="text-[10px] text-emerald-400 font-mono">● Online</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={handleLogout}
                 className="text-slate-400 hover:text-red-400 p-1 border-0 bg-transparent cursor-pointer text-xs transition duration-150 shrink-0"
-                title="Sign out"
+                title={t("logout")}
               >
                 🚪
               </button>
