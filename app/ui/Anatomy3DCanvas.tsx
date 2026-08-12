@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import type { AnatomicalRegion, AnatomyNodeTag } from "@/lib/anatomy-store";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 interface Anatomy3DCanvasProps {
@@ -35,7 +34,6 @@ export function Anatomy3DCanvas({
   const controlsRef = useRef<OrbitControls | null>(null);
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
-  const regionsGroupRef = useRef<THREE.Group | null>(null);
   const taggedGroupRef = useRef<THREE.Group | null>(null);
   const humanMeshGroupRef = useRef<THREE.Group | null>(null);
   const requestFrameRef = useRef<number | null>(null);
@@ -137,140 +135,68 @@ export function Anatomy3DCanvas({
     humanMeshGroupRef.current = humanMeshGroup;
     scene.add(humanMeshGroup);
 
-    const regionsGroup = new THREE.Group();
-    regionsGroupRef.current = regionsGroup;
-    humanMeshGroup.add(regionsGroup);
-
     const taggedGroup = new THREE.Group();
     taggedGroupRef.current = taggedGroup;
     humanMeshGroup.add(taggedGroup);
 
-    // 7. Build High-Precision Anatomical Region Meshes
-    const buildAnatomicalRegions = () => {
-      const regionGeometries: Record<AnatomicalRegion, THREE.BufferGeometry> = {
-        head: new THREE.SphereGeometry(0.24, 32, 32),
-        chest: new THREE.CylinderGeometry(0.30, 0.25, 0.44, 32),
-        abdomen: new THREE.CylinderGeometry(0.25, 0.23, 0.40, 32),
-        spine: new THREE.BoxGeometry(0.15, 0.85, 0.15),
-        left_arm: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24),
-        right_arm: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24),
-        legs: new THREE.CylinderGeometry(0.19, 0.13, 1.15, 24),
-      };
-
-      Object.entries(regionGeometries).forEach(([regKey, geom]) => {
-        const reg = regKey as AnatomicalRegion;
-        const pos = nodePositions[reg];
-
-        const mat = new THREE.MeshStandardMaterial({
-          color: 0x1e293b,
-          roughness: 0.4,
-          metalness: 0.1,
-          transparent: true,
-          opacity: 0.45,
-          wireframe: false,
-        });
-
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.position.copy(pos);
-        mesh.userData = { region: reg };
-        regionsGroup.add(mesh);
-      });
-    };
-
-    buildAnatomicalRegions();
-
-    // 8. Load High-Definition 3D Human OBJ/GLTF Model (Local Candidates & Public WebGL CDN Fallbacks)
+    // 7. Load Exclusively public/models/Male.OBJ 3D Human Asset
     const objLoader = new OBJLoader();
-    const gltfLoader = new GLTFLoader();
+    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj"];
 
-    const modelCandidates: Array<{ url: string; format: "obj" | "glb" }> = [
-      { url: "/models/Male.OBJ", format: "obj" },
-      { url: "/models/male.obj", format: "obj" },
-      { url: "/models/human.glb", format: "glb" },
-      { url: "/models/human.obj", format: "obj" },
-      { url: "/models/hd_human_anatomy.glb", format: "glb" },
-      // Open-Source Public WebGL CDN Fallbacks (Guarantees HD 3D Human model renders on screen)
-      {
-        url: "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/LeePerrySmith/LeePerrySmith.glb",
-        format: "glb",
-      },
-      {
-        url: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Xbot/glTF-Binary/Xbot.glb",
-        format: "glb",
-      },
-    ];
-
-    const tryLoadCandidate = (candidateIndex: number) => {
-      if (candidateIndex >= modelCandidates.length) {
-        // Fallback gracefully to high-density procedural volume meshes if no candidate loads
+    const tryLoadMaleObj = (index: number) => {
+      if (index >= modelCandidates.length) {
         setIsLoadingModel(false);
         return;
       }
 
-      const candidate = modelCandidates[candidateIndex];
-
-      const applyMeshStyling = (meshGroup: THREE.Object3D) => {
-        meshGroup.traverse((child) => {
-          if ((child as THREE.Mesh).isMesh) {
-            const m = child as THREE.Mesh;
-            if (m.geometry) {
-              m.geometry.computeVertexNormals();
+      const url = modelCandidates[index];
+      objLoader.load(
+        url,
+        (obj) => {
+          obj.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+              const m = child as THREE.Mesh;
+              if (m.geometry) {
+                m.geometry.computeVertexNormals();
+              }
+              m.material = new THREE.MeshStandardMaterial({
+                color: 0x475569,
+                roughness: 0.35,
+                metalness: 0.15,
+                transparent: true,
+                opacity: 0.92,
+                side: THREE.DoubleSide,
+              });
+              m.castShadow = true;
+              m.receiveShadow = true;
             }
-            m.material = new THREE.MeshStandardMaterial({
-              color: 0x475569,
-              roughness: 0.35,
-              metalness: 0.15,
-              transparent: true,
-              opacity: 0.92,
-              side: THREE.DoubleSide,
-            });
-            m.castShadow = true;
-            m.receiveShadow = true;
+          });
+
+          const box = new THREE.Box3().setFromObject(obj);
+          const size = box.getSize(new THREE.Vector3());
+          const center = box.getCenter(new THREE.Vector3());
+
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const scale = 2.25 / (maxDim || 1);
+          obj.scale.set(scale, scale, scale);
+          obj.position.set(-center.x * scale, -center.y * scale + 0.82, -center.z * scale);
+
+          humanMeshGroup.add(obj);
+          setIsLoadingModel(false);
+        },
+        (xhr) => {
+          if (xhr.lengthComputable && xhr.total > 0) {
+            const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            if (pct >= 100) setIsLoadingModel(false);
           }
-        });
-
-        const box = new THREE.Box3().setFromObject(meshGroup);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 2.25 / (maxDim || 1);
-        meshGroup.scale.set(scale, scale, scale);
-        meshGroup.position.set(-center.x * scale, -center.y * scale + 0.82, -center.z * scale);
-
-        humanMeshGroup.add(meshGroup);
-        setIsLoadingModel(false);
-      };
-
-      const handleProgress = (xhr: ProgressEvent) => {
-        if (xhr.lengthComputable && xhr.total > 0) {
-          const pct = Math.round((xhr.loaded / xhr.total) * 100);
-          if (pct >= 100) setIsLoadingModel(false);
+        },
+        () => {
+          tryLoadMaleObj(index + 1);
         }
-      };
-
-      const handleError = () => {
-        tryLoadCandidate(candidateIndex + 1);
-      };
-
-      if (candidate.format === "glb" || candidate.url.endsWith(".glb") || candidate.url.endsWith(".gltf")) {
-        gltfLoader.load(
-          candidate.url,
-          (gltf) => applyMeshStyling(gltf.scene || gltf.scenes[0]),
-          handleProgress,
-          handleError
-        );
-      } else {
-        objLoader.load(
-          candidate.url,
-          (obj) => applyMeshStyling(obj),
-          handleProgress,
-          handleError
-        );
-      }
+      );
     };
 
-    tryLoadCandidate(0);
+    tryLoadMaleObj(0);
 
     // 9. Render 60 FPS Animation Loop
     const animate = () => {
@@ -342,48 +268,55 @@ export function Anatomy3DCanvas({
     controlsRef.current.update();
   }, [selectedRegion]);
 
-  // Update Region Selection & Hover Highlight Materials (PBR Emissive Shaders)
+  // Resolve anatomical region directly from 3D surface point on Male.OBJ
+  const resolveRegionFromPoint = (point: THREE.Vector3): AnatomicalRegion => {
+    const y = point.y;
+    const x = point.x;
+    const z = point.z;
+
+    if (y > 1.45) return "head";
+    if (y > 1.05) {
+      if (x > 0.32) return "left_arm";
+      if (x < -0.32) return "right_arm";
+      if (z < -0.05) return "spine";
+      return "chest";
+    }
+    if (y > 0.65) {
+      if (z < -0.05) return "spine";
+      return "abdomen";
+    }
+    return "legs";
+  };
+
+  // Update Male.OBJ Material Highlighting on Hover/Selection
   useEffect(() => {
-    if (!regionsGroupRef.current) return;
+    if (!humanMeshGroupRef.current) return;
 
-    regionsGroupRef.current.children.forEach((child) => {
-      const mesh = child as THREE.Mesh;
-      const reg = mesh.userData.region as AnatomicalRegion;
-      if (!reg) return;
+    humanMeshGroupRef.current.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const m = child as THREE.Mesh;
+        const mat = m.material as THREE.MeshStandardMaterial;
+        if (!mat) return;
 
-      const isSelected = selectedRegion === reg;
-      const isHovered = hoveredRegion === reg;
-      const taggedNode = taggedNodes.find((n) => n.region === reg);
+        if (selectedRegion || hoveredRegion) {
+          const activeReg = selectedRegion || hoveredRegion;
+          const taggedNode = taggedNodes.find((n) => n.region === activeReg);
+          const colorHex = taggedNode
+            ? taggedNode.severity === "high"
+              ? 0xef4444
+              : taggedNode.severity === "moderate"
+                ? 0xf59e0b
+                : 0x10b981
+            : 0x38bdf8;
 
-      const mat = mesh.material as THREE.MeshStandardMaterial;
-      if (!mat) return;
-
-      if (isSelected) {
-        mat.color.setHex(0x38bdf8);
-        mat.emissive.setHex(0x0284c7);
-        mat.emissiveIntensity = 0.8;
-        mat.opacity = 0.85;
-      } else if (isHovered) {
-        mat.color.setHex(0x0ea5e9);
-        mat.emissive.setHex(0x0ea5e9);
-        mat.emissiveIntensity = 0.6;
-        mat.opacity = 0.70;
-      } else if (taggedNode) {
-        const severityHex =
-          taggedNode.severity === "high"
-            ? 0xef4444
-            : taggedNode.severity === "moderate"
-              ? 0xf59e0b
-              : 0x10b981;
-        mat.color.setHex(severityHex);
-        mat.emissive.setHex(severityHex);
-        mat.emissiveIntensity = 0.7;
-        mat.opacity = 0.65;
-      } else {
-        mat.color.setHex(0x1e293b);
-        mat.emissive.setHex(0x000000);
-        mat.emissiveIntensity = 0.0;
-        mat.opacity = 0.35;
+          mat.color.setHex(colorHex);
+          mat.emissive.setHex(0x0ea5e9);
+          mat.emissiveIntensity = 0.5;
+        } else {
+          mat.color.setHex(0x475569);
+          mat.emissive.setHex(0x000000);
+          mat.emissiveIntensity = 0.0;
+        }
       }
     });
   }, [selectedRegion, hoveredRegion, taggedNodes]);
@@ -429,19 +362,20 @@ export function Anatomy3DCanvas({
     });
   }, [taggedNodes]);
 
-  // Handle Precision Mesh Raycasting Pointer Movement & Clicks
+  // Handle Precision Surface Raycasting Pointer Movement & Clicks directly on Male.OBJ
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!interactive || !mountRef.current || !cameraRef.current || !regionsGroupRef.current) return;
+    if (!interactive || !mountRef.current || !cameraRef.current || !humanMeshGroupRef.current) return;
 
     const rect = mountRef.current.getBoundingClientRect();
     mouseRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouseRef.current.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
     raycasterRef.current.setFromCamera(mouseRef.current, cameraRef.current);
-    const intersects = raycasterRef.current.intersectObjects(regionsGroupRef.current.children);
+    const intersects = raycasterRef.current.intersectObjects(humanMeshGroupRef.current.children, true);
 
     if (intersects.length > 0) {
-      const reg = intersects[0].object.userData.region as AnatomicalRegion;
+      const point = intersects[0].point;
+      const reg = resolveRegionFromPoint(point);
       setHoveredRegion(reg);
     } else {
       setHoveredRegion(null);
