@@ -642,18 +642,21 @@ export function MobileWorkspace() {
                   <div className="mb-4">
                     <label className="text-xs font-semibold text-slate-700 block mb-2">{t("selectComplaint")}:</label>
                     <div className="flex flex-wrap gap-2">
-                      {getAllProtocols().map((p) => (
-                        <button
-                          key={p.id}
-                          type="button"
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${activeProtocol?.id === p.id ? "bg-emerald-700 text-white border-emerald-700 shadow-2xs" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"}`}
-                          onClick={() => {
-                            setDraft((curr) => ({ ...curr, complaint: p.label[language] }));
-                          }}
-                        >
-                          + {p.label[language]}
-                        </button>
-                      ))}
+                      {getAllProtocols().map((p) => {
+                        const labelText = p.label[language as "uz" | "en"] || p.label.en;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${activeProtocol?.id === p.id ? "bg-emerald-700 text-white border-emerald-700 shadow-2xs" : "bg-white text-slate-700 border-slate-300 hover:bg-slate-50"}`}
+                            onClick={() => {
+                              setDraft((curr) => ({ ...curr, complaint: labelText }));
+                            }}
+                          >
+                            + {labelText}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -682,7 +685,7 @@ export function MobileWorkspace() {
                           <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
                             <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">{t("adaptiveProtocol")}:</span>
-                            <strong className="text-sm font-bold text-emerald-950">{activeProtocol.label[language]}</strong>
+                            <strong className="text-sm font-bold text-emerald-950">{activeProtocol.label[language as "uz" | "en"] || activeProtocol.label.en}</strong>
                           </div>
                           <span className="text-[11px] text-emerald-700 font-medium block mt-0.5">
                             {t("protocolSource")}: {activeProtocol.source}
@@ -807,7 +810,7 @@ export function MobileWorkspace() {
                                             }));
                                           }}
                                         >
-                                          {opt[language]}
+                                          {opt[language as "uz" | "en"] || opt.en}
                                         </button>
                                       ))}
                                     </div>
@@ -849,7 +852,7 @@ export function MobileWorkspace() {
                                                 }));
                                               }}
                                             />
-                                            <span>{opt[language]}</span>
+                                            <span>{opt[language as "uz" | "en"] || opt.en}</span>
                                           </label>
                                         );
                                       })}
@@ -861,7 +864,7 @@ export function MobileWorkspace() {
                                       <input
                                         type={q.type === "number" ? "number" : "text"}
                                         value={isAnswered ? String(answerState.value) : ""}
-                                        placeholder={q.text[language]}
+                                        placeholder={q.text[language as "uz" | "en"] || q.text.en}
                                         className="text-xs border border-slate-300 rounded-lg p-2 flex-1"
                                         onChange={(e) => {
                                           const rawVal = e.target.value;

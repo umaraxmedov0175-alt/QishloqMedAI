@@ -116,11 +116,12 @@ export default function OperationsPage() {
 
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0"
+            onChange={(e) => setLanguage(e.target.value as "uz" | "en" | "ru")}
+            className="px-2.5 py-1 bg-emerald-950/70 hover:bg-emerald-950 text-emerald-100 text-xs rounded-lg border border-emerald-700/60 font-semibold outline-none shrink-0 cursor-pointer"
           >
-            <option value="uz">{"Oʻzbekcha"}</option>
+            <option value="uz">Oʻzbekcha</option>
             <option value="en">English</option>
+            <option value="ru">Русский</option>
           </select>
 
           <nav className="flex items-center gap-1 text-xs font-semibold shrink-0">

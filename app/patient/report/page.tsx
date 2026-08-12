@@ -164,11 +164,12 @@ export default function PatientReportPage() {
 
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
+            onChange={(e) => setLanguage(e.target.value as "uz" | "en" | "ru")}
+            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium cursor-pointer"
           >
-            <option value="uz">{"O'zbekcha"}</option>
+            <option value="uz">O'zbekcha</option>
             <option value="en">English</option>
+            <option value="ru">Русский</option>
           </select>
         </div>
       </header>

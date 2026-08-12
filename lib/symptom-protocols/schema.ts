@@ -3,6 +3,7 @@ import { z } from "zod";
 export const LocalizedTextSchema = z.object({
   uz: z.string().min(1),
   en: z.string().min(1),
+  ru: z.string().optional(),
 });
 
 export const QuestionTypeSchema = z.enum([
@@ -18,6 +19,7 @@ export const OptionSchema = z.object({
   value: z.string().min(1),
   uz: z.string().min(1),
   en: z.string().min(1),
+  ru: z.string().optional(),
 });
 
 export const TriageLevelSchema = z.enum([

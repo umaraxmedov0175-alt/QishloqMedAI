@@ -219,11 +219,12 @@ export function ClinicDashboard() {
           <div className="flex items-center gap-3">
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-              className="px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg border border-slate-700 font-medium shadow-xs"
+              onChange={(e) => setLanguage(e.target.value as "uz" | "en" | "ru")}
+              className="px-3 py-1.5 bg-slate-800 text-white text-xs rounded-lg border border-slate-700 font-medium shadow-xs cursor-pointer"
             >
-              <option value="uz">{"O'zbekcha"}</option>
+              <option value="uz">O'zbekcha</option>
               <option value="en">English</option>
+              <option value="ru">Русский</option>
             </select>
           </div>
         </header>

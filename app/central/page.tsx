@@ -282,7 +282,7 @@ export default function CentralReviewPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5">
                       <div>
                         <span className="text-xs font-bold text-emerald-900 block">
-                          📋 {t("adaptiveProtocol")}: {protocol.label[language]}
+                          📋 {t("adaptiveProtocol")}: {protocol.label[language as "uz" | "en"] || protocol.label.en}
                         </span>
                         <span className="text-[10px] text-emerald-700 font-mono">
                           {t("protocolSource")}: {protocol.source}
@@ -305,13 +305,15 @@ export default function CentralReviewPage() {
                         if (isAnswered) {
                           const val = entry.value;
                           if (typeof val === "boolean") {
-                            formattedAnswer = val ? (language === "uz" ? "Ha" : "Yes") : (language === "uz" ? "Yoʻq" : "No");
+                            formattedAnswer = val ? (language === "uz" ? "Ha" : language === "ru" ? "Да" : "Yes") : (language === "uz" ? "Yoʻq" : language === "ru" ? "Нет" : "No");
                           } else if (Array.isArray(val)) {
+                            const langKey = (language === "ru" ? "en" : language) as "uz" | "en";
                             formattedAnswer = val
-                              .map((v) => q.options?.find((o) => o.value === v)?.[language] || v)
+                              .map((v) => q.options?.find((o) => o.value === v)?.[langKey] || v)
                               .join(", ");
                           } else if (q.options) {
-                            formattedAnswer = q.options.find((o) => o.value === String(val))?.[language] || String(val);
+                            const langKey = (language === "ru" ? "en" : language) as "uz" | "en";
+                            formattedAnswer = q.options.find((o) => o.value === String(val))?.[langKey] || String(val);
                           } else {
                             formattedAnswer = q.unit ? `${val} ${q.unit}` : String(val);
                           }
@@ -329,7 +331,7 @@ export default function CentralReviewPage() {
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
-                              <span className="font-semibold text-slate-900 leading-tight">{q.text[language]}</span>
+                              <span className="font-semibold text-slate-900 leading-tight">{q.text[language as "uz" | "en"] || q.text.en}</span>
                               {isSkipped ? (
                                 <span className="px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded">
                                   🛑 {t("skipped").toUpperCase()}

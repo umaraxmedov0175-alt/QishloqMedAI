@@ -27,7 +27,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   const [language, setLanguageState] = useState<Language>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("qm_lang");
-      if (saved === "uz" || saved === "en") {
+      if (saved === "uz" || saved === "en" || saved === "ru") {
         return saved;
       }
     }
@@ -38,6 +38,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguageState(lang);
     if (typeof window !== "undefined") {
       localStorage.setItem("qm_lang", lang);
+      document.cookie = `qm_lang=${lang}; Path=/; Max-Age=31536000`;
     }
   };
 

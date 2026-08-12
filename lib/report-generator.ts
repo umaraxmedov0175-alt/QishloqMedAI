@@ -21,10 +21,15 @@ export interface ClinicalReportData {
   reviewedAt?: string;
 }
 
-export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" = "uz"): string {
+export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" | "ru" = "uz"): string {
   const isUz = lang === "uz";
-  const title = isUz ? "TOMIR AI - TIBBIY KO'RIK XULOSASI" : "TOMIR AI - CLINICAL EVALUATION REPORT";
-  const generatedAt = data.reviewedAt || new Date().toLocaleString(isUz ? "uz-UZ" : "en-US");
+  const isRu = lang === "ru";
+  const title = isUz
+    ? "TOMIR AI - TIBBIY KO'RIK XULOSASI"
+    : isRu
+    ? "TOMIR AI - ОФИЦИАЛЬНОЕ МЕДИЦИНСКОЕ ЗАКЛЮЧЕНИЕ"
+    : "TOMIR AI - CLINICAL EVALUATION REPORT";
+  const generatedAt = data.reviewedAt || new Date().toLocaleString(isUz ? "uz-UZ" : isRu ? "ru-RU" : "en-US");
 
   return `
 <!DOCTYPE html>
@@ -38,17 +43,6 @@ export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" =
     .brand { font-size: 24px; font-weight: bold; color: #0369a1; letter-spacing: -0.5px; }
     .subtitle { font-size: 12px; color: #64748b; text-transform: uppercase; }
     .section { margin-bottom: 24px; background: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; }
-    .section-title { font-size: 14px; font-weight: 700; color: #334155; text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
-    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .vital-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .vital-box { background: #fff; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; text-align: center; }
-    .vital-box.warning { border-color: #f87171; background: #fef2f2; }
-    .vital-label { font-size: 11px; color: #64748b; display: block; }
-    .vital-value { font-size: 14px; font-weight: bold; color: #0f172a; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-    .urgent { background: #fee2e2; color: #991b1b; }
-    .priority { background: #fef3c7; color: #92400e; }
-    .routine { background: #e0f2fe; color: #075985; }
     .footer { margin-top: 40px; border-top: 1px dashed #94a3b8; padding-top: 20px; display: flex; justify-content: space-between; font-size: 12px; color: #64748b; }
     @media print {
       body { padding: 0; margin: 0; max-width: 100%; }
@@ -154,7 +148,7 @@ export function generateReportHTML(data: ClinicalReportData, lang: "uz" | "en" =
   `;
 }
 
-export function printClinicalReport(data: ClinicalReportData, lang: "uz" | "en" = "uz") {
+export function printClinicalReport(data: ClinicalReportData, lang: "uz" | "en" | "ru" = "uz") {
   const html = generateReportHTML(data, lang);
   const printWindow = window.open("", "_blank");
   if (printWindow) {

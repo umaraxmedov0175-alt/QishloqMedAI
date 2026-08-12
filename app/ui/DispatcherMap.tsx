@@ -12,7 +12,7 @@ interface DispatcherMapProps {
   onSelect: (item: DispatchItem) => void;
   onAssignVehicle: (id: string, vehicle: string) => void;
   onScheduleTeleconsult: (id: string, doctor: string) => void;
-  language?: "uz" | "en";
+  language?: "uz" | "en" | "ru";
 }
 
 export function DispatcherMap({

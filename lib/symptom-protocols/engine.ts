@@ -84,7 +84,7 @@ export function getProtocol(complaintIdOrText: string): SymptomProtocol | null {
 export function evaluateAnswers(
   protocol: SymptomProtocol,
   answers: AnswerMap,
-  lang: "uz" | "en" = "uz"
+  lang: "uz" | "en" | "ru" = "uz"
 ): EvaluationResult {
   const redFlags: TriggeredRedFlag[] = [];
   let maxRedFlagLevel: TriageLevel = "routine";
@@ -114,7 +114,7 @@ export function evaluateAnswers(
 
         if (rf.whenTrue !== undefined && typeof val === "boolean" && val === rf.whenTrue) {
           triggered = true;
-          detail = lang === "uz" ? "Ha (Tasdiqlandi)" : "Yes (Confirmed)";
+          detail = lang === "uz" ? "Ha (Tasdiqlandi)" : lang === "ru" ? "Да (Подтверждено)" : "Yes (Confirmed)";
         } else if (rf.whenEquals !== undefined && val === rf.whenEquals) {
           triggered = true;
           detail = String(val);
@@ -135,9 +135,10 @@ export function evaluateAnswers(
         }
 
         if (triggered) {
+          const textKey = (lang === "ru" ? "en" : lang) as "uz" | "en";
           redFlags.push({
             questionId: question.id,
-            questionText: question.text[lang],
+            questionText: question.text[textKey] || question.text.en,
             level: rf.level,
             source: question.source,
             detail,
@@ -175,7 +176,8 @@ export function evaluateAnswers(
     }
 
     if (matches) {
-      suggestedActions.push(rule.text[lang]);
+      const actionText = rule.text[lang as "uz" | "en"] || rule.text.en;
+      suggestedActions.push(actionText);
     }
   }
 

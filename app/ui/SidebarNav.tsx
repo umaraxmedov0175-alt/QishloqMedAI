@@ -14,7 +14,7 @@ interface SidebarNavProps {
 }
 
 export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavProps) {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
 
@@ -39,37 +39,37 @@ export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavPro
     switch (role) {
       case "doctor":
         return [
-          { href: "/central", label: language === "uz" ? "Shifokor Ko'rigi" : "Clinician Review", icon: "🩺" },
-          { href: "/anatomy", label: language === "uz" ? "3D Anatomiya Ishi" : "3D Anatomy Work", icon: "🧍" },
-          { href: "/hospital/outbreak", label: language === "uz" ? "Hududiy Shifoxonalar" : "Regional Hospitals", icon: "🏥" },
+          { href: "/central", label: t("navClinicianReview"), icon: "🩺" },
+          { href: "/anatomy", label: t("nav3dAnatomy"), icon: "🧍" },
+          { href: "/hospital/outbreak", label: t("navRegionalHospitals"), icon: "🏥" },
         ];
       case "nurse":
         return [
-          { href: "/mobile", label: language === "uz" ? "Mobil Klinika" : "Mobile Clinic", icon: "📋" },
-          { href: "/anatomy", label: language === "uz" ? "3D Anatomiya Ishi" : "3D Anatomy Work", icon: "🧍" },
-          { href: "/offline", label: language === "uz" ? "Oflayn Navbat" : "Offline Queue", icon: "⚡" },
+          { href: "/mobile", label: t("navMobileClinic"), icon: "📋" },
+          { href: "/anatomy", label: t("nav3dAnatomy"), icon: "🧍" },
+          { href: "/offline", label: t("navOfflineQueue"), icon: "⚡" },
         ];
       case "dispatcher":
         return [
-          { href: "/dispatcher", label: language === "uz" ? "Live Dispetcher GIS" : "Live GIS Dispatch", icon: "🏢" },
-          { href: "/dispatcher/radar", label: language === "uz" ? "Outbreak Radar" : "Outbreak Radar", icon: "☣️" },
-          { href: "/operations", label: language === "uz" ? "Logistika Paneli" : "Logistics Hub", icon: "📊" },
-          { href: "/hospital/outbreak", label: language === "uz" ? "Shifoxona Resurslari" : "Hospital Beds", icon: "🏥" },
+          { href: "/dispatcher", label: t("navLiveGisDispatch"), icon: "🏢" },
+          { href: "/dispatcher/radar", label: t("navOutbreakRadar"), icon: "☣️" },
+          { href: "/operations", label: t("navLogisticsHub"), icon: "📊" },
+          { href: "/hospital/outbreak", label: t("navHospitalBeds"), icon: "🏥" },
         ];
       case "patient":
         return [
-          { href: "/patient", label: language === "uz" ? "Bemor Portali" : "Patient Portal", icon: "📱" },
-          { href: "/patient/report", label: language === "uz" ? "Arizalar Tizimi" : "Medical Requests", icon: "📝" },
+          { href: "/patient", label: t("navPatientPortal"), icon: "📱" },
+          { href: "/patient/report", label: t("navMedicalRequests"), icon: "📝" },
         ];
     }
   };
 
   const navItems = getNavItems();
   const roleLabel = {
-    doctor: language === "uz" ? "Shifokor REJIM" : "CLINICIAN MODE",
-    nurse: language === "uz" ? "Hamshira REJIM" : "NURSE MODE",
-    dispatcher: language === "uz" ? "Dispetcher REJIM" : "DISPATCH MODE",
-    patient: language === "uz" ? "Bemor REJIM" : "PATIENT MODE",
+    doctor: t("roleSpecialist"),
+    nurse: t("roleMobileNurse"),
+    dispatcher: t("roleDispatcher"),
+    patient: t("patientPortalTitle"),
   }[role];
 
   return (
@@ -166,14 +166,15 @@ export function SidebarNav({ role, activePath, onToggleCollapse }: SidebarNavPro
           <>
             {/* Language Switcher */}
             <div className="flex items-center justify-between px-2 text-xs">
-              <span className="text-slate-400 text-[11px] font-mono">Til / Lang</span>
+              <span className="text-slate-400 text-[11px] font-mono">{t("language")}</span>
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
+                onChange={(e) => setLanguage(e.target.value as "uz" | "en" | "ru")}
                 className="bg-slate-800 text-slate-200 text-xs px-2 py-1 rounded border border-slate-700 font-medium outline-none cursor-pointer"
               >
-                <option value="uz">{"Oʻzbekcha"}</option>
+                <option value="uz">Oʻzbekcha</option>
                 <option value="en">English</option>
+                <option value="ru">Русский</option>
               </select>
             </div>
 

@@ -39,7 +39,7 @@ interface Particle {
 interface CinematicUzbekistanMapProps {
   onSelectNode?: (node: DistrictNode) => void;
   className?: string;
-  language?: "uz" | "en";
+  language?: "uz" | "en" | "ru";
 }
 
 export function CinematicUzbekistanMap({

@@ -163,10 +163,10 @@ export default function Anatomy3DWorkspacePage({ initialRole }: { initialRole?: 
             <span className="text-xl">🧍</span>
             <div>
               <h1 className="text-base font-bold text-white leading-tight">
-                {language === "uz" ? "3D Odam Anatomiyasi va Simptom Tagger" : "3D Human Anatomy & Symptom Tagger"}
+                {language === "uz" ? "3D Odam Anatomiyasi va Simptom Tagger" : language === "ru" ? "3D Анатомия Человека и Метки Симптомов" : "3D Human Anatomy & Symptom Tagger"}
               </h1>
               <span className="text-[10px] text-emerald-400 font-mono">
-                {role === "doctor" ? "VRACH TEKSHIRUV VA TASDIQLASH PANELI" : "HAMSHIRA REJIMI · REAL-TIME 3D TAGGING"}
+                {role === "doctor" ? (language === "uz" ? "VRACH TEKSHIRUV PANELI" : language === "ru" ? "ПАНЕЛЬ ВРАЧЕБНОГО ОСМОТРА" : "CLINICIAN REVIEW PANEL") : (language === "uz" ? "HAMSHIRA REJIMI · REAL-TIME 3D TAGGING" : language === "ru" ? "РЕЖИМ МЕДСЕСТРЫ · REAL-TIME 3D TAGGING" : "NURSE MODE · REAL-TIME 3D TAGGING")}
               </span>
             </div>
           </div>
