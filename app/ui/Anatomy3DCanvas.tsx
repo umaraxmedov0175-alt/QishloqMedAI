@@ -140,13 +140,38 @@ export function Anatomy3DCanvas({
     taggedGroupRef.current = taggedGroup;
     scene.add(taggedGroup);
 
-    // 7. Load Exclusively public/models/Male.OBJ 3D Human Asset
+    // 7. Load Exclusively public/models/Male.OBJ 3D Human Asset with Robust Fallback
     const objLoader = new OBJLoader();
-    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj", "/models/hd_human_anatomy.glb"];
+    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj"];
+
+    const buildProceduralFallbackModel = () => {
+      const bodyParts: Array<{ geom: THREE.BufferGeometry; pos: THREE.Vector3 }> = [
+        { geom: new THREE.SphereGeometry(0.24, 32, 32), pos: new THREE.Vector3(0, 1.68, 0) },
+        { geom: new THREE.CylinderGeometry(0.30, 0.25, 0.44, 32), pos: new THREE.Vector3(0, 1.18, 0.12) },
+        { geom: new THREE.CylinderGeometry(0.25, 0.23, 0.40, 32), pos: new THREE.Vector3(0, 0.78, 0.12) },
+        { geom: new THREE.BoxGeometry(0.15, 0.85, 0.15), pos: new THREE.Vector3(0, 1.08, -0.14) },
+        { geom: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24), pos: new THREE.Vector3(0.50, 1.08, 0) },
+        { geom: new THREE.CylinderGeometry(0.09, 0.07, 0.70, 24), pos: new THREE.Vector3(-0.50, 1.08, 0) },
+        { geom: new THREE.CylinderGeometry(0.19, 0.13, 1.15, 24), pos: new THREE.Vector3(0, 0.12, 0) },
+      ];
+
+      bodyParts.forEach(({ geom, pos }) => {
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x64748b,
+          roughness: 0.35,
+          metalness: 0.15,
+          side: THREE.DoubleSide,
+        });
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.copy(pos);
+        humanMeshGroup.add(mesh);
+      });
+      setIsLoadingModel(false);
+    };
 
     const tryLoadMaleObj = (index: number) => {
       if (index >= modelCandidates.length) {
-        setIsLoadingModel(false);
+        buildProceduralFallbackModel();
         return;
       }
 
@@ -187,7 +212,6 @@ export function Anatomy3DCanvas({
           if (xhr.lengthComputable && xhr.total > 0) {
             const pct = Math.round((xhr.loaded / xhr.total) * 100);
             setLoadingPct(pct);
-            if (pct >= 100) setIsLoadingModel(false);
           }
         },
         () => {
