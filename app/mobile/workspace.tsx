@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role, react-hooks/set-state-in-effect */
 import { FormEvent, useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
@@ -25,6 +25,12 @@ import { getAllProtocols } from "@/lib/symptom-protocols/index";
 import { MobileLabBadgeIcon } from "@/app/ui/MedicalIcons";
 import { CarePulse } from "@/app/ui/CarePulse";
 import { analyzeOutbreakRadar } from "@/lib/outbreak-radar";
+import {
+  createAnatomyAssessment,
+  getAnatomyAssessments,
+  subscribeToAnatomyUpdates,
+  type AnatomyAssessment,
+} from "@/lib/anatomy-store";
 
 type NetState =
   | "online"
@@ -70,6 +76,15 @@ export function MobileWorkspace() {
     valid: boolean;
   } | null>(null);
   const [rawFile, setRawFile] = useState<File | null>(null);
+  const [liveAssessments, setLiveAssessments] = useState<AnatomyAssessment[]>(() => getAnatomyAssessments());
+
+  useEffect(() => {
+    setLiveAssessments(getAnatomyAssessments());
+    const unsubscribe = subscribeToAnatomyUpdates((updated) => {
+      setLiveAssessments(updated);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const activeProtocol = getProtocol(draft.complaint);
   const protocolEval = activeProtocol
@@ -186,6 +201,33 @@ export function MobileWorkspace() {
           },
           `asset-binary:${encounterKey}`,
         );
+
+      // Mutual Real-Time Dispatch to Doctor Workspace
+      createAnatomyAssessment({
+        patientId: data.patientCode,
+        patientName: data.fullName,
+        nurseId: "NURSE-01",
+        nurseName: "Mobil Hamshira",
+        vitals: {
+          bp: data.bp || "140/90",
+          hr: Number(data.pulse) || 92,
+          spo2: Number(data.spo2) || 94,
+          temp: Number(data.temp) || 37.2,
+          glucose: 6.4,
+        },
+        taggedNodes: [
+          {
+            region: "chest",
+            label: { uz: "Ko'krak Qafasi (Yurak / O'pka)", en: "Chest (Heart / Lungs)" },
+            symptoms: [data.complaint || "Simptom ko'rsatilgan"],
+            severity: Number(data.spo2) < 92 ? "high" : "moderate",
+            description: `Bemor: ${data.fullName}, Shikoyat: ${data.complaint}`,
+          },
+        ],
+        aiRiskScore: Number(data.spo2) < 92 ? 88 : 65,
+        aiAssessment: `MedAI Agent Tahlili: ${data.fullName} da ${data.complaint} aniqlandi. SpO2: ${data.spo2}%, BO: ${data.bp}. Shoshilinch vrach ko'rigi va tasdig'i talab etiladi.`,
+      });
+
       setNotice(t("caseSavedOffline"));
       setStep(6);
       await refresh();
@@ -1275,23 +1317,44 @@ export function MobileWorkspace() {
             </div>
 
             <div className="space-y-3">
-              <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs space-y-1">
-                <div className="flex items-center justify-between font-bold text-emerald-950">
-                  <span>QM-2027-0042 (Tomir)</span>
-                  <span className="px-2 py-0.5 bg-emerald-700 text-white rounded text-[10px]">✓ TASDIQLANDI</span>
+              {liveAssessments.map((a) => (
+                <div
+                  key={a.id}
+                  className={`p-4 rounded-xl text-xs space-y-1 border ${
+                    a.status === "approved"
+                      ? "bg-emerald-50/80 border-emerald-200"
+                      : a.status === "additional_info_requested"
+                        ? "bg-amber-50/80 border-amber-200"
+                        : "bg-slate-50 border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-bold text-slate-900">
+                    <span>{a.patientId} ({a.patientName})</span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        a.status === "approved"
+                          ? "bg-emerald-700 text-white"
+                          : a.status === "additional_info_requested"
+                            ? "bg-amber-600 text-white"
+                            : "bg-blue-600 text-white"
+                      }`}
+                    >
+                      {a.status === "approved"
+                        ? "✓ TASDIQLANDI"
+                        : a.status === "additional_info_requested"
+                          ? "❓ MA'LUMOT SO'RALDI"
+                          : "◷ SHOSHILINCH KO'RIB CHIQILMOQDA"}
+                    </span>
+                  </div>
+                  <p className="text-slate-800 m-0 leading-relaxed">
+                    <b>Vrach xulosasi:</b> {a.doctorNotes || a.aiAssessment}
+                  </p>
+                  <div className="text-[10px] text-slate-500 font-mono pt-1 flex items-center justify-between">
+                    <span>Shifokor: Dr. Tomir (Kardiolog)</span>
+                    <span>{new Date(a.timestamp).toLocaleTimeString("uz-UZ", { hour: "2-digit", minute: "2-digit" })}</span>
+                  </div>
                 </div>
-                <p className="text-slate-800 m-0"><b>Vrach xulosasi:</b> Zudlik bilan kislorod bering va Urgut Tuman Kasalxonasiga o'tkazing.</p>
-                <div className="text-[10px] text-slate-500 font-mono pt-1">Shifokor: Dr. Tomir (Kardiolog) · 10:42 AM</div>
-              </div>
-
-              <div className="p-4 bg-amber-50/70 border border-amber-200 rounded-xl text-xs space-y-1">
-                <div className="flex items-center justify-between font-bold text-amber-950">
-                  <span>QM-2027-0039 (Anvar Rahimov)</span>
-                  <span className="px-2 py-0.5 bg-amber-600 text-white rounded text-[10px]">❓ MA'LUMOT SO'RALDI</span>
-                </div>
-                <p className="text-slate-800 m-0"><b>Vrach xulosasi:</b> Qayta tana haroratini o'lchang va o'pka auskultatsiya natijasini yuboring.</p>
-                <div className="text-[10px] text-slate-500 font-mono pt-1">Shifokor: Dr. Rahmonov · 09:15 AM</div>
-              </div>
+              ))}
             </div>
           </aside>
         </section>

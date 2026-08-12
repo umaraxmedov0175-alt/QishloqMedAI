@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role */
+/* eslint-disable @next/next/no-html-link-for-pages, react/no-unescaped-entities, jsx-a11y/aria-role, react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { DEMO_CASES } from "@/lib/demo-data";
 import { RoleGuard } from "@/app/ui/RoleGuard";
@@ -16,20 +16,34 @@ import { downloadFhirJson } from "@/lib/fhir-mapping";
 import { ImageViewerModal } from "@/app/ui/ImageViewerModal";
 import { CarePulse } from "@/app/ui/CarePulse";
 import { MedAIAssistantDrawer } from "@/app/ui/MedAIAssistantDrawer";
+import {
+  getAnatomyAssessments,
+  subscribeToAnatomyUpdates,
+  updateAnatomyStatus,
+  type AnatomyAssessment,
+} from "@/lib/anatomy-store";
 
 export default function CentralReviewPage() {
   const { language, t } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [cases] = useState(DEMO_CASES);
   const [selected, setSelected] = useState("QM-2027-0042");
+  const active = cases.find((c) => c.code === selected) ?? cases[0];
   const [query, setQuery] = useState("");
   const [priority, setPriority] = useState("all");
   const [finalSummary, setFinalSummary] = useState("");
   const [decision, setDecision] = useState("");
   const [savedAt, setSavedAt] = useState("");
   const [viewerOpen, setViewerOpen] = useState(false);
+  const [liveNurseAssessments, setLiveNurseAssessments] = useState<AnatomyAssessment[]>(() => getAnatomyAssessments());
 
-  const active = cases.find((c) => c.code === selected) ?? cases[0];
+  useEffect(() => {
+    setLiveNurseAssessments(getAnatomyAssessments());
+    const unsubscribe = subscribeToAnatomyUpdates((updated) => {
+      setLiveNurseAssessments(updated);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     let current = true;
@@ -53,6 +67,16 @@ export default function CentralReviewPage() {
     });
     setDecision(action.decision);
     setSavedAt(action.updatedAt);
+
+    // Mutual Real-Time Synchronization back to Nurse Workspace
+    const matchAssessment = liveNurseAssessments.find((a) => a.patientId === active.code || a.id.includes(active.code));
+    if (matchAssessment) {
+      updateAnatomyStatus(
+        matchAssessment.id,
+        nextDecision === "CONFIRM_REFERRAL" ? "approved" : "additional_info_requested",
+        finalSummary || "Vrach xulosasi tasdiqlandi va hamshira ish maydoniga uzatildi."
+      );
+    }
   }
 
   const handlePrintReport = () => {
