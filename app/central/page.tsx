@@ -115,27 +115,27 @@ export default function CentralReviewPage() {
 
   return (
     <RoleGuard requiredRole="doctor">
-      <div className="min-h-screen bg-[#0F172A] text-white">
+      <div className="min-h-screen bg-[#f6f3ea] text-[#2b2621]">
         <SidebarNav role="doctor" activePath="/central" onToggleCollapse={setCollapsed} />
         <main className={`transition-[margin] duration-300 ${collapsed ? "ml-16" : "ml-64"} min-h-screen overflow-y-auto`}>
 
       <section className="max-w-[1520px] mx-auto px-6 py-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div>
-            <span className="text-[11px] font-bold text-sky-400 tracking-wider uppercase">{t("roleSpecialist")}</span>
-            <h1 className="text-3xl font-sans font-bold text-white mt-1 mb-1">{t("specialistQueue")}</h1>
-            <p className="text-slate-400 text-xs">{t("evidenceFirstNotice")}</p>
+            <span className="text-[11px] font-bold text-emerald-800 tracking-wider uppercase">{t("roleSpecialist")}</span>
+            <h1 className="text-3xl font-serif font-bold text-slate-900 mt-1 mb-1">{t("specialistQueue")}</h1>
+            <p className="text-slate-500 text-xs">{t("evidenceFirstNotice")}</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrintReport}
-              className="px-4 py-2 bg-slate-800/60 border border-white/[0.08] hover:border-white/20 text-slate-200 text-xs font-semibold rounded-lg shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
             >
               ⏱ {t("printReport")}
             </button>
             <button
               onClick={handleExportFhir}
-              className="px-4 py-2 bg-slate-800/60 border border-white/[0.08] hover:border-white/20 text-slate-200 text-xs font-semibold rounded-lg shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg shadow-2xs transition flex items-center gap-1.5 cursor-pointer"
             >
               📥 {t("exportFhir")}
             </button>
@@ -150,29 +150,29 @@ export default function CentralReviewPage() {
             ["3", t("reviewedToday")],
             ["18 min", t("avgTurnaround")],
           ].map(([n, l]) => (
-            <div className="bg-slate-800/60 border border-white/[0.08] rounded-xl p-4 shadow-2xs backdrop-blur" key={l}>
-              <b className="text-2xl font-bold text-white block leading-tight">{n}</b>
-              <span className="text-[11px] text-slate-400 font-medium">{l}</span>
+            <div className="bg-white border border-slate-200/80 rounded-xl p-4 shadow-2xs" key={l}>
+              <b className="text-2xl font-bold text-slate-900 block leading-tight">{n}</b>
+              <span className="text-[11px] text-slate-500 font-medium">{l}</span>
             </div>
           ))}
         </div>
 
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Left Column: Patient Queue List */}
-          <aside className="lg:col-span-3 bg-slate-800/60 border border-white/[0.08] rounded-xl overflow-hidden shadow-2xs flex flex-col backdrop-blur">
-            <div className="p-3 border-b border-white/[0.06] grid grid-cols-3 gap-2">
+          <aside className="lg:col-span-3 bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs flex flex-col">
+            <div className="p-3 border-b border-slate-100 grid grid-cols-3 gap-2">
               <input
                 aria-label={t("searchPlaceholder")}
                 placeholder={t("searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="col-span-2 text-xs border border-white/[0.08] rounded-lg px-2.5 py-1.5 outline-none focus:border-sky-500 bg-slate-900/60 text-white placeholder:text-slate-500"
+                className="col-span-2 text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 outline-none focus:border-emerald-600"
               />
               <select
                 aria-label={t("triageLevel")}
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
-                className="text-xs border border-white/[0.08] rounded-lg px-1.5 py-1.5 outline-none bg-slate-900/60 text-white font-medium"
+                className="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 outline-none bg-white font-medium"
               >
                 <option value="all">{t("allPriorities")}</option>
                 <option value="emergency">{t("emergency")}</option>
@@ -182,10 +182,10 @@ export default function CentralReviewPage() {
               </select>
             </div>
 
-            <div className="divide-y divide-white/[0.06] overflow-y-auto max-h-[750px]">
+            <div className="divide-y divide-slate-100 overflow-y-auto max-h-[750px]">
               {cases.map((c) => (
                 <button
-                  className={`w-full text-left p-3.5 transition cursor-pointer ${selected === c.code ? "bg-sky-600/15 border-l-4 border-sky-500" : "hover:bg-white/[0.04]"}`}
+                  className={`w-full text-left p-3.5 transition cursor-pointer ${selected === c.code ? "bg-emerald-50/60 border-l-4 border-emerald-700" : "hover:bg-slate-50"}`}
                   key={c.code}
                   onClick={() => setSelected(c.code)}
                 >
@@ -194,7 +194,7 @@ export default function CentralReviewPage() {
                       {c.triage === "emergency" ? "▲ FAVQULODDA (KRITIK)" : c.triage === "urgent" ? "■ SHOSHILINCH" : c.triage === "priority" ? "◆ USTUVOR" : "● REJALI (ODATIY)"}
                     </span>
                   </div>
-                  <div className="font-bold text-xs text-white mb-0.5">
+                  <div className="font-bold text-xs text-slate-900 mb-0.5">
                     {c.code} · {c.age} {t("years")} · {c.sex}
                   </div>
                   <div className="text-[11px] text-slate-500 mb-1">
@@ -203,8 +203,8 @@ export default function CentralReviewPage() {
                   <div className="text-[10px] font-medium text-slate-400 mb-1.5">
                     {c.diagnostics.join(" · ")}
                   </div>
-                  <p className="text-[11px] text-slate-300 bg-amber-500/10 p-2 rounded border border-amber-500/20 leading-snug">
-                    <strong className="text-amber-400 block font-semibold mb-0.5">{t("whyPrioritized")}:</strong> {c.reason}
+                  <p className="text-[11px] text-slate-700 bg-amber-50/60 p-2 rounded border border-amber-100/80 leading-snug">
+                    <strong className="text-amber-900 block font-semibold mb-0.5">{t("whyPrioritized")}:</strong> {c.reason}
                   </p>
                 </button>
               ))}
@@ -213,16 +213,16 @@ export default function CentralReviewPage() {
 
           {/* Middle Column: Zone A — Evidence (Read Only) */}
           <article id="zone-a-evidence" className="lg:col-span-4 space-y-4">
-            <div className="bg-slate-800/60 border border-white/[0.08] rounded-xl p-5 shadow-xs backdrop-blur">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3 mb-3">
-                <span className="inline-block px-2.5 py-1 bg-slate-700/60 text-slate-200 font-bold text-[10px] tracking-wider rounded uppercase">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+                <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-800 font-bold text-[10px] tracking-wider rounded uppercase">
                   📋 ZONE A: KLINIK DALILLAR (OʻQISH REJIMI)
                 </span>
                 <span className="text-xs text-slate-500 font-semibold font-mono">QM-RECORD-RAW</span>
               </div>
 
-              <h2 className="text-xl font-bold font-sans text-white mb-1">{active.code} — {active.name}</h2>
-              <p className="text-xs text-slate-400 mb-4 font-medium">
+              <h2 className="text-xl font-bold font-serif text-slate-900 mb-1">{active.code} — {active.name}</h2>
+              <p className="text-xs text-slate-500 mb-4 font-medium">
                 {active.age} {t("years")} · {active.sex} · {active.village}, {active.region}
               </p>
 
@@ -237,8 +237,8 @@ export default function CentralReviewPage() {
                 className="mb-4"
               />
 
-              <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-1.5">{t("chiefComplaint")}</h3>
-              <p className="text-sm font-semibold text-slate-200 bg-slate-700/40 p-3 rounded-lg border border-white/[0.06] mb-4">
+              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1.5">{t("chiefComplaint")}</h3>
+              <p className="text-sm font-semibold text-slate-800 bg-slate-50 p-3 rounded-lg border border-slate-200/60 mb-4">
                 {active.complaint}
               </p>
 
@@ -253,17 +253,17 @@ export default function CentralReviewPage() {
                 const evalResult = evaluateAnswers(protocol, answers, language);
 
                 return (
-                  <div className="mb-4 p-4 bg-emerald-500/8 border border-emerald-500/15 rounded-xl space-y-3 backdrop-blur">
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-500/15 pb-2.5">
+                  <div className="mb-4 p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5">
                       <div>
-                        <span className="text-xs font-bold text-emerald-400 block">
+                        <span className="text-xs font-bold text-emerald-900 block">
                           📋 {t("adaptiveProtocol")}: {protocol.label[language]}
                         </span>
-                        <span className="text-[10px] text-emerald-500/80 font-mono">
+                        <span className="text-[10px] text-emerald-700 font-mono">
                           {t("protocolSource")}: {protocol.source}
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold px-2.5 py-0.5 bg-slate-800 border border-emerald-500/25 text-emerald-300 rounded-full">
+                      <span className="text-[11px] font-bold px-2.5 py-0.5 bg-white border border-emerald-300 text-emerald-900 rounded-full">
                         {t("completeness")}: {evalResult.completeness.answered}/{evalResult.completeness.total} ({evalResult.completeness.percentage}%)
                         {evalResult.completeness.skipped > 0 && ` · ${evalResult.completeness.skipped} ${t("skipped").toLowerCase()}`}
                       </span>
@@ -297,20 +297,20 @@ export default function CentralReviewPage() {
                             key={q.id}
                             className={`p-2.5 rounded-lg border text-xs transition ${
                               isRedFlag
-                                ? "bg-red-500/10 border-red-500/25 text-red-200 font-medium"
+                                ? "bg-red-50 border-red-300 text-red-950 font-medium"
                                 : isSkipped
-                                  ? "bg-slate-800/40 border-white/[0.06] text-slate-500"
-                                  : "bg-slate-800/40 border-white/[0.08] text-slate-200"
+                                  ? "bg-slate-100 border-slate-200 text-slate-500"
+                                  : "bg-white border-slate-200 text-slate-800"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-2">
-                              <span className="font-semibold text-white leading-tight">{q.text[language]}</span>
+                              <span className="font-semibold text-slate-900 leading-tight">{q.text[language]}</span>
                               {isSkipped ? (
-                                <span className="px-2 py-0.5 bg-slate-700 text-slate-400 font-bold text-[10px] rounded">
+                                <span className="px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded">
                                   🛑 {t("skipped").toUpperCase()}
                                 </span>
                               ) : isAnswered ? (
-                                <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${isRedFlag ? "bg-red-500/15 text-red-300" : "bg-emerald-500/15 text-emerald-300"}`}>
+                                <span className={`font-bold px-2 py-0.5 rounded text-[11px] ${isRedFlag ? "bg-red-200 text-red-900" : "bg-emerald-100 text-emerald-900"}`}>
                                   {formattedAnswer}
                                 </span>
                               ) : (
@@ -328,8 +328,8 @@ export default function CentralReviewPage() {
                     </div>
 
                     {evalResult.suggestedActions.length > 0 && (
-                      <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg text-xs text-amber-200 font-medium space-y-0.5">
-                        <strong className="block font-bold text-amber-400 text-[11px]">
+                      <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-950 font-medium space-y-0.5">
+                        <strong className="block font-bold text-amber-900 text-[11px]">
                           💡 PROTOKOL TAVSIYASI:
                         </strong>
                         {evalResult.suggestedActions.map((act, idx) => (
@@ -341,36 +341,36 @@ export default function CentralReviewPage() {
                 );
               })()}
 
-              <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-1">{t("step4Vitals")}</h3>
+              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">{t("step4Vitals")}</h3>
               <div className="grid grid-cols-2 gap-2.5 mb-4">
-                <div className="border border-white/[0.08] rounded-lg p-3 bg-slate-800/50">
-                  <span className="text-xs text-slate-400 block mb-1">🫁 SpO₂</span>
-                  <b className="text-lg font-bold text-white">{active.code === "QM-2027-0042" ? "89%" : "97%"}</b>
+                <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                  <span className="text-xs text-slate-500 block mb-1">🫁 SpO₂</span>
+                  <b className="text-lg font-bold text-slate-900">{active.code === "QM-2027-0042" ? "89%" : "97%"}</b>
                 </div>
-                <div className="border border-white/[0.08] rounded-lg p-3 bg-slate-800/50">
-                  <span className="text-xs text-slate-400 block mb-1">💓 {t("pulseBpm")}</span>
-                  <b className="text-lg font-bold text-white">{active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm"}</b>
+                <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                  <span className="text-xs text-slate-500 block mb-1">💓 {t("pulseBpm")}</span>
+                  <b className="text-lg font-bold text-slate-900">{active.code === "QM-2027-0042" ? "108 bpm" : "78 bpm"}</b>
                 </div>
-                <div className="border border-white/[0.08] rounded-lg p-3 bg-slate-800/50">
-                  <span className="text-xs text-slate-400 block mb-1">⏱ {t("systolicBp")}</span>
-                  <b className="text-lg font-bold text-white">168/96 mmHg</b>
+                <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                  <span className="text-xs text-slate-500 block mb-1">⏱ {t("systolicBp")}</span>
+                  <b className="text-lg font-bold text-slate-900">168/96 mmHg</b>
                 </div>
-                <div className="border border-white/[0.08] rounded-lg p-3 bg-slate-800/50">
-                  <span className="text-xs text-slate-400 block mb-1">🌡️ {t("tempC")}</span>
-                  <b className="text-lg font-bold text-white">37.4 °C</b>
+                <div className="border border-slate-200 rounded-lg p-3 bg-white">
+                  <span className="text-xs text-slate-500 block mb-1">🌡️ {t("tempC")}</span>
+                  <b className="text-lg font-bold text-slate-900">37.4 °C</b>
                 </div>
               </div>
 
-              <h3 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-1">{t("nurseNotes")}</h3>
-              <p className="text-xs text-slate-300 leading-relaxed bg-slate-700/40 p-2.5 rounded-md border border-white/[0.06]">
+              <h3 className="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">{t("nurseNotes")}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-2.5 rounded-md border border-slate-200/50">
                 {language === "uz"
                   ? `${active.clinic} klinikasidan sinxronlangan simptomlar va koʻrsatkichlar.`
                   : `Symptoms and measurements synchronized from ${active.clinic}. Units preserved as entered.`}
               </p>
             </div>
 
-            <div className="bg-slate-800/60 border border-white/[0.08] rounded-xl p-5 shadow-xs backdrop-blur">
-              <span className="inline-block px-2.5 py-1 bg-slate-700/60 text-slate-300 font-bold text-[10px] tracking-wider rounded uppercase mb-3">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+              <span className="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-bold text-[10px] tracking-wider rounded uppercase mb-3">
                 🖼 DIAGNOSTIK DALILLAR
               </span>
 
@@ -380,14 +380,14 @@ export default function CentralReviewPage() {
                   <p className="text-xs text-slate-400">JPEG namoyish tasviri</p>
                   <button
                     type="button"
-                    className="mt-2 px-5 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-full text-xs font-bold shadow-md shadow-sky-600/20 transition cursor-pointer"
+                    className="mt-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full text-xs font-bold shadow-md transition cursor-pointer"
                     onClick={() => setViewerOpen(true)}
                   >
                     HD Tasvirni koʻrish va analiz qilish
                   </button>
                 </div>
               ) : (
-                <div className="p-8 text-center text-xs text-slate-500 bg-slate-800/30 rounded-xl border border-dashed border-white/[0.08]">
+                <div className="p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   {t("noImageAttached")}
                 </div>
               )}
@@ -397,41 +397,41 @@ export default function CentralReviewPage() {
           {/* Right Column: Zone B (AI Decision Support) & Zone C (Doctor Decision) */}
           <article className="lg:col-span-4 space-y-5">
             {/* ZONE B: AI Decision Support */}
-            <div id="zone-b-ai" className="bg-violet-950/30 border-l-4 border-l-violet-500/60 border border-violet-500/15 rounded-r-xl p-5 space-y-3 backdrop-blur">
+            <div id="zone-b-ai" className="bg-purple-50/60 border-l-4 border-l-purple-600 border-dashed border-purple-200 rounded-r-xl p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  <span className="font-bold text-xs text-violet-300 uppercase tracking-wider">ZONE B: AI DECISION SUPPORT</span>
+                  <span className="font-bold text-xs text-purple-950 uppercase tracking-wider">ZONE B: AI DECISION SUPPORT</span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-violet-500/30 bg-violet-500/15 text-violet-300 border-dashed">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border border-purple-300 bg-purple-100 text-purple-900 border-dashed">
                   ◷ AI TAKLIFI
                 </span>
               </div>
 
               {/* Attribution Strip */}
-              <div className="p-2.5 bg-violet-500/10 border border-violet-500/20 rounded-lg text-[11px] text-violet-200 font-medium">
+              <div className="p-2.5 bg-purple-100/70 border border-purple-200 rounded-lg text-[11px] text-purple-950 font-medium">
                 Yaratildi: <b>Tomir Triage v2.4</b> · Ishonch: <b>92/100</b> · <i>AI yordamchi vosita (Tashxis emas)</i>
               </div>
 
-              <div className="bg-slate-800/50 p-3 rounded-lg border border-violet-500/15 text-xs text-slate-200 leading-relaxed font-medium">
-                <b className="block font-bold text-violet-300 text-xs mb-1">
+              <div className="bg-white/80 p-3 rounded-lg border border-purple-100 text-xs text-slate-800 leading-relaxed font-medium">
+                <b className="block font-bold text-purple-900 text-xs mb-1">
                   AI BOSHLANGʻICH TAHLILI:
                 </b>
                 {active.aiSummary}
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-red-400 uppercase tracking-wider mb-1">{t("redFlags")}</h4>
-                <p className="text-xs text-slate-200 bg-red-500/10 p-2.5 rounded border border-red-500/20 font-medium">
+                <h4 className="text-xs font-bold text-red-700 uppercase tracking-wider mb-1">{t("redFlags")}</h4>
+                <p className="text-xs text-slate-800 bg-red-50 p-2.5 rounded border border-red-100 font-medium">
                   {active.reason}
                 </p>
               </div>
 
               <div>
                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t("limitations")}</h4>
-                <p className="text-xs text-slate-400 bg-slate-800/40 p-2.5 rounded border border-violet-500/10 text-[11px] leading-relaxed">
+                <p className="text-xs text-slate-600 bg-white/70 p-2.5 rounded border border-purple-100 text-[11px] leading-relaxed">
                   {language === "uz"
                     ? "Chala anamnez va tasdiqlanmagan qurilma integratsiyasi. Faqat dastlabki qaror yordami."
                     : "Incomplete history and no validated device integration. Preliminary support only."}
@@ -440,25 +440,25 @@ export default function CentralReviewPage() {
             </div>
 
             {/* ZONE C: Doctor Decision Container (Starts Completely Empty) */}
-            <div id="zone-c-doctor" className="bg-slate-800/40 border-2 border-sky-500/50 shadow-md shadow-sky-500/10 rounded-xl p-5 space-y-4 backdrop-blur">
-              <div className="flex items-center justify-between border-b border-sky-500/20 pb-2.5">
+            <div id="zone-c-doctor" className="bg-white border-3 border-[#0B5FFF] shadow-md rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-blue-100 pb-2.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-sky-500 animate-pulse"></span>
-                  <span className="font-extrabold text-xs text-sky-300 uppercase tracking-wider">ZONE C: VRACH QARORI</span>
+                  <span className="w-3 h-3 rounded-full bg-[#0B5FFF] animate-pulse"></span>
+                  <span className="font-extrabold text-xs text-blue-950 uppercase tracking-wider">ZONE C: VRACH QARORI</span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-sky-600 text-white shadow-xs">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-600 text-white shadow-xs">
                   ✓ VRACH
                 </span>
               </div>
 
               <div>
-                <label htmlFor="finalSummary" className="block text-xs font-bold text-white mb-1.5">
+                <label htmlFor="finalSummary" className="block text-xs font-bold text-slate-900 mb-1.5">
                   {t("clinicianFinalLabel")} *
                 </label>
                 <textarea
                   id="finalSummary"
                   rows={4}
-                  className="w-full text-xs font-medium bg-slate-900/60 border border-white/[0.12] rounded-lg p-3 text-white focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none placeholder:text-slate-500"
+                  className="w-full text-xs font-medium bg-slate-50 border border-slate-300 rounded-lg p-3 focus:bg-white focus:border-[#0B5FFF] focus:ring-2 focus:ring-blue-500/20 outline-none"
                   value={finalSummary}
                   onChange={(e) => setFinalSummary(e.target.value)}
                   placeholder="Yakuniy klinik xulosangizni va davolash rejasini kiriting..."
@@ -466,7 +466,7 @@ export default function CentralReviewPage() {
               </div>
 
               {savedAt && (
-                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs text-emerald-300 font-bold">
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-950 font-bold">
                   ✓ {t("durablyRecorded")} {decision} ({new Date(savedAt).toLocaleTimeString()})
                 </div>
               )}
@@ -474,7 +474,7 @@ export default function CentralReviewPage() {
               <div className="space-y-2 pt-1">
                 <button
                   type="button"
-                  className="w-full py-2.5 px-4 bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs rounded-lg shadow-sm shadow-sky-600/20 transition cursor-pointer"
+                  className="w-full py-2.5 px-4 bg-[#0B5FFF] hover:bg-blue-700 text-white font-extrabold text-xs rounded-lg shadow-sm transition cursor-pointer"
                   onClick={() => void recordDecision("APPROVED_WITH_EDITS")}
                 >
                   ✓ {t("confirmReview")}

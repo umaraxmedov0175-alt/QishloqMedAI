@@ -135,7 +135,7 @@ export function MovableChatWidget() {
         <button
           type="button"
           onClick={() => !isDragging && setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-sky-600 hover:bg-sky-500 text-white shadow-2xl flex items-center justify-center border-2 border-sky-400/50 transition transform hover:scale-105 active:scale-95 cursor-pointer relative shadow-sky-600/30"
+          className="w-14 h-14 rounded-full bg-emerald-700 hover:bg-emerald-600 text-white shadow-2xl flex items-center justify-center border-2 border-emerald-400/60 transition transform hover:scale-105 active:scale-95 cursor-pointer relative"
           title="Teleconsultation Chat (Cmd+K)"
         >
           <span className="text-2xl">{isOpen ? "✕" : "💬"}</span>
@@ -147,14 +147,14 @@ export function MovableChatWidget() {
       {isOpen && (
         <div className="fixed inset-y-0 right-0 w-full sm:w-96 bg-slate-900 border-l border-slate-800 text-white shadow-2xl z-50 flex flex-col font-sans animate-in slide-in-from-right duration-200">
           {/* Drawer Header */}
-          <div className="p-4 bg-slate-950 border-b border-white/[0.08] flex items-center justify-between">
+          <div className="p-4 bg-emerald-950 border-b border-emerald-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-lg">💬</span>
               <div>
                 <b className="text-sm font-bold text-white block">
                   {language === "uz" ? "Telemaslahat va Chat" : "Teleconsultation Chat"}
                 </b>
-                <span className="text-[10px] text-sky-300 font-mono">
+                <span className="text-[10px] text-emerald-300 font-mono">
                   {language === "uz" ? "SHIFORXONA XAVFSIZ KANAL" : "SECURE CLINICAL CHANNEL"}
                 </span>
               </div>
@@ -162,14 +162,14 @@ export function MovableChatWidget() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-white p-1 rounded-lg border-0 bg-transparent text-sm cursor-pointer"
+              className="text-emerald-200 hover:text-white p-1 rounded-lg border-0 bg-transparent text-sm cursor-pointer"
             >
               ✕
             </button>
           </div>
 
           {/* Active Thread Selector Tabs */}
-          <div className="flex border-b border-white/[0.06] bg-slate-950/80 overflow-x-auto text-xs font-semibold">
+          <div className="flex border-b border-slate-800 bg-slate-950/80 overflow-x-auto text-xs font-semibold">
             {threads.slice(0, 3).map((thread) => (
               <button
                 key={thread.id}
@@ -180,7 +180,7 @@ export function MovableChatWidget() {
                 }}
                 className={`py-2 px-3 border-b-2 transition whitespace-nowrap text-left text-[11px] ${
                   activeThreadId === thread.id
-                    ? "border-sky-500 text-sky-300 font-bold bg-slate-900"
+                    ? "border-emerald-500 text-emerald-300 font-bold bg-slate-900"
                     : "border-transparent text-slate-400 hover:text-slate-200"
                 }`}
               >
@@ -210,8 +210,8 @@ export function MovableChatWidget() {
                     <div
                       className={`max-w-[85%] p-3 rounded-2xl leading-relaxed text-xs ${
                         isSelf
-                          ? "bg-sky-700 text-white rounded-br-none"
-                          : "bg-slate-800 text-slate-100 rounded-bl-none border border-white/[0.08]"
+                          ? "bg-emerald-700 text-white rounded-br-none"
+                          : "bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700"
                       }`}
                     >
                       {msg.content}
@@ -227,17 +227,17 @@ export function MovableChatWidget() {
           </div>
 
           {/* Chat Input Bar */}
-          <form onSubmit={handleSendMessage} className="p-3 bg-slate-950 border-t border-white/[0.06] flex items-center gap-2">
+          <form onSubmit={handleSendMessage} className="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder={language === "uz" ? "Klinik xabar yozing..." : "Type clinical message..."}
-              className="flex-1 bg-slate-900 border border-white/[0.08] text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-sky-500"
+              className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs rounded-xl px-3 py-2 outline-none focus:border-emerald-500"
             />
             <button
               type="submit"
-              className="px-3 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-lg shadow-sky-600/20"
+              className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition cursor-pointer"
             >
               {language === "uz" ? "Yuborish" : "Send"}
             </button>

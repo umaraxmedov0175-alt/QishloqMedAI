@@ -159,23 +159,23 @@ export default function InnerChatPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0F172A] text-white flex flex-col">
+    <main className="min-h-screen bg-[#f6f3ea] text-[#2b2621] flex flex-col">
       {/* Top Main Navigation Header */}
-      <header className="h-16 px-6 bg-slate-900/90 backdrop-blur text-white flex items-center justify-between shadow-xs shrink-0 border-b border-white/[0.08]">
+      <header className="h-16 px-6 bg-[#063c32] text-white flex items-center justify-between shadow-xs shrink-0">
         <div className="flex items-center gap-4">
           <a className="flex items-center gap-2 font-bold text-lg text-white no-underline" href="/">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
             <span>Tomir AI</span>
           </a>
-          <span className="text-xs text-slate-400 font-medium pl-3 border-l border-white/10 hidden md:inline-block">
+          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             Ichki muloqot & Telekonsultatsiya
           </span>
         </div>
 
         <div className="flex items-center gap-4">
           {/* Active Demo Role Simulator Switcher */}
-          <div className="flex items-center gap-2 bg-slate-800/60 px-3 py-1 rounded-full border border-white/10 text-xs">
-            <span className="text-sky-300 font-medium">Sizning rolingiz:</span>
+          <div className="flex items-center gap-2 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-700/60 text-xs">
+            <span className="text-emerald-300 font-medium">Sizning rolingiz:</span>
             <select
               value={activeUserId}
               onChange={(e) => setActiveUserId(e.target.value)}

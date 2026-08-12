@@ -147,15 +147,15 @@ export default function PatientReportPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0F172A] text-white pb-12">
+    <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A] pb-12">
       {/* Top Header */}
-      <header className="h-16 px-6 bg-slate-900/90 backdrop-blur text-white flex items-center justify-between shadow-xs border-b border-white/[0.08]">
+      <header className="h-16 px-6 bg-[#063C32] text-white flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
           <a href="/" className="flex items-center gap-2 font-bold text-lg text-white no-underline">
             <span className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center text-sm">+</span>
             <span>Tomir AI</span>
           </a>
-          <span className="text-xs text-slate-400 font-medium pl-3 border-l border-white/10 hidden md:inline-block">
+          <span className="text-xs text-emerald-200/80 font-medium pl-3 border-l border-emerald-800/60 hidden md:inline-block">
             📱 Bemor va Hamshira Murojaat Portali
           </span>
         </div>
@@ -165,7 +165,7 @@ export default function PatientReportPage() {
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as "uz" | "en")}
-            className="px-2.5 py-1 bg-slate-800 text-slate-200 text-xs rounded border border-white/10 font-medium"
+            className="px-2.5 py-1 bg-emerald-950/60 text-emerald-100 text-xs rounded border border-emerald-700/50 font-medium"
           >
             <option value="uz">{"O'zbekcha"}</option>
             <option value="en">English</option>
@@ -175,28 +175,28 @@ export default function PatientReportPage() {
 
       <section className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6 text-center">
-          <span className="px-3 py-1 bg-sky-500/15 text-sky-300 text-xs font-extrabold rounded-full uppercase tracking-wider border border-sky-500/25">
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-extrabold rounded-full uppercase tracking-wider">
             TEZKOR TIBBIY YORDAM VA MOBIL KLINIKA CHAQIRUV PORTALI
           </span>
-          <h1 className="text-3xl font-sans font-bold text-white mt-2 mb-1">
+          <h1 className="text-3xl font-serif font-bold text-slate-900 mt-2 mb-1">
             Tibbiy Yordam So'rovini Yuborish
           </h1>
-          <p className="text-slate-400 text-xs max-w-xl mx-auto">
+          <p className="text-slate-500 text-xs max-w-xl mx-auto">
             Qishloq hududlarida yashovchi bemorlar hamda dala hamshiralari uchun tezkori va avtomatik geolokatsiyali tibbiy triage tizimi.
           </p>
         </div>
 
         {/* Live Status Tracker for Active Request */}
         {activeRequest && (
-          <div className="mb-8 bg-slate-800/60 backdrop-blur border-2 border-sky-500/50 rounded-2xl p-6 shadow-md shadow-sky-500/10">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-4 mb-4">
+          <div className="mb-8 bg-white border-2 border-emerald-600 rounded-2xl p-6 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-4">
               <div>
-                <span className="text-[11px] font-bold text-sky-400 uppercase tracking-wider block">YUBORILGAN SO'ROV HOLATI</span>
-                <b className="text-lg font-sans font-bold text-white">{activeRequest.patientName} ({activeRequest.patientCode})</b>
+                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">YUBORILGAN SO'ROV HOLATI</span>
+                <b className="text-lg font-serif font-bold text-slate-900">{activeRequest.patientName} ({activeRequest.patientCode})</b>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping"></span>
-                <span className="text-xs font-bold text-sky-300 bg-sky-500/15 px-3 py-1 rounded-full border border-sky-500/25">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                   {activeRequest.status === "unassigned"
                     ? "⏳ Dispetcherga Yetib Bordi"
                     : activeRequest.status === "reviewing"
@@ -212,13 +212,13 @@ export default function PatientReportPage() {
 
             {/* Stepper Status Bar */}
             <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold mb-4">
-              <div className={`p-3 rounded-xl border transition ${activeRequest.status !== "unassigned" ? "bg-sky-600 text-white border-sky-500" : "bg-sky-500/15 border-sky-500/25 text-sky-300"}`}>
+              <div className={`p-3 rounded-xl border transition ${activeRequest.status !== "unassigned" ? "bg-emerald-700 text-white border-emerald-700" : "bg-emerald-50 border-emerald-300 text-emerald-900"}`}>
                 <span>1. Yuborildi</span>
               </div>
-              <div className={`p-3 rounded-xl border transition ${activeRequest.status === "reviewing" || activeRequest.status === "dispatched" || activeRequest.status === "teleconsult_scheduled" ? "bg-sky-600 text-white border-sky-500" : "bg-slate-800/40 border-white/[0.06] text-slate-500"}`}>
+              <div className={`p-3 rounded-xl border transition ${activeRequest.status === "reviewing" || activeRequest.status === "dispatched" || activeRequest.status === "teleconsult_scheduled" ? "bg-emerald-700 text-white border-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400"}`}>
                 <span>2. Triage Ko'rik</span>
               </div>
-              <div className={`p-3 rounded-xl border transition ${activeRequest.status === "dispatched" || activeRequest.status === "teleconsult_scheduled" || activeRequest.status === "resolved" ? "bg-sky-600 text-white border-sky-500" : "bg-slate-800/40 border-white/[0.06] text-slate-500"}`}>
+              <div className={`p-3 rounded-xl border transition ${activeRequest.status === "dispatched" || activeRequest.status === "teleconsult_scheduled" || activeRequest.status === "resolved" ? "bg-emerald-700 text-white border-emerald-700" : "bg-slate-50 border-slate-200 text-slate-400"}`}>
                 <span>3. Avtobus / Telemaslahat</span>
               </div>
             </div>

@@ -40,10 +40,10 @@ export function TomirLogo({
       <div
         className={`relative ${iconSizes[size]} rounded-xl flex items-center justify-center transition-all duration-300 shadow-md ${
           isGlass
-            ? "bg-white/10 backdrop-blur-md border border-white/20 text-sky-400"
+            ? "bg-white/10 backdrop-blur-md border border-white/20 text-emerald-400"
             : isLight
-            ? "bg-sky-950 text-sky-400 border border-sky-800/40"
-            : "bg-sky-600 text-white shadow-sky-600/30 shadow-lg"
+            ? "bg-emerald-950 text-emerald-400 border border-emerald-800/40"
+            : "bg-emerald-600 text-white shadow-emerald-600/30 shadow-lg"
         }`}
       >
         <svg
@@ -76,14 +76,14 @@ export function TomirLogo({
         </svg>
 
         {/* Ambient Pulse Dot */}
-        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-sky-400 animate-ping opacity-75" />
+        <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
       </div>
 
       {/* Brand Text */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5">
           <span
-            className={`font-sans font-black tracking-tight ${textSizes[size]} ${
+            className={`font-serif font-extrabold tracking-tight ${textSizes[size]} ${
               isGlass || isLight ? "text-white" : "text-slate-900"
             }`}
           >
@@ -92,10 +92,10 @@ export function TomirLogo({
           <span
             className={`font-mono font-bold rounded-md uppercase tracking-wider ${badgeSizes[size]} ${
               isGlass
-                ? "bg-sky-500/15 text-sky-300 border border-sky-400/25"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
                 : isLight
-                ? "bg-sky-500/20 text-sky-200 border border-sky-400/25"
-                : "bg-sky-100 text-sky-900 border border-sky-200"
+                ? "bg-emerald-500/30 text-emerald-200 border border-emerald-400/30"
+                : "bg-emerald-100 text-emerald-900 border border-emerald-200"
             }`}
           >
             AI
@@ -104,7 +104,7 @@ export function TomirLogo({
         {showSubtitle && (
           <span
             className={`text-[10px] font-semibold tracking-wider uppercase -mt-0.5 ${
-              isGlass || isLight ? "text-sky-300/70" : "text-slate-500"
+              isGlass || isLight ? "text-emerald-300/80" : "text-slate-500"
             }`}
           >
             Qishloq Med AI Ecosystem
