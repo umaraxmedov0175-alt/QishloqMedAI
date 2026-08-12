@@ -30,8 +30,8 @@ export function InteractiveBody({
   const { nodes, materials } = useGLTF(MODEL_PATH) as unknown as GLTFResult;
   const [hoveredRegion, setHoveredRegion] = useState<BodyRegionId | null>(null);
 
-  // Main body mesh geometry node
-  const bodyMesh = nodes.Low_Poly_Male_bodyGroup2_lambert1_0 || Object.values(nodes).find((n) => n.isMesh);
+  // Main body mesh geometry node from HD ZBrush GLB model
+  const bodyMesh = nodes.Group16371 || nodes.Low_Poly_Male_bodyGroup2_lambert1_0 || Object.values(nodes).find((n) => n && n.isMesh);
 
   // Region raycast / hit handling
   const handlePointerOver = (e: { stopPropagation: () => void; point: THREE.Vector3 }) => {
@@ -83,7 +83,8 @@ export function InteractiveBody({
 
   // Dynamically compute active material state cleanly in useMemo
   const activeMaterial = useMemo(() => {
-    const baseMat = (materials.lambert1 || new THREE.MeshStandardMaterial({ color: 0xcfd8dc })).clone() as THREE.MeshStandardMaterial;
+    const sourceMat = materials.default || materials.lambert1 || new THREE.MeshStandardMaterial({ color: 0xcfd8dc });
+    const baseMat = sourceMat.clone() as THREE.MeshStandardMaterial;
     baseMat.roughness = 0.5;
     baseMat.metalness = 0.1;
 
