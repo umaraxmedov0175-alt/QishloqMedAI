@@ -25,6 +25,7 @@ export function Anatomy3DCanvas({
   const [isAutoRotating, setIsAutoRotating] = useState(false);
   const [hoveredRegion, setHoveredRegion] = useState<AnatomicalRegion | null>(null);
   const [isLoadingModel, setIsLoadingModel] = useState(true);
+  const [loadingPct, setLoadingPct] = useState(0);
   const [currentRotationY, setCurrentRotationY] = useState(0);
 
   // References for Three.js WebGL Instance
@@ -94,7 +95,7 @@ export function Anatomy3DCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.2;
     rendererRef.current = renderer;
 
     container.appendChild(renderer.domElement);
@@ -111,23 +112,23 @@ export function Anatomy3DCanvas({
 
     // 5. Three-Point Clinical Lighting Setup
     // Key Light (Main clinical illumination)
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
     keyLight.position.set(4, 8, 5);
     keyLight.castShadow = true;
     scene.add(keyLight);
 
     // Fill Light (Soft cyan anatomical fill)
-    const fillLight = new THREE.DirectionalLight(0x0ea5e9, 1.4);
+    const fillLight = new THREE.DirectionalLight(0x38bdf8, 1.8);
     fillLight.position.set(-4, -1, 4);
     scene.add(fillLight);
 
-    // Subtle Rim Light (Volumetric muscle outline depth)
-    const rimLight = new THREE.PointLight(0x38bdf8, 2.0, 12);
+    // Rim Light (Volumetric muscle outline depth)
+    const rimLight = new THREE.PointLight(0x7dd3fc, 2.4, 12);
     rimLight.position.set(0, 2.5, -4);
     scene.add(rimLight);
 
-    // Ambient Base
-    const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+    // Ambient Base Light
+    const ambient = new THREE.AmbientLight(0xffffff, 1.8);
     scene.add(ambient);
 
     // 6. Interactive Mesh Groups Setup
@@ -137,11 +138,11 @@ export function Anatomy3DCanvas({
 
     const taggedGroup = new THREE.Group();
     taggedGroupRef.current = taggedGroup;
-    humanMeshGroup.add(taggedGroup);
+    scene.add(taggedGroup);
 
     // 7. Load Exclusively public/models/Male.OBJ 3D Human Asset
     const objLoader = new OBJLoader();
-    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj"];
+    const modelCandidates = ["/models/Male.OBJ", "/models/male.obj", "/models/hd_human_anatomy.glb"];
 
     const tryLoadMaleObj = (index: number) => {
       if (index >= modelCandidates.length) {
@@ -160,11 +161,9 @@ export function Anatomy3DCanvas({
                 m.geometry.computeVertexNormals();
               }
               m.material = new THREE.MeshStandardMaterial({
-                color: 0x475569,
+                color: 0x64748b,
                 roughness: 0.35,
                 metalness: 0.15,
-                transparent: true,
-                opacity: 0.92,
                 side: THREE.DoubleSide,
               });
               m.castShadow = true;
@@ -187,6 +186,7 @@ export function Anatomy3DCanvas({
         (xhr) => {
           if (xhr.lengthComputable && xhr.total > 0) {
             const pct = Math.round((xhr.loaded / xhr.total) * 100);
+            setLoadingPct(pct);
             if (pct >= 100) setIsLoadingModel(false);
           }
         },
@@ -473,7 +473,9 @@ export function Anatomy3DCanvas({
         {isLoadingModel && (
           <div className="absolute z-20 flex flex-col items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-800 shadow-xl space-y-2">
             <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs font-bold text-slate-200">High-Definition 3D Human Model yuklanmoqda...</span>
+            <span className="text-xs font-bold text-slate-200">
+              Male.OBJ High-Definition 3D Human Model yuklanmoqda... {loadingPct > 0 ? `${loadingPct}%` : ""}
+            </span>
           </div>
         )}
       </div>
